@@ -9,14 +9,14 @@ See the .xml file in the root. This is opened via [draw.io](http://www.draw.io)
 
 # Brain dump
 
-##Shopping cart
+## Shopping cart
 https://codecanyon.net/item/expresscart-a-beautiful-shopping-cart-made-simple/19308261
 https://github.com/reactioncommerce
 
-##Heroku hosting
+## Heroku hosting
 does that do MongoDB?
 
-##Printful API NodeJS wrapper
+## Printful API NodeJS wrapper
 https://www.printful.com/docs/libraries
 
 ## Twitter API
