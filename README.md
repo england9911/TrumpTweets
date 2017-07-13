@@ -14,7 +14,8 @@ https://codecanyon.net/item/expresscart-a-beautiful-shopping-cart-made-simple/19
 https://github.com/reactioncommerce
 
 ## Heroku hosting
-does that do MongoDB?
+NodeJS / Express
+MongoDB?
 
 ## Printful API NodeJS wrapper
 https://www.printful.com/docs/libraries
