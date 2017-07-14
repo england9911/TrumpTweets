@@ -15,8 +15,11 @@ https://codecanyon.net/item/expresscart-a-beautiful-shopping-cart-made-simple/19
 https://github.com/reactioncommerce
 
 ## Heroku hosting
-NodeJS / Express
-MongoDB?
+https://devcenter.heroku.com/articles/getting-started-with-nodejs
+
+https://dashboard.heroku.com/apps/trump-tweet-posters/
+
+NodeJS / Express / MongoDB
 
 ## Printful API NodeJS wrapper
 https://www.printful.com/docs/libraries
