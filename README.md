@@ -22,3 +22,7 @@ https://www.printful.com/docs/libraries
 
 ## Twitter API
 https://stackoverflow.com/a/32468777
+
+## Image processor?
+https://github.com/aheckmann/gm
+https://github.com/lalunamel/NodeDynamicImageServer
