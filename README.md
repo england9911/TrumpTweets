@@ -11,6 +11,7 @@ See the .xml file in the root. This is opened via [draw.io](http://www.draw.io)
 
 ## Shopping cart
 https://codecanyon.net/item/expresscart-a-beautiful-shopping-cart-made-simple/19308261
+
 https://github.com/reactioncommerce
 
 ## Heroku hosting
@@ -25,4 +26,5 @@ https://stackoverflow.com/a/32468777
 
 ## Image processor?
 https://github.com/aheckmann/gm
+
 https://github.com/lalunamel/NodeDynamicImageServer
