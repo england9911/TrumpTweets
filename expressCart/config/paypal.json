@@ -1,0 +1,7 @@
+{
+    "mode": "sandbox",
+    "client_id": "",
+    "client_secret": "",
+    "paypalCartDescription": "expressCart",
+    "paypalCurrency": "USD"
+}
