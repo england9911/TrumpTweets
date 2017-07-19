@@ -1,7 +1,7 @@
 {
     "mode": "sandbox",
-    "client_id": "",
-    "client_secret": "",
+    "client_id": "AR8RvEqGpL8W-OI56HAVUpcNCT9PPl59YEv3pZcsBiI_1vm4zPCDvbO6rJqYfRerK5ElK49mf5gL93aV",
+    "client_secret": "ENCGeW6LRm3-mmYMqZCab8Uxq7ncI48aJBUSJE-T8tMAlj86MwuzZudMRfTXu7G2dBqvysLGRKOZRb45",
     "paypalCartDescription": "expressCart",
     "paypalCurrency": "USD"
 }
