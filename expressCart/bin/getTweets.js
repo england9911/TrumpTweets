@@ -4,10 +4,11 @@ var async = require('async');
 var path = require('path');
 var common = require('../routes/common');
 var config = common.getConfig();
-var ndb;
 
 // Twit stuff.
-var Twit = require('twit')
+var Twit = require('twit');
+var assert = require('assert');
+
 
 var T = new Twit({
   consumer_key:         'oVlWXbZ12rcooRWWy1pUXH3rz',
@@ -41,6 +42,8 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb){
     console.log('Connected to: ' + config.databaseConnectionString);
     console.log('');
 
+    // console.log(mdb);
+
     T.get('statuses/user_timeline', options , function(err, data) {
       // for (var i = 0; i < data.length ; i++) {
       //   console.log('-----');
@@ -55,7 +58,7 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb){
         insertTweets(mdb, data, function(tweetErr, report) {
 
             if(tweetErr) {
-                console.log('There was an error upgrading to MongoDB. Check the console output');
+                console.log('There was an error importing tweets. Check the console output');
             } else {
                 console.log('Tweets imported successfully');
                 // process.exit();
@@ -89,23 +92,43 @@ function insertTweets(db, tweets, callback) {
     // console.log('Tweets:');
     // console.log(tweets);
 
-    var cursor = db.collection('tweets').find( );
-    // console.log(cursor);
+    // var cursor = db.collection('tweets').find( );
     
-    cursor.each(function(err, doc) {
+    // cursor.each(function(err, doc) {
 
-      if (doc != null) {
-         console.dir(doc);
-      } 
-    });
+    //   if (doc != null) {
+    //      console.dir(doc);
+    //   } 
+    // });
 
-    console.log('-----');
+    // console.log('-----');
 
     // Get DB collection (table) 'tweets'.
-    var tweetsDb = db.collection('tweets');
-    // console.log('tweetsDb....');
-    // console.log(tweetsDb);
-    // console.log('----');
+    var tweetsDb = db.tweets;
+    console.log('tweetsDb DOCS...');
+
+    var tweetsCol = db.collection('tweets');
+
+    // Peform a simple find and return all the documents
+    tweetsCol.find().toArray(function(err, docs) {
+
+        console.log(docs);
+    });
+
+    // TODO: Do this with a cursor instead - best practice for large datasets.
+    // Grab a cursor using the find
+    var cursor = tweetsCol.find({});
+    
+    // Fetch the first object off the cursor
+    cursor.nextObject(function(err, item) {
+
+        // console.log(item);
+    });
+
+
+    // console.log(docs);
+        console.log('----');
+
 
     async.each(tweets, function (tweet, cb) {
 
@@ -119,16 +142,19 @@ function insertTweets(db, tweets, callback) {
 
         // tweetsDb.insert(tweet, function (err){ return cb(err); });
 
-        tweetsDb.insert({ 
+
+        tweetsCol.insert({ 
             "created_at":tweet.created_at,
             "tweet_id":tweet.id, 
-            "text":tweet.text, 
+            "text":tweet.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''), 
             "retweet_count":tweet.retweet_count, 
             "favorite_count":tweet.favorite_count },
             function (err){ return cb(err); });
 
-    }, function (err) {
+    }, 
+    function (err) {
 
+        // Callback func.
         // console.log('ERR: ' + err);
 
         if(err) {
