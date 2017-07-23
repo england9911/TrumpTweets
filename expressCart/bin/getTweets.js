@@ -43,16 +43,20 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
     console.log('Connected to: ' + config.databaseConnectionString);
     console.log('');
 
+
+    // insertProducts(mdb, function(exists) {
+
+    // });
+
+
     T.get('statuses/user_timeline', options , function(err, data) {
 
-        // console.log(data);
         insertTweets(mdb, data, function(tweetErr, report) {
 
             if(tweetErr) {
                 console.log('There was an error importing tweets. Check the console output');
             } else {
                 console.log('Tweets imported successfully');
-                // process.exit();
             }
         });
     });
@@ -85,7 +89,7 @@ function insertTweets(db, tweets, callback) {
 
             assert.equal(null, err);
             db.close();
-            
+
           });
         }
         else {
@@ -163,50 +167,4 @@ function tweetExists(tweetsCol, id, cb) {
         }
     });
 };
-
-// function insertProducts(db, callback) {
-//     var collection = db.collection('products');
-//     ndb = new Nedb(path.join(path.join('data', 'products.db')));
-//     ndb.loadDatabase(function (err) {
-//         if(err) {
-//             console.error('Error while loading the data from the NeDB database');
-//             console.error(err);
-//             process.exit(1);
-//         }
-
-//         ndb.find({}, function (err, docs) {
-//             if(docs.length === 0) {
-//                 console.error('The NeDB database contains no data, no work required');
-//                 console.error('You should probably check the NeDB datafile path though!');
-//             }else{
-//                 console.log('Loaded ' + docs.length + ' products(s) data from the NeDB database');
-//                 console.log('');
-//             }
-
-//             console.log('Inserting products into MongoDB...');
-//             async.each(docs, function (doc, cb) {
-//                 console.log('Product inserted: ' + doc.productTitle);
-
-//                 // check for permalink. If it is not set we set the old NeDB _id to the permalink to stop links from breaking.
-//                 if(!doc.productPermalink || doc.productPermalink === '') {
-//                     doc.productPermalink = doc._id;
-//                 }
-
-//                 // delete the old ID and let MongoDB generate new ones
-//                 delete doc._id;
-
-//                 collection.insert(doc, function (err) { return cb(err); });
-//             }, function (err) {
-//                 if(err) {
-//                     console.log('An error happened while inserting data');
-//                     callback(err, null);
-//                 }else{
-//                     console.log('All products successfully inserted');
-//                     console.log('');
-//                     callback(null, 'All products successfully inserted');
-//                 }
-//             });
-//         });
-//     });
-// };
 
