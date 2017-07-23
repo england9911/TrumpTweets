@@ -28,6 +28,8 @@ https://www.printful.com/docs/libraries
 https://stackoverflow.com/a/32468777
 
 ## Image processor?
+Canvas looks good: https://github.com/Automattic/node-canvas
+
 https://github.com/aheckmann/gm
 
 https://github.com/lalunamel/NodeDynamicImageServer

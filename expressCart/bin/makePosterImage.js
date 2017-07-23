@@ -1,65 +1,77 @@
 var fs = require('fs')
 var path = require('path')
-var Canvas = require('..')
+var drawText = require('node-canvas-text')
+var opentype = require('opentype.js')
+var Canvas = require('canvas')
 
-
-function fontFile (name) {
-  return path.join(__dirname, '/fonts/', name)
-}
-
-// Pass each font, including all of its individual variants if there are any, to
-// `registerFont`. When you set `ctx.font`, refer to the styles and the family
-// name as it is embedded in the TTF. If you aren't sure, open the font in
-// FontForge and visit Element -> Font Information and copy the Family Name
-Canvas.registerFont(fontFile('AktivGrotesk.ttf'), {family: 'AktivGrotesk'})
-Canvas.registerFont(fontFile('AktivGroteskBold.ttf'), {family: 'AktivGroteskBold', weight: 'bold'})
-Canvas.registerFont(fontFile('AktivGroteskItalic.ttf'), {family: 'AktivGroteskItalic', style: 'italic'})
-Canvas.registerFont(fontFile('AktivGroteskBoldItalic.ttf'), {family: 'AktivGroteskBoldItalic', weight: 'bold', style: 'italic'})
-Canvas.registerFont(fontFile('AktivGroteskLight.ttf'), {family: 'AktivGroteskLight', weight: 'bold'})
-Canvas.registerFont(fontFile('AktivGroteskLightItalic.ttf'), {family: 'AktivGroteskLightItalic', style: 'italic'})
+console.log(drawText)
 
 
 
+// function fontFile (name) {
+//   return path.join(__dirname, '/fonts/', name)
+// }
 
-var canvas = new Canvas(7200, 10800)
+
+// Canvas.registerFont(fontFile('AktivGrotesk.ttf'), {family: 'AktivGrotesk'})
+// Canvas.registerFont(fontFile('AktivGroteskBold.ttf'), {family: 'AktivGroteskBold', weight: 'bold'})
+// Canvas.registerFont(fontFile('AktivGroteskItalic.ttf'), {family: 'AktivGroteskItalic', style: 'italic'})
+// Canvas.registerFont(fontFile('AktivGroteskBoldItalic.ttf'), {family: 'AktivGroteskBoldItalic', weight: 'bold', style: 'italic'})
+// Canvas.registerFont(fontFile('AktivGroteskLight.ttf'), {family: 'AktivGroteskLight', weight: 'bold'})
+// Canvas.registerFont(fontFile('AktivGroteskLightItalic.ttf'), {family: 'AktivGroteskLightItalic', style: 'italic'})
+
+var mainFont = opentype.loadSync(__dirname + '/fonts/AktivGroteskBold.ttf');
+
+
+var cWidth = 7200
+var cHeight = 10800
+var cPadding = (cWidth / 20)
+var textStr = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque interdum rutrum sodales. Nullam mattis fermentum libero, non volutpat.'
+var canvas = new Canvas(cWidth, cHeight)
 var ctx = canvas.getContext('2d')
-
-ctx.globalAlpha = 0.2
-
-ctx.strokeRect(0, 0, 200, 200)
-ctx.lineTo(0, 100)
-ctx.lineTo(200, 100)
-ctx.stroke()
-
-ctx.beginPath()
-ctx.lineTo(100, 0)
-ctx.lineTo(100, 200)
-ctx.stroke()
-
-ctx.globalAlpha = 1
-// ctx.font = 'normal 40px Impact, serif'
-ctx.font = 'normal 400px AktivGroteskBold'
+// var m = ctx.measureText(textStr)
 
 
-// ctx.rotate(0.5)
-// ctx.translate(20, -40)
+// var textTopOffset = ((cHeight - m.height) / 2)
+// var textLeftOffset = ((cWidth - m.width) / 2)
 
-// ctx.lineWidth = 1
-// ctx.strokeStyle = '#ddd'
-// ctx.strokeText('Wahoo', 50, 100)
+// console.log(m)
+// console.log('top:' + textTopOffset + ' left:' + textLeftOffset)
 
-ctx.fillStyle = '#000'
-ctx.fillText('Wahoo', 49, 99)
 
-var m = ctx.measureText('Wahoo')
+// canvas.fillStyle = '#FFF'
 
-// ctx.strokeStyle = '#f00'
+// TODO: Text not wrapping or vertically centering.
+// https://github.com/kaivi/node-canvas-text
 
-// ctx.strokeRect(
-//   49 + m.actualBoundingBoxLeft,
-//   99 - m.actualBoundingBoxAscent,
-//   m.actualBoundingBoxRight - m.actualBoundingBoxLeft,
-//   m.actualBoundingBoxAscent + m.actualBoundingBoxDescent
-// )
+
+
+// ctx.patternQuality="best";
+// ctx.antialias = "subpixel";
+// ctx.textAlign = 'center';
+// ctx.textBaseline = 'middle'
+// ctx.globalAlpha = 1
+// // ctx.font = 'normal 40px Impact, serif'
+// ctx.font = 'normal 400px AktivGroteskBold'
+// ctx.fillStyle = '#000'
+// ctx.fillText(textStr, textLeftOffset, textTopOffset, (cWidth / cPadding))
+
+var drawRect = 1;
+var headerRect = {
+    x: 0,
+    y: 0,
+    width: canvas.width,
+    height: canvas.height / 3.5 };
+
+// ERROR: IS NOT A FUNC. TODO *********
+drawText(ctx, textStr, mainFont, headerRect,
+    {
+        minSize: 5,
+        maxSize: 200,
+        hAlign: 'center',
+        vAlign: 'center',
+        fitMethod: 'box',
+        drawRect: drawRect });
+
 
 canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, 'text.png')))
