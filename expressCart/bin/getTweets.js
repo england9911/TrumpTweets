@@ -22,9 +22,6 @@ var options = { screen_name: 'realDonaldTrump',
                 count: 3 };
 
 
-
-
-
 // check for DB config
 if(!config.databaseConnectionString) {
     console.log('No MongoDB configured. Please see README.md for help');
