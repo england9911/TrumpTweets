@@ -42,6 +42,9 @@ OpenType.load('/Users/mattengland/sites/TrumpTweets/expressCart/bin/fonts/Myriad
             paddingY: cPadding
         });
 
+        // TODO: Print the username in smaller text below the main tweet. 
+        // TODO: Print the date of the tweet below that.
+
         canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, 'text-24x32.png')))
     }
 });
