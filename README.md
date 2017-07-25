@@ -28,8 +28,8 @@ https://www.printful.com/docs/libraries
 https://stackoverflow.com/a/32468777
 
 ## Image processor?
-Canvas looks good: https://github.com/Automattic/node-canvas
+Node canvas: https://github.com/Automattic/node-canvas
 
-https://github.com/aheckmann/gm
+Canvas text wrapper: https://github.com/namniak/canvas-text-wrapper
 
-https://github.com/lalunamel/NodeDynamicImageServer
+Opentype.js: https://github.com/kaivi/node-canvas-text
