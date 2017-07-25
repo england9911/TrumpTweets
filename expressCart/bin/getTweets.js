@@ -130,6 +130,8 @@ function insertTweets(db, tweets, callback) {
                     tweetvalues,
                     function (err) { return cb(err); }
                 );
+
+                // TODO: Post a reply to the original tweet.
             }
         });
     }, 
