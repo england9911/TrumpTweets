@@ -101,12 +101,16 @@ function insertTweets(db, tweets, callback) {
     // Take the tweets from the Twit response and save or update information about them in our DB.
     async.each(tweets, function (tweet, cb) {
 
+        // TODO: Store - username, profile photo location
+        // console.log(tweet);
+
         var tweetvalues = { 
             "created_at":tweet.created_at,
             "tweet_id":tweet.id, 
             "text":tweet.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''), 
             "retweet_count":tweet.retweet_count, 
-            "favorite_count":tweet.favorite_count };
+            "favorite_count":tweet.favorite_count,
+            "screen_name": tweet.user.screen_name };
 
 
         tweetExists(tweetsCol, tweet.id, function(exists) {
@@ -131,7 +135,8 @@ function insertTweets(db, tweets, callback) {
                     function (err) { return cb(err); }
                 );
 
-                // TODO: Post a reply to the original tweet.
+                // TODO: Post a reply to the original tweet advertising the new poster.
+                // TODO: This will need a new Twitter account!
             }
         });
     }, 
