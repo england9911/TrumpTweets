@@ -22,7 +22,7 @@ var options = { screen_name: 'realDonaldTrump',
                 count: 3 };
 
 
-// check for DB config
+// Check for DB config
 if(!config.databaseConnectionString) {
     console.log('No MongoDB configured. Please see README.md for help');
     process.exit(1);
@@ -39,12 +39,6 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
 
     console.log('Connected to: ' + config.databaseConnectionString);
     console.log('');
-
-
-    // insertProducts(mdb, function(exists) {
-
-    // });
-
 
     T.get('statuses/user_timeline', options , function(err, data) {
 
@@ -101,9 +95,6 @@ function insertTweets(db, tweets, callback) {
     // Take the tweets from the Twit response and save or update information about them in our DB.
     async.each(tweets, function (tweet, cb) {
 
-        // TODO: Store - username, profile photo location
-        // console.log(tweet);
-
         var tweetvalues = { 
             "created_at":tweet.created_at,
             "tweet_id":tweet.id, 
@@ -111,7 +102,6 @@ function insertTweets(db, tweets, callback) {
             "retweet_count":tweet.retweet_count, 
             "favorite_count":tweet.favorite_count,
             "screen_name": tweet.user.screen_name };
-
 
         tweetExists(tweetsCol, tweet.id, function(exists) {
 
