@@ -31,12 +31,12 @@ function makePoster(textStr, screenName, tweetDate) {
             // Canvas background colour.
             var ctx = canvas.getContext('2d')
 
-            ctx.fillStyle = '#FFFFFF'
+            ctx.fillStyle = '#2977bc'
             ctx.fillRect(0, 0, cWidth, cHeight);
 
             // Main tweet text.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = '#000000'
+            ctx.fillStyle = '#FFFFFF'
             ctx.textAlign = 'left'
             ctx.textBaseline = 'top'
             ctx.font = "600px 'Myriad Pro'"
@@ -53,7 +53,7 @@ function makePoster(textStr, screenName, tweetDate) {
 
             // Screen name.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = '#000000'
+            ctx.fillStyle = '#FFFFFF'
             ctx.textAlign = 'left'
             ctx.textBaseline = 'middle'
             ctx.font = "300px 'Myriad Pro'"
@@ -66,9 +66,24 @@ function makePoster(textStr, screenName, tweetDate) {
                 paddingY: cPadding * 1.5
             });
 
+            var text = ctx.measureText(screenName)
+            ctx.strokeStyle = '#FFFFFF'
+            ctx.beginPath()
+            ctx.lineTo(500, 10100)
+            ctx.lineTo(20000, 10100)
+            ctx.lineWidth = 15;
+            ctx.stroke()
+
+            ctx.beginPath()
+            ctx.lineTo(500, 10350)
+            ctx.lineTo(20000, 10350)
+            ctx.lineWidth = 10;
+            ctx.stroke()
+
+
             // Date of tweet.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = '#000000'
+            ctx.fillStyle = '#FFFFFF'
             ctx.textAlign = 'left'
             ctx.textBaseline = 'middle'
             ctx.font = "150px 'Aktiv Grotesk'"
@@ -88,6 +103,9 @@ function makePoster(textStr, screenName, tweetDate) {
                     paddingY: cPadding
                 });
 
+                
+
+
                 // Watermark.
                 // CanvasTextWrapper(canvas, 'TrumpPosterTweets.com', {
                 //     font: ctx.font,
@@ -98,7 +116,7 @@ function makePoster(textStr, screenName, tweetDate) {
                 // });
 
 
-                fs.readFile(__dirname + '/img/watermark.png', function(err, squid) {
+                fs.readFile(__dirname + '/img/watermark-colour.png', function(err, squid) {
 
                     if (err) throw err
                     var img = new Image
