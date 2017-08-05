@@ -1,0 +1,1 @@
+var products = require('./insertProducts');

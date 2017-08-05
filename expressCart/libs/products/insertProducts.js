@@ -24,9 +24,19 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
     console.log('');
 
 
+    loadTweets(db, function(tweets) {
+
+        console.log('existing...');
+        console.log(tweets);
+    });
+
+
+
     // insertProducts(mdb, function(exists) {
 
     // });
+
+
 
 
 });
@@ -34,9 +44,18 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
 
 function insertProducts(db, callback) {
 
-    var collection = db.collection('products');
+    var products = db.collection('products');
+    var tweets = db.collection('tweets');
 
-    console.log(collection);
+    console.log(tweets);
+
+    // Load Tweets.
+
+
+    // Generate poster images.
+
+
+    // Insert products to expressCart, each product has 3 colour options.
 
         
     // console.log('Inserting products into MongoDB...');

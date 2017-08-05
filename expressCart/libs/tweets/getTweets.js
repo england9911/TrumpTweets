@@ -1,26 +1,3 @@
-// expressCart stuff.
-var mongodb = require('mongodb');
-var async = require('async');
-var path = require('path');
-var common = require('../routes/common');
-var config = common.getConfig();
-
-// Twit stuff.
-var Twit = require('twit');
-var assert = require('assert');
-
-
-var T = new Twit({
-  consumer_key:         'oVlWXbZ12rcooRWWy1pUXH3rz',
-  consumer_secret:      'p958ZUFohLbRgKhf0GmRFybRtxjmfgYzwji36Fw9fSgA6GZRKD',
-  access_token:         '2613390788-C1Wpvzp4yV5wxAiHvuVv1AzBRjOAgULKB1WIp0C',
-  access_token_secret:  '2iZ8HcyIkfT1Z6k0PpniUC3zXvJ1iXmvaTekfaqLBZi5V',
-  timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-});
-
-var options = { screen_name: 'realDonaldTrump',
-                count: 3 };
-
 
 // Check for DB config
 if(!config.databaseConnectionString) {
@@ -28,31 +5,34 @@ if(!config.databaseConnectionString) {
     process.exit(1);
 }
 
-// Connect to the MongoDB database
-mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
+function importTweets() {
 
-    if(err) {
-        console.log("Couldn't connect to the Mongo database");
-        console.log(err);
-        process.exit(1);
-    }
+    // Connect to the MongoDB database
+    mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
 
-    console.log('Connected to: ' + config.databaseConnectionString);
-    console.log('');
+        if(err) {
+            console.log("Couldn't connect to the Mongo database");
+            console.log(err);
+            process.exit(1);
+        }
 
-    T.get('statuses/user_timeline', options , function(err, data) {
+        console.log('Connected to: ' + config.databaseConnectionString);
+        console.log('');
 
-        insertTweets(mdb, data, function(tweetErr, report) {
+        T.get('statuses/user_timeline', tweetOptions , function(err, data) {
 
-            if(tweetErr) {
-                console.log('There was an error importing tweets. Check the console output');
-            } else {
-                console.log('Tweets imported successfully');
-            }
+            insertTweets(mdb, data, function(tweetErr, report) {
+
+                if(tweetErr) {
+                    console.log('There was an error importing tweets. Check the console output');
+                } else {
+                    console.log('Tweets imported successfully');
+                }
+            });
         });
-    });
 
-});
+    });
+}
 
 // @function: Perform database actions for the retrieved tweets.
 // -------------------------------------------------------------
@@ -64,33 +44,6 @@ function insertTweets(db, tweets, callback) {
 
     // Load the tweets collection (table).
     var tweetsCol = db.collection('tweets');
-
-    /*
-    var cursor = tweetsCol.find({});
-    
-    // Loop through the existing saved tweets.
-    // Execute the each command, triggers for each document (row).
-    cursor.each(function(err, item) {
-
-        // If the item is null then the cursor is exhausted/empty and closed.
-        if(item == null) {
-
-          // If there is no error and the cursor is empty, close the DB connection.
-          cursor.toArray(function(err, items) {
-
-            assert.equal(null, err);
-            db.close();
-
-          });
-        }
-        else {
-
-            // Do something with this tweet.
-            // console.log(item);
-        }
-    });
-    */
-
 
     // Take the tweets from the Twit response and save or update information about them in our DB.
     async.each(tweets, function (tweet, cb) {
@@ -160,5 +113,50 @@ function tweetExists(tweetsCol, id, cb) {
             cb(false);
         }
     });
+};
+
+// Load existing tweets.
+function loadTweets(db, callback) {
+
+    var tweets = [];
+    var tweetsCol = db.collection('tweets');
+    var cursor = tweetsCol.find({});
+    
+    // Loop through the existing saved tweets.
+    // Execute the each command, triggers for each document (row).
+    cursor.each(function(err, item, cb) {
+
+        // If the item is null then the cursor is exhausted/empty and closed.
+        if(item == null) {
+
+            // If there is no error and the cursor is empty, close the DB connection.
+            cursor.toArray(function(err, items) {
+
+                assert.equal(null, err);
+                db.close();
+            });
+        }
+        else {
+
+            tweets.push(item); 
+        }
+    }, function (err) {
+
+        if(err) {
+            console.error('An error happened while loading existing tweets');
+            callback(err, null);
+        } else {
+            console.log('All existing tweets successfully loaded');
+            console.log('');
+            callback(null, 'All existing tweets successfully loaded');
+        }
+    });
+
+
+    if (tweets.length > 0) {
+        callback(tweets);
+    } else {
+        callback(err);
+    }
 };
 
