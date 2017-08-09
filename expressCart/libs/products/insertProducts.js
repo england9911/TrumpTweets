@@ -5,13 +5,12 @@ var path = require('path');
 var common = require('../routes/common');
 var config = common.getConfig();
 
-// check for DB config
+
 if(!config.databaseConnectionString) {
     console.log('No MongoDB configured. Please see README.md for help');
     process.exit(1);
 }
 
-// Connect to the MongoDB database
 mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
 
     if(err) {
@@ -23,9 +22,7 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
     console.log('Connected to: ' + config.databaseConnectionString);
     console.log('');
 
-
     loadTweets(db, function(tweets) {
-
         console.log('existing...');
         console.log(tweets);
     });
@@ -38,6 +35,10 @@ mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
 
 
 
+    // TODO: Post a reply to the original tweet advertising the new poster.
+    // TODO: This will need a new Twitter account!
+    // TODO: Post Facebook status with poster + link.
+    // TODO: Instagram post.
 
 });
 

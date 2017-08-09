@@ -1,28 +1,87 @@
 var fs = require('fs')
 var path = require('path')
+var mongodb = require('mongodb')
+var async = require('async')
 var OpenType = require('opentype.js')
 var Canvas = require('canvas')
 var Image = Canvas.Image
-var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper;
-var moment = require('moment');
+var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper
+var moment = require('moment')
+var common = require('../../routes/common');
+var config = common.getConfig()
+
+// These two need an equal number of items in each object.
+var bgColours = ['#2977BC','#D6353D','#FCFAEC']
+var textColours = ['#FFF','#FFF','#000']
 
 
-// var textStr = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque interdum rutrum sodales. Nullam mattis fermentum libero, non volutpat.'
-// var screenName = '@realDonaldTrump'
-// var tweetDate = new Date('Thu Jul 27 19:08:58 +0000 2017')  
+// Check for DB config
+if(!config.databaseConnectionString) {
+    console.log('No MongoDB configured. Please see README.md for help');
+    process.exit(1);
+}
 
-// makePoster(textStr, screenName, tweetDate, '#2977bc', '#FFF');
-// makePoster(textStr, screenName, tweetDate, '#d6353d', '#FFF');
-// makePoster(textStr, screenName, tweetDate, '#fcfaec', '#000');
 
-function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
+module.exports.make = function(tweets, callback) {
 
-    OpenType.load(path.join(__dirname,'/fonts/MyriadProBoldSemiC.ttf'), function(err, font){
+    mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
 
-        if(err) {
+        var tweetsCol = db.collection('tweets');
 
-            console.log(err);
-            process.exit(1);
+        // **************************
+        // TODO:
+        // 3 x posters for each tweet. See colour arrays above.
+        // Emojis
+
+        async.each(tweets, function (tweet, cb) {
+
+            var tweetDate = new Date(tweet.created_at);
+
+            if(!tweet.posters_generated) {
+
+                makePoster(tweet.text, tweet.screen_name, tweetDate, function(err) {
+
+                    if(err) {
+                        cb(err);
+                    }
+                    else {
+
+                        tweetsCol.updateOne(
+                            { "tweet_id" : tweet.tweet_id },
+                            { $set: {"posters_generated" : true } },
+                            function(err,res) { 
+                                cb();
+                            }
+                        );
+                    }
+                });
+
+            } else {
+
+                cb();
+            }
+        }, 
+        function (err) {
+
+            if(err) {
+                db.close();
+                callback(err, null);
+            } 
+            else {
+                db.close();
+                callback(null, 'All posters successfully generated, or no new posters needed.');
+            }
+        });
+    });
+}
+
+function makePoster(textStr, screenName, tweetDate, callback) {
+
+    OpenType.load(path.join(__dirname,'/fonts/MyriadProBoldSemiC.ttf'), function(err1, font){
+
+        if(err1) {
+
+            callback(err);
         }
         else {
 
@@ -35,16 +94,16 @@ function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
             // Canvas background colour.
             var ctx = canvas.getContext('2d')
 
-            ctx.fillStyle = bgCol
+            ctx.fillStyle = bgColours[0]
             ctx.fillRect(0, 0, cWidth, cHeight);
 
             // Main tweet text.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = textCol
+            ctx.fillStyle = textColours[1]
             ctx.textAlign = 'left'
             ctx.textBaseline = 'top'
             ctx.font = "600px 'Myriad Pro'"
-            ctx.lineHeight = 1.1;
+            ctx.lineHeight = 1.1
 
             CanvasTextWrapper(canvas, textStr, {
                 font: ctx.font,
@@ -57,7 +116,7 @@ function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
 
             // Screen name.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = textCol
+            ctx.fillStyle = textColours[1]
             ctx.textAlign = 'left'
             ctx.textBaseline = 'middle'
             ctx.font = "300px 'Myriad Pro'"
@@ -71,11 +130,11 @@ function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
             });
 
             var text = ctx.measureText(screenName)
-            ctx.strokeStyle = textCol
+            ctx.strokeStyle = textColours[1]
             ctx.beginPath()
             ctx.lineTo(450, 9650)
             ctx.lineTo(20000, 9650)
-            ctx.lineWidth = 18;
+            ctx.lineWidth = 18
             ctx.stroke()
 
             // ctx.beginPath()
@@ -86,51 +145,66 @@ function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
 
             // Date of tweet.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = textCol
+            ctx.fillStyle = textColours[1]
             ctx.textAlign = 'left'
             ctx.textBaseline = 'middle'
             ctx.font = "150px 'Aktiv Grotesk'"
             
-            OpenType.load(path.join(__dirname, '/fonts/AktivGrotesk.ttf'), function(err, font2){
+            OpenType.load(path.join(__dirname, '/fonts/AktivGrotesk.ttf'), function(err, font2) {
 
-                // @TODO: Is this UTC?
-                var formatDate = moment(tweetDate).format('dddd, MMMM Do YYYY, h:mm a')
-                var fileDate = moment.utc(formatDate,'dddd, MMMM Do YYYY, h:mm a').format('X')
+                if(err1) {
 
-                CanvasTextWrapper(canvas, formatDate, {
-                    font: ctx.font,
-                    textAlign: ctx.textAlign,
-                    verticalAlign: "bottom",
-                    paddingX: cPaddingX,
-                    paddingY: 900
-                });
+                    callback(err);
+                }
+                else {
 
-                // // Watermark text.
-                // CanvasTextWrapper(canvas, 'TrumpPosterTweets.com', {
-                //     font: ctx.font,
-                //     textAlign: "left",
-                //     verticalAlign: "bottom",
-                //     paddingX: cPaddingX,
-                //     paddingY: 450
-                // });
+                    // @TODO: Is this UTC? - see tweet details from TWIT.
+                    var formatDate = moment(tweetDate).format('dddd, MMMM Do YYYY, h:mm a')
+                    var fileDate = moment.utc(formatDate,'dddd, MMMM Do YYYY, h:mm a').format('X')
 
-                // fs.readFile(__dirname + '/img/watermark-transparent.png', function(err, squid) {
+                    CanvasTextWrapper(canvas, formatDate, {
+                        font: ctx.font,
+                        textAlign: ctx.textAlign,
+                        verticalAlign: "bottom",
+                        paddingX: cPaddingX,
+                        paddingY: 900
+                    });
 
-                //     if (err) throw err
-                //     var img = new Image
-                //     img.src = squid
+                    // // Watermark text.
+                    // CanvasTextWrapper(canvas, 'TrumpPosterTweets.com', {
+                    //     font: ctx.font,
+                    //     textAlign: "left",
+                    //     verticalAlign: "bottom",
+                    //     paddingX: cPaddingX,
+                    //     paddingY: 450
+                    // });
 
-                //     ctxt = canvas.getContext('2d')
-                //     ctxt.drawImage(img, 5700, 9400)
+                    // fs.readFile(__dirname + '/img/watermark-transparent.png', function(err, squid) {
 
-                //     canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, fileDate + '-' + bgCol + '-24x32.png')))
-                // });
-                var filename = fileDate + '-' + bgCol + '-24x32.png';
-                var stream = canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, '/posters/' + filename)))
+                    //     if (err) throw err
+                    //     var img = new Image
+                    //     img.src = squid
 
-                stream.on('end', function(){
-                  console.log('Saved ' + filename);
-                });
+                    //     ctxt = canvas.getContext('2d')
+                    //     ctxt.drawImage(img, 5700, 9400)
+
+                    //     canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, fileDate + '-' + bgCol + '-24x32.png')))
+                    // });
+
+                    // Colour versions of each poster.
+                    // TODO: Use stream listener to invoke the function again, each time with an incremented counter to select colours?
+                    // TODO: OR - Do a nested async() call.
+
+
+                    var filename = fileDate + '-' + bgColours[1] + '-24x32.png';
+                    var stream = canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, '/poster-imgs/' + filename)))
+
+                    // Listener.
+                    stream.on('close', function(){
+                      console.log('Saved ' + filename);
+                      callback();
+                    });
+                }
             });
         }
     });

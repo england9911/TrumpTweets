@@ -1,3 +1,24 @@
+// expressCart stuff.
+var mongodb = require('mongodb');
+var async = require('async');
+var path = require('path');
+var common = require('../../routes/common');
+var config = common.getConfig();
+
+// Tweet stuff.
+var Twit = require('twit');
+var assert = require('assert');
+
+var T = new Twit({
+  consumer_key:         'oVlWXbZ12rcooRWWy1pUXH3rz',
+  consumer_secret:      'p958ZUFohLbRgKhf0GmRFybRtxjmfgYzwji36Fw9fSgA6GZRKD',
+  access_token:         '2613390788-C1Wpvzp4yV5wxAiHvuVv1AzBRjOAgULKB1WIp0C',
+  access_token_secret:  '2iZ8HcyIkfT1Z6k0PpniUC3zXvJ1iXmvaTekfaqLBZi5V',
+  timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+});
+
+var tweetOptions = { screen_name: 'realDonaldTrump',
+                     count: 3 };
 
 // Check for DB config
 if(!config.databaseConnectionString) {
@@ -5,7 +26,9 @@ if(!config.databaseConnectionString) {
     process.exit(1);
 }
 
-function importTweets() {
+// @function: Load tweets from Twitter API, add to our database.
+// -------------------------------------------------------------
+module.exports.importTweets = function(callback) {
 
     // Connect to the MongoDB database
     mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
@@ -24,13 +47,13 @@ function importTweets() {
             insertTweets(mdb, data, function(tweetErr, report) {
 
                 if(tweetErr) {
-                    console.log('There was an error importing tweets. Check the console output');
+                    console.log(tweetErr);
+                    callback(false);
                 } else {
-                    console.log('Tweets imported successfully');
+                    callback(true);
                 }
             });
         });
-
     });
 }
 
@@ -45,61 +68,61 @@ function insertTweets(db, tweets, callback) {
     // Load the tweets collection (table).
     var tweetsCol = db.collection('tweets');
 
-    // Take the tweets from the Twit response and save or update information about them in our DB.
+    // Take the tweets from the Twit response and save or update information.
     async.each(tweets, function (tweet, cb) {
 
         var tweetvalues = { 
             "created_at":tweet.created_at,
             "tweet_id":tweet.id, 
-            "text":tweet.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''), 
+            "text":tweet.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(), 
             "retweet_count":tweet.retweet_count, 
             "favorite_count":tweet.favorite_count,
-            "screen_name": tweet.user.screen_name };
+            "screen_name": tweet.user.screen_name,
+            "posters_generated": false };
 
-        tweetExists(tweetsCol, tweet.id, function(exists) {
+        if(!isReplyRetweet(tweet)) {
 
-            if(exists) {
+            tweetExists(tweetsCol, tweet.id, function(exists) {
 
-                var myquery = { tweet_id: tweet.id };
-                
-                // If we already have the tweet, update the retweet_count and favorite_count only.
-                tweetsCol.updateOne(myquery, tweetvalues, function(err, res) {
+                if(exists) {
 
-                    if (err) throw err;
-                    console.log("1 record updated");
-                    db.close();
-                });
-            }
-            else {
+                    var myquery = { tweet_id: tweet.id };
+                    
+                    // Update the retweet_count and favorite_count only.
+                    tweetsCol.updateOne(myquery, tweetvalues, function(err, res) {
 
-                // Insert a new tweet.
-                tweetsCol.insert(
-                    tweetvalues,
-                    function (err) { return cb(err); }
-                );
+                        if (err) return cb(err);
+                        console.log("1 record updated");
+                        return cb(null);
+                    });
+                }
+                else {
 
-                // TODO: Post a reply to the original tweet advertising the new poster.
-                // TODO: This will need a new Twitter account!
-            }
-        });
+                    tweetsCol.insert(
+                        tweetvalues,
+                        function (err) { return cb(err); }
+                    );
+                }
+            });
+        };
     }, 
     function (err) {
 
         if(err) {
-
             console.log('An error happened while inserting tweet data');
             callback(err, null);
         } 
         else {
-
             console.log('All tweets successfully inserted');
             console.log('');
             callback(null, 'All tweets successfully inserted');
         }
+        db.close();
     });
 };
 
-// Have we already saved this tweet id?
+// @function: Do we already have this tweet saved in our database?
+// ---------------------------------------------------------------
 function tweetExists(tweetsCol, id, cb) {
 
     tweetsCol.find({ tweet_id:id }).toArray( function(err, results) {
@@ -107,56 +130,45 @@ function tweetExists(tweetsCol, id, cb) {
         if (err) throw err;
 
         if(results.length > 0) {
-            cb(true);
+            return cb(true);
         }
         else {
-            cb(false);
+            return cb(false);
         }
     });
 };
 
-// Load existing tweets.
-function loadTweets(db, callback) {
+// @function: Is this tweet a reply or retweet?
+// -------------------------------------------------------------
+function isReplyRetweet(tweet) {
+  if ( tweet.retweeted_status
+    || tweet.in_reply_to_status_id
+    || tweet.in_reply_to_status_id_str
+    || tweet.in_reply_to_user_id
+    || tweet.in_reply_to_user_id_str
+    || tweet.in_reply_to_screen_name )
+    return true
+}
 
-    var tweets = [];
-    var tweetsCol = db.collection('tweets');
-    var cursor = tweetsCol.find({});
-    
-    // Loop through the existing saved tweets.
-    // Execute the each command, triggers for each document (row).
-    cursor.each(function(err, item, cb) {
+// @function: Load existing tweets.
+// -------------------------------------------------------------
+module.exports.loadTweets = function(callback) {
 
-        // If the item is null then the cursor is exhausted/empty and closed.
-        if(item == null) {
+    mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
 
-            // If there is no error and the cursor is empty, close the DB connection.
-            cursor.toArray(function(err, items) {
+        var tweetsCol = db.collection('tweets');
+        var cursor = tweetsCol.find({});
 
-                assert.equal(null, err);
-                db.close();
-            });
-        }
-        else {
+        tweetsCol.find().toArray(function (err, items) {
 
-            tweets.push(item); 
-        }
-    }, function (err) {
+             if (err) {
+                callback(err, null);
+             } else {
+                callback(null, items);
+             }
 
-        if(err) {
-            console.error('An error happened while loading existing tweets');
-            callback(err, null);
-        } else {
-            console.log('All existing tweets successfully loaded');
-            console.log('');
-            callback(null, 'All existing tweets successfully loaded');
-        }
+             db.close();
+        });
     });
-
-
-    if (tweets.length > 0) {
-        callback(tweets);
-    } else {
-        callback(err);
-    }
 };
 
