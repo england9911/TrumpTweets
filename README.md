@@ -1,6 +1,6 @@
 # Trump Tweets
 
-A webapp which instantly grabs any tweets that Donald Trump makes, and allows users to immediately buy them as a poster.
+A webapp which grabs any tweets that Donald Trump makes, and allows users to buy them as a poster.
 
 # Functional Spec
 
