@@ -16,9 +16,7 @@ tweets.importTweets(function(success) {
                 console.log('no.');
             }
 
-                        	process.exit();
-
-
+            process.exit();
 		});
 
 		// console.log(tweets);

@@ -31,7 +31,7 @@ module.exports.make = function(tweets, callback) {
         // **************************
         // TODO:
         // 3 x posters for each tweet. See colour arrays above.
-        // Emojis
+        // Emojis? font?
 
         async.each(tweets, function (tweet, cb) {
 
@@ -39,25 +39,37 @@ module.exports.make = function(tweets, callback) {
 
             if(!tweet.posters_generated) {
 
-                makePoster(tweet.text, tweet.screen_name, tweetDate, function(err) {
+                if(err) {
+                    cb(err);
+                }
+                else {
+                    var cCount = 0;
 
-                    if(err) {
-                        cb(err);
-                    }
-                    else {
-
-                        tweetsCol.updateOne(
-                            { "tweet_id" : tweet.tweet_id },
-                            { $set: {"posters_generated" : true } },
-                            function(err,res) { 
-                                cb();
-                            }
-                        );
-                    }
-                });
-
-            } else {
-
+                    async.each(bgColours, function (bgCol, cb2) {
+                        console.log('----:' + cCount)
+                        makePoster(tweet.text, tweet.screen_name, tweetDate, bgCol, textColours[cCount], function(err) {
+                            cb2();
+                        });
+                        cCount++;
+                    }, 
+                    function (err2) {
+                        
+                        if(err2) {
+                            cb(err2)
+                        } 
+                        else {
+                            tweetsCol.updateOne(
+                                { "tweet_id" : tweet.tweet_id },
+                                { $set: { "posters_generated" : true } },
+                                function(err,res) { 
+                                    cb();
+                                }
+                            );
+                        }
+                    });                        
+                }
+            } 
+            else {
                 cb();
             }
         }, 
@@ -75,16 +87,14 @@ module.exports.make = function(tweets, callback) {
     });
 }
 
-function makePoster(textStr, screenName, tweetDate, callback) {
+function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
 
     OpenType.load(path.join(__dirname,'/fonts/MyriadProBoldSemiC.ttf'), function(err1, font){
 
         if(err1) {
-
             callback(err);
         }
         else {
-
             var cWidth = 7200
             var cHeight = 10800
             var cPaddingX = (cWidth / 16)    
@@ -94,12 +104,12 @@ function makePoster(textStr, screenName, tweetDate, callback) {
             // Canvas background colour.
             var ctx = canvas.getContext('2d')
 
-            ctx.fillStyle = bgColours[0]
-            ctx.fillRect(0, 0, cWidth, cHeight);
+            ctx.fillStyle = bgCol
+            ctx.fillRect(0, 0, cWidth, cHeight)
 
             // Main tweet text.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = textColours[1]
+            ctx.fillStyle = textCol
             ctx.textAlign = 'left'
             ctx.textBaseline = 'top'
             ctx.font = "600px 'Myriad Pro'"
@@ -116,7 +126,7 @@ function makePoster(textStr, screenName, tweetDate, callback) {
 
             // Screen name.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = textColours[1]
+            ctx.fillStyle = textCol
             ctx.textAlign = 'left'
             ctx.textBaseline = 'middle'
             ctx.font = "300px 'Myriad Pro'"
@@ -130,7 +140,7 @@ function makePoster(textStr, screenName, tweetDate, callback) {
             });
 
             var text = ctx.measureText(screenName)
-            ctx.strokeStyle = textColours[1]
+            ctx.strokeStyle = textCol
             ctx.beginPath()
             ctx.lineTo(450, 9650)
             ctx.lineTo(20000, 9650)
@@ -145,7 +155,7 @@ function makePoster(textStr, screenName, tweetDate, callback) {
 
             // Date of tweet.
             ctx = canvas.getContext('2d')
-            ctx.fillStyle = textColours[1]
+            ctx.fillStyle = textCol
             ctx.textAlign = 'left'
             ctx.textBaseline = 'middle'
             ctx.font = "150px 'Aktiv Grotesk'"
@@ -153,11 +163,9 @@ function makePoster(textStr, screenName, tweetDate, callback) {
             OpenType.load(path.join(__dirname, '/fonts/AktivGrotesk.ttf'), function(err, font2) {
 
                 if(err1) {
-
                     callback(err);
                 }
                 else {
-
                     // @TODO: Is this UTC? - see tweet details from TWIT.
                     var formatDate = moment(tweetDate).format('dddd, MMMM Do YYYY, h:mm a')
                     var fileDate = moment.utc(formatDate,'dddd, MMMM Do YYYY, h:mm a').format('X')
@@ -191,12 +199,7 @@ function makePoster(textStr, screenName, tweetDate, callback) {
                     //     canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, fileDate + '-' + bgCol + '-24x32.png')))
                     // });
 
-                    // Colour versions of each poster.
-                    // TODO: Use stream listener to invoke the function again, each time with an incremented counter to select colours?
-                    // TODO: OR - Do a nested async() call.
-
-
-                    var filename = fileDate + '-' + bgColours[1] + '-24x32.png';
+                    var filename = fileDate + '-' + bgCol + '-24x32.png';
                     var stream = canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, '/poster-imgs/' + filename)))
 
                     // Listener.

@@ -2,6 +2,7 @@
 var mongodb = require('mongodb');
 var async = require('async');
 var path = require('path');
+var decode = require('decode-html');
 var common = require('../../routes/common');
 var config = common.getConfig();
 
@@ -71,13 +72,15 @@ function insertTweets(db, tweets, callback) {
     // Take the tweets from the Twit response and save or update information.
     async.each(tweets, function (tweet, cb) {
 
+        var tweetext = decode(tweet.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim());
+        tweetext = tweetext.replace(/^\./, '');
         var tweetvalues = { 
             "created_at":tweet.created_at,
             "tweet_id":tweet.id, 
-            "text":tweet.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim(), 
+            "text":tweetext, 
             "retweet_count":tweet.retweet_count, 
             "favorite_count":tweet.favorite_count,
-            "screen_name": tweet.user.screen_name,
+            "screen_name":tweet.user.screen_name,
             "posters_generated": false };
 
         if(!isReplyRetweet(tweet)) {
@@ -85,29 +88,31 @@ function insertTweets(db, tweets, callback) {
             tweetExists(tweetsCol, tweet.id, function(exists) {
 
                 if(exists) {
-
                     var myquery = { tweet_id: tweet.id };
                     
                     // Update the retweet_count and favorite_count only.
                     tweetsCol.updateOne(myquery, tweetvalues, function(err, res) {
 
+                        console.log('1 record updated');
                         if (err) return cb(err);
-                        console.log("1 record updated");
-                        return cb(null);
+                        return cb();
                     });
                 }
                 else {
-
                     tweetsCol.insert(
                         tweetvalues,
-                        function (err) { return cb(err); }
+                        function (err) { 
+                            return cb(err); 
+                        }
                     );
                 }
             });
+        } 
+        else {
+            cb();
         };
     }, 
     function (err) {
-
         if(err) {
             console.log('An error happened while inserting tweet data');
             callback(err, null);
@@ -125,7 +130,7 @@ function insertTweets(db, tweets, callback) {
 // ---------------------------------------------------------------
 function tweetExists(tweetsCol, id, cb) {
 
-    tweetsCol.find({ tweet_id:id }).toArray( function(err, results) {
+    tweetsCol.find({ tweet_id:id }).toArray(function(err, results) {
 
         if (err) throw err;
 
@@ -157,10 +162,10 @@ module.exports.loadTweets = function(callback) {
     mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
 
         var tweetsCol = db.collection('tweets');
-        var cursor = tweetsCol.find({});
+        var cursor = tweetsCol.find({ 'posters_generated': false });
 
         tweetsCol.find().toArray(function (err, items) {
-
+            
              if (err) {
                 callback(err, null);
              } else {
