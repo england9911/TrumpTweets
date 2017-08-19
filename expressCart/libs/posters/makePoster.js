@@ -30,14 +30,19 @@ module.exports.make = function(tweets, callback) {
 
         // **************************
         // TODO:
-        // 3 x posters for each tweet. See colour arrays above.
         // Emojis? font?
+
+
+        // console.log(tweets);
+
 
         async.each(tweets, function (tweet, cb) {
 
-            var tweetDate = new Date(tweet.created_at);
+            var tweetDate = tweet.tweet_local_date;
 
-            if(!tweet.posters_generated) {
+            if(tweet.posters_generated === false) {
+
+                console.log('----1');
 
                 if(err) {
                     cb(err);
@@ -46,8 +51,8 @@ module.exports.make = function(tweets, callback) {
                     var cCount = 0;
 
                     async.each(bgColours, function (bgCol, cb2) {
-                        console.log('----:' + cCount)
-                        makePoster(tweet.text, tweet.screen_name, tweetDate, bgCol, textColours[cCount], function(err) {
+
+                        makePoster(tweet.tweet_id, tweet.text, '@' + tweet.screen_name, tweetDate, bgCol, textColours[cCount], function(err) {
                             cb2();
                         });
                         cCount++;
@@ -59,10 +64,11 @@ module.exports.make = function(tweets, callback) {
                         } 
                         else {
                             tweetsCol.updateOne(
-                                { "tweet_id" : tweet.tweet_id },
+                                { "tweet_id":tweet.tweet_id },
                                 { $set: { "posters_generated" : true } },
                                 function(err,res) { 
-                                    cb();
+                                    if (err) return cb(err);
+                                    return cb();
                                 }
                             );
                         }
@@ -70,6 +76,7 @@ module.exports.make = function(tweets, callback) {
                 }
             } 
             else {
+                console.log('----2');
                 cb();
             }
         }, 
@@ -87,7 +94,7 @@ module.exports.make = function(tweets, callback) {
     });
 }
 
-function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
+function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callback) {
 
     OpenType.load(path.join(__dirname,'/fonts/MyriadProBoldSemiC.ttf'), function(err1, font){
 
@@ -163,14 +170,13 @@ function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
             OpenType.load(path.join(__dirname, '/fonts/AktivGrotesk.ttf'), function(err, font2) {
 
                 if(err1) {
+
+                    console.log('-- 1');
+
                     callback(err);
                 }
                 else {
-                    // @TODO: Is this UTC? - see tweet details from TWIT.
-                    var formatDate = moment(tweetDate).format('dddd, MMMM Do YYYY, h:mm a')
-                    var fileDate = moment.utc(formatDate,'dddd, MMMM Do YYYY, h:mm a').format('X')
-
-                    CanvasTextWrapper(canvas, formatDate, {
+                    CanvasTextWrapper(canvas, tweetDate, {
                         font: ctx.font,
                         textAlign: ctx.textAlign,
                         verticalAlign: "bottom",
@@ -199,7 +205,9 @@ function makePoster(textStr, screenName, tweetDate, bgCol, textCol, callback) {
                     //     canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, fileDate + '-' + bgCol + '-24x32.png')))
                     // });
 
-                    var filename = fileDate + '-' + bgCol + '-24x32.png';
+                    console.log('Generating a poster..');
+
+                    var filename = tid + '-' + bgCol + '-24x32.png';
                     var stream = canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, '/poster-imgs/' + filename)))
 
                     // Listener.

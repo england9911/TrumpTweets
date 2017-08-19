@@ -3,23 +3,19 @@ var mongodb = require('mongodb');
 var async = require('async');
 var path = require('path');
 var decode = require('decode-html');
+var moment = require('moment-timezone');
 var common = require('../../routes/common');
 var config = common.getConfig();
 
-// Tweet stuff.
 var Twit = require('twit');
 var assert = require('assert');
+var tconfig = require('./twitConf.js');
 
-var T = new Twit({
-  consumer_key:         'oVlWXbZ12rcooRWWy1pUXH3rz',
-  consumer_secret:      'p958ZUFohLbRgKhf0GmRFybRtxjmfgYzwji36Fw9fSgA6GZRKD',
-  access_token:         '2613390788-C1Wpvzp4yV5wxAiHvuVv1AzBRjOAgULKB1WIp0C',
-  access_token_secret:  '2iZ8HcyIkfT1Z6k0PpniUC3zXvJ1iXmvaTekfaqLBZi5V',
-  timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-});
+var T = new Twit(tconfig);
 
 var tweetOptions = { screen_name: 'realDonaldTrump',
-                     count: 3 };
+                     count: 2,
+                     tweet_mode: 'extended' };
 
 // Check for DB config
 if(!config.databaseConnectionString) {
@@ -72,31 +68,43 @@ function insertTweets(db, tweets, callback) {
     // Take the tweets from the Twit response and save or update information.
     async.each(tweets, function (tweet, cb) {
 
-        var tweetext = decode(tweet.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim());
+        var tweetext = decode(tweet.full_text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim());
         tweetext = tweetext.replace(/^\./, '');
+
+        var tweetUnix = moment(tweet.created_at, 'ddd MMM DD HH:mm:ss Z YYYY');
+        var tweetDateTimezone = moment.tz(tweetUnix, 'US/Eastern').format('dddd, MMMM Do YYYY, h:mm a');
+
         var tweetvalues = { 
             "created_at":tweet.created_at,
+            "tweet_local_date":tweetDateTimezone,
             "tweet_id":tweet.id, 
             "text":tweetext, 
             "retweet_count":tweet.retweet_count, 
             "favorite_count":tweet.favorite_count,
             "screen_name":tweet.user.screen_name,
-            "posters_generated": false };
+            "posters_generated":false
+        };
 
         if(!isReplyRetweet(tweet)) {
 
             tweetExists(tweetsCol, tweet.id, function(exists) {
 
                 if(exists) {
-                    var myquery = { tweet_id: tweet.id };
-                    
-                    // Update the retweet_count and favorite_count only.
-                    tweetsCol.updateOne(myquery, tweetvalues, function(err, res) {
+                    var idtweet = { tweet_id: tweet.id };
 
-                        console.log('1 record updated');
-                        if (err) return cb(err);
-                        return cb();
-                    });
+                    // Update the retweet_count and favorite_count only.
+                    tweetsCol.updateOne(
+                        idtweet, 
+                        { $set: {
+                            "retweet_count":tweet.retweet_count, 
+                            "favorite_count":tweet.favorite_count,
+                        } }, 
+                        function(err, res) {
+                            console.log('1 record updated');
+                            if (err) return cb(err);
+                            return cb();
+                        }
+                    );
                 }
                 else {
                     tweetsCol.insert(
@@ -162,10 +170,10 @@ module.exports.loadTweets = function(callback) {
     mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
 
         var tweetsCol = db.collection('tweets');
-        var cursor = tweetsCol.find({ 'posters_generated': false });
+        // var cursor = tweetsCol.find({ 'posters_generated': false });
 
         tweetsCol.find().toArray(function (err, items) {
-            
+
              if (err) {
                 callback(err, null);
              } else {
