@@ -59,5 +59,7 @@ typings/
 
 # config
 expressCart/config/
+expressCart/libs/tweets/twitConf.js
 
 *.DS_Store
+

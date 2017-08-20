@@ -1,4 +1,5 @@
 var fs = require('fs')
+var gm = require('gm')
 var path = require('path')
 var mongodb = require('mongodb')
 var async = require('async')
@@ -7,8 +8,12 @@ var Canvas = require('canvas')
 var Image = Canvas.Image
 var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper
 var moment = require('moment')
-var common = require('../../routes/common');
+var common = require('../../routes/common')
 var config = common.getConfig()
+var Thumbnail = require('thumbnail')
+var postersDir = path.join(__dirname, '/poster-imgs')
+var thumbnail = new Thumbnail(postersDir, postersDir + '/thumbs')
+var filenames = []
 
 // These two need an equal number of items in each object.
 var bgColours = ['#2977BC','#D6353D','#FCFAEC']
@@ -17,8 +22,8 @@ var textColours = ['#FFF','#FFF','#000']
 
 // Check for DB config
 if(!config.databaseConnectionString) {
-    console.log('No MongoDB configured. Please see README.md for help');
-    process.exit(1);
+    console.log('No MongoDB configured. Please see README.md for help')
+    process.exit(1)
 }
 
 
@@ -33,7 +38,6 @@ module.exports.make = function(tweets, callback) {
         // Emojis? font?
 
 
-        // console.log(tweets);
 
 
         async.each(tweets, function (tweet, cb) {
@@ -41,8 +45,6 @@ module.exports.make = function(tweets, callback) {
             var tweetDate = tweet.tweet_local_date;
 
             if(tweet.posters_generated === false) {
-
-                console.log('----1');
 
                 if(err) {
                     cb(err);
@@ -52,14 +54,24 @@ module.exports.make = function(tweets, callback) {
 
                     async.each(bgColours, function (bgCol, cb2) {
 
-                        makePoster(tweet.tweet_id, tweet.text, '@' + tweet.screen_name, tweetDate, bgCol, textColours[cCount], function(err) {
-                            cb2();
+                        makePoster(tweet.tweet_id, tweet.text, '@' + tweet.screen_name, tweetDate, bgCol, textColours[cCount], function(filename, err) {
+
+                            if (err) {
+                                console.log(err)
+                                cb2(err)
+                            } 
+                            else {
+                                cb2()
+                            }
+
+                            filenames.push(filename);
                         });
                         cCount++;
                     }, 
                     function (err2) {
                         
                         if(err2) {
+                            console.log(err2)
                             cb(err2)
                         } 
                         else {
@@ -76,7 +88,6 @@ module.exports.make = function(tweets, callback) {
                 }
             } 
             else {
-                console.log('----2');
                 cb();
             }
         }, 
@@ -87,6 +98,25 @@ module.exports.make = function(tweets, callback) {
                 callback(err, null);
             } 
             else {
+
+                // Generate thumbs after all posters are made.
+                for (var i = 0, len = filenames.length; i < len; i++) {
+
+                    console.log('len: ' + len)
+                    console.log('i: ' + i)
+
+
+                    thumbnail.ensureThumbnail(filenames[i], 800, null, function (err, filename) {
+
+                        if (err) { 
+                            console.log(err);
+                        }
+                        else {
+                            console.log('Created a thumbnail for: ' + filename)
+                        }
+                    });
+                } 
+
                 db.close();
                 callback(null, 'All posters successfully generated, or no new posters needed.');
             }
@@ -170,9 +200,6 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
             OpenType.load(path.join(__dirname, '/fonts/AktivGrotesk.ttf'), function(err, font2) {
 
                 if(err1) {
-
-                    console.log('-- 1');
-
                     callback(err);
                 }
                 else {
@@ -210,10 +237,12 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     var filename = tid + '-' + bgCol + '-24x32.png';
                     var stream = canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, '/poster-imgs/' + filename)))
 
-                    // Listener.
-                    stream.on('close', function(){
-                      console.log('Saved ' + filename);
-                      callback();
+
+                    // Listener for images creation.
+                    stream.on('close', function() {
+
+                        console.log('Saved ' + filename);
+                        callback(filename);
                     });
                 }
             });
