@@ -5,6 +5,8 @@ var products = require('./products/insertProducts');
 //@TODO: Twitter webhook, fire this when a new tweet is sent.
 //https://dev.twitter.com/webhooks/getting-started
 
+// TODO: Make an 'official' twitter account. Make new API keys.
+
 tweets.importTweets(function(success) {
 
 	tweets.loadTweets(function(errLoad, tweets) {
