@@ -31,7 +31,8 @@ module.exports.insertProducts = function(tweets, callback) {
 
             var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["Yes","No"]}}'
             
-            // TODO: productImage = thumbnails
+            // TODO: productImage = thumbnails - how to find the names? we have the tweet_id which makes up part of the filename.
+            // TODO: make function to get image paths from a tweet_id
             // TODO: multiple product images, one is main
             // TODO: options changed, show diff image?
 
