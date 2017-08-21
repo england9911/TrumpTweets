@@ -50,36 +50,46 @@ module.exports.insertProducts = function(tweets, callback) {
                 productImage: "/uploads/placeholder.png"
             };
 
+            // Product images get made by putting images into a folder under public/uploads/product_id/
+            // Product images loaded with:
+            // common.getImages(prodid, req, res, function (images){
+            // });
+
             db.products.insert(doc, function (err, newDoc) {
 
-            if(err) {
+                if(err) {
 
-                console.error(colors.red('Error inserting document: ' + err));
-                cb(err);
+                    console.error(colors.red('Error inserting document: ' + err));
+                    cb(err);
 
-            } else {
+                } else {
 
-                    // get the new ID
-                    // var newId = newDoc._id;
-                    // if(config.databaseType !== 'embedded'){
-                    //     newId = newDoc.insertedIds;
-                    // }
+                        // get the new ID
+                        // var newId = newDoc._id;
+                        // if(config.databaseType !== 'embedded'){
+                        //     newId = newDoc.insertedIds;
+                        // }
 
-                    // // create lunr doc
-                    // var lunrDoc = {
-                    //     productTitle: doc.productTitle,
-                    //     productTags: doc.productTags,
-                    //     productDescription: doc.productDescription,
-                    //     id: newId
-                    // };
+                        // // create lunr doc
+                        // var lunrDoc = {
+                        //     productTitle: doc.productTitle,
+                        //     productTags: doc.productTags,
+                        //     productDescription: doc.productDescription,
+                        //     id: newId
+                        // };
 
-                    // // add to lunr index
-                    // productsIndex.add(lunrDoc);
+                        // // add to lunr index
+                        // productsIndex.add(lunrDoc);
 
-                    cb();
+                        cb();
 
-                }
+                    }
+                });
             });
+
+            // TODO: Create new dir under /public/uploads/product_id/
+            // TODO: Add all the thumbnails to this dir.
+            // TODO: Find out how to use one thumbnail as the main image.
 
 
 
