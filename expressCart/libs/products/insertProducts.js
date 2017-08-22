@@ -4,6 +4,8 @@ var async = require('async');
 var path = require('path');
 var common = require('../../routes/common');
 var config = common.getConfig();
+var fs = require('fs-extra');
+
 
 
 if(!config.databaseConnectionString) {
@@ -14,7 +16,7 @@ if(!config.databaseConnectionString) {
 
 module.exports.insertProducts = function(tweets, callback) {
 
-    mongodb.connect(config.databaseConnectionString, {}, function(err, mdb) {
+    mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
 
         if(err) {
             console.log("Couldn't connect to the Mongo database");
@@ -22,12 +24,15 @@ module.exports.insertProducts = function(tweets, callback) {
             process.exit(1);
         }
 
+        var productsCol = db.collection('products');
+
+
         console.log('GONNA INSERT PRODUCTS NOW>>>>')
-        console.log(tweets)
+        // console.log(tweets)
 
 
 
-        async.each(tweets, function (doc, cb) {
+        async.each(tweets, function (tweet, cb) {
 
             var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["Yes","No"]}}'
             
@@ -50,12 +55,16 @@ module.exports.insertProducts = function(tweets, callback) {
                 productImage: "/uploads/placeholder.png"
             };
 
+            console.log(tweet)
+
             // Product images get made by putting images into a folder under public/uploads/product_id/
             // Product images loaded with:
             // common.getImages(prodid, req, res, function (images){
             // });
 
-            db.products.insert(doc, function (err, newDoc) {
+            productsCol.insert(doc, function (err, newDoc) {
+
+                console.log('INSERT')
 
                 if(err) {
 
@@ -64,11 +73,24 @@ module.exports.insertProducts = function(tweets, callback) {
 
                 } else {
 
-                        // get the new ID
-                        // var newId = newDoc._id;
-                        // if(config.databaseType !== 'embedded'){
-                        //     newId = newDoc.insertedIds;
-                        // }
+                        // Get the new document ID.
+                        var newId = newDoc._id;
+
+                        // Construct folder path.
+                        var productImgsPath = path.join('public/uploads/' + newId)
+
+                        console.log('create dir: ' + productImgsPath)
+                        
+                        // Create folder for product images.
+                        fs.mkdirs(productImgsPath);
+
+                        // Get thumbnails for this product id.
+                        var productFiles = getProductFiles(tweet.tweet_id);
+
+                        // Move thumbnails into new folder.
+
+
+
 
                         // // create lunr doc
                         // var lunrDoc = {
@@ -83,9 +105,9 @@ module.exports.insertProducts = function(tweets, callback) {
 
                         cb();
 
-                    }
-                });
+                }
             });
+        
 
             // TODO: Create new dir under /public/uploads/product_id/
             // TODO: Add all the thumbnails to this dir.
@@ -133,6 +155,12 @@ module.exports.insertProducts = function(tweets, callback) {
 
     
 
+}
+
+function getProductFiles(tweetID) {
+
+    console.log('get products for:')
+    console.log(tweetID);
 }
 
 
