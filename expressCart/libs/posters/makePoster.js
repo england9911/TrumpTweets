@@ -95,15 +95,15 @@ module.exports.make = function(tweets, callback) {
 
             if(err) {
                 db.close();
-                callback(err, null);
+                callback(err);
             } 
             else {
 
                 // Generate thumbs after all posters are made.
                 for (var i = 0, len = filenames.length; i < len; i++) {
 
-                    console.log('len: ' + len)
-                    console.log('i: ' + i)
+                    // console.log('len: ' + len)
+                    // console.log('i: ' + i)
 
 
                     thumbnail.ensureThumbnail(filenames[i], 800, null, function (err, filename) {
@@ -118,7 +118,8 @@ module.exports.make = function(tweets, callback) {
                 } 
 
                 db.close();
-                callback(null, 'All posters successfully generated, or no new posters needed.');
+                console.log('All posters successfully generated, or no new posters needed.');
+                callback(null);
             }
         });
     });

@@ -34,6 +34,8 @@ module.exports.insertProducts = function(tweets, callback) {
 
         async.each(tweets, function (tweet, cb) {
 
+            console.log('Mark 1');
+
             var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["Yes","No"]}}'
             
             // TODO: productImage = thumbnails - how to find the names? we have the tweet_id which makes up part of the filename.
@@ -64,7 +66,7 @@ module.exports.insertProducts = function(tweets, callback) {
 
             productsCol.insert(doc, function (err, newDoc) {
 
-                console.log('INSERT')
+                console.log('INSERT...')
 
                 if(err) {
 
@@ -74,18 +76,16 @@ module.exports.insertProducts = function(tweets, callback) {
                 } else {
 
                         // Get the new document ID.
-                        var newId = newDoc._id;
+                        var newId = newDoc.ops[0]._id;
 
                         // Construct folder path.
                         var productImgsPath = path.join('public/uploads/' + newId)
-
-                        console.log('create dir: ' + productImgsPath)
                         
                         // Create folder for product images.
                         fs.mkdirs(productImgsPath);
 
                         // Get thumbnails for this product id.
-                        var productFiles = getProductFiles(tweet.tweet_id);
+                        // var productFiles = getProductFiles(tweet.tweet_id);
 
                         // Move thumbnails into new folder.
 
@@ -118,7 +118,7 @@ module.exports.insertProducts = function(tweets, callback) {
         }, function (err) {
 
             if(err) {
-                console.log('An error happened while inserting data');
+                console.log('An error happened while inserting product data');
                 callback(err, null);
             } else {
                 console.log('All products successfully inserted');
@@ -147,7 +147,7 @@ module.exports.insertProducts = function(tweets, callback) {
         // TODO: Post Facebook status with poster + link.
         // TODO: Instagram post.
 
-        callback(false);
+        // callback(false);
 
 
     });
@@ -157,10 +157,51 @@ module.exports.insertProducts = function(tweets, callback) {
 
 }
 
-function getProductFiles(tweetID) {
+function getProductFiles(tweetID, thumbsOnly) {
 
-    console.log('get products for:')
+    var globPath = 'public/uploads/**';
+
+    if(thumbsOnly === undefined) { 
+        thumbsOnly = false; 
+    }
+    else { 
+        thumbsOnly = true; 
+        globPath = 'public/uploads/thumbs**';
+    }
+
+    console.log('get product imgs & thumbs for: ')
     console.log(tweetID);
+    if(thumbsOnly === false) console.log('THUMBS ONLY')
+
+    var glob = require('glob');
+    var fs = require('fs');
+
+    // loop files in /public/uploads/
+    glob(globPath, {nosort: true}, function (er, files){
+        // sort array
+        files.sort();
+
+        // declare the array of objects
+        var fileList = [];
+
+        // loop these files
+        for(var i = 0; i < files.length; i++){
+        // only want files
+            if(fs.lstatSync(files[i]).isDirectory() === false){
+                // declare the file object and set its values
+                var file = {
+                    id: i,
+                    path: files[i].substring(6)
+                };
+
+                // push the file object into the array
+                fileList.push(file);
+            }
+        }
+
+        // 
+        console.log(fileList);
+    });
 }
 
 
