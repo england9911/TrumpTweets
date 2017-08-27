@@ -38,8 +38,6 @@ module.exports.make = function(tweets, callback) {
         // Emojis? font?
 
 
-
-
         async.each(tweets, function (tweet, cb) {
 
             var tweetDate = tweet.tweet_local_date;
@@ -98,30 +96,44 @@ module.exports.make = function(tweets, callback) {
                 callback(err);
             } 
             else {
-
                 // Generate thumbs after all posters are made.
-                for (var i = 0, len = filenames.length; i < len; i++) {
+                var x = 0;
+                var loopArray = function(files) {
 
-                    // console.log('len: ' + len)
-                    // console.log('i: ' + i)
+                    makeThumb(files[x],function(){
 
+                        x++;
 
-                    thumbnail.ensureThumbnail(filenames[i], 800, null, function (err, filename) {
-
-                        if (err) { 
-                            console.log(err);
+                        // any more items in array? continue loop
+                        if(x < files.length) {
+                            loopArray(files);   
                         }
                         else {
-                            console.log('Created a thumbnail for: ' + filename)
+                            db.close();
+                            callback(null);
                         }
-                    });
-                } 
+                    }); 
+                }
 
-                db.close();
-                console.log('All posters successfully generated, or no new posters needed.');
-                callback(null);
+                loopArray(filenames);
             }
         });
+    });
+}
+
+function makeThumb(filename, cb) {
+
+    if(!filename) return;
+
+    thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
+
+        if (err) { 
+            console.log(err);
+        }
+        else {
+            console.log('Created a thumbnail for: ' + filename)
+            cb();
+        }
     });
 }
 

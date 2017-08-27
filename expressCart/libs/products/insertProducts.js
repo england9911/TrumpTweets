@@ -5,7 +5,7 @@ var path = require('path');
 var common = require('../../routes/common');
 var config = common.getConfig();
 var fs = require('fs-extra');
-
+var glob = require('glob');
 
 
 if(!config.databaseConnectionString) {
@@ -26,24 +26,17 @@ module.exports.insertProducts = function(tweets, callback) {
 
         var productsCol = db.collection('products');
 
-
-        console.log('GONNA INSERT PRODUCTS NOW>>>>')
-        // console.log(tweets)
-
-
+        console.log('Inserting products....')
 
         async.each(tweets, function (tweet, cb) {
 
-            console.log('Mark 1');
-
             var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["Yes","No"]}}'
-            
-            // TODO: productImage = thumbnails - how to find the names? we have the tweet_id which makes up part of the filename.
-            // TODO: make function to get image paths from a tweet_id
+            var insertThis = false;
+
             // TODO: multiple product images, one is main
             // TODO: options changed, show diff image?
 
-            // TODO: Sync with Printful API.
+            // TODO: Sync with Printful API. ******************
 
             var doc = {
                 productPermalink: tweet.tweet_id,
@@ -57,60 +50,94 @@ module.exports.insertProducts = function(tweets, callback) {
                 productImage: "/uploads/placeholder.png"
             };
 
-            console.log(tweet)
-
             // Product images get made by putting images into a folder under public/uploads/product_id/
             // Product images loaded with:
-            // common.getImages(prodid, req, res, function (images){
-            // });
+            // common.getImages(prodid, req, res, function (images){});
 
-            productsCol.insert(doc, function (err, newDoc) {
 
-                console.log('INSERT...')
+
+            // Check if this tweet has already been stored as a product.
+            productsCol.findOne({'productTitle': tweet.tweet_id}, function (err, result) {
 
                 if(err) {
+                    console.info(err.stack);
+                }
 
-                    console.error(colors.red('Error inserting document: ' + err));
-                    cb(err);
+                if(!result) {
 
-                } else {
+                    productsCol.insert(doc, function (err2, newDoc) {
 
-                        // Get the new document ID.
-                        var newId = newDoc.ops[0]._id;
+                        if(err2) {
 
-                        // Construct folder path.
-                        var productImgsPath = path.join('public/uploads/' + newId)
-                        
-                        // Create folder for product images.
-                        fs.mkdirs(productImgsPath);
+                            console.error(colors.red('Error inserting document: ' + err));
+                            cb(err2);
 
-                        // Get thumbnails for this product id.
-                        // var productFiles = getProductFiles(tweet.tweet_id);
+                        } else {
 
-                        // Move thumbnails into new folder.
+                            // Get the new document ID.
+                            var newId = newDoc.ops[0]._id;
+
+                            // Construct folder path.
+                            var productImgsPath = path.join(__dirname, '../../public/uploads', newId.toString());
+                            
+                            // Create folder for product images.
+                            fs.ensureDir(productImgsPath, function(err3) {
+
+                                if(err3) console.log(err3);
+
+                                // Get thumbnails for this product/tweet id from their temp location.
+                                getGeneratedThumbs(tweet.tweet_id, newId, function(thumbFiles) {
+
+                                    // console.log("");
+                                    // console.log('thumbs for this product:');
+                                    // console.log(thumbFiles);
+
+                                    // Move thumbnails into new folder.
+                                    moveThumbs(thumbFiles, function(err3){
+
+                                        console.log('matt callback');
+
+                                        if(err) {
+                                            console.err(err3);
+                                        } 
+
+                                        cb();
+                                    });
+                                });
+                            });
+
+                            
+
+                            
+
+                            
 
 
 
 
-                        // // create lunr doc
-                        // var lunrDoc = {
-                        //     productTitle: doc.productTitle,
-                        //     productTags: doc.productTags,
-                        //     productDescription: doc.productDescription,
-                        //     id: newId
-                        // };
+                            // // create lunr doc
+                            // var lunrDoc = {
+                            //     productTitle: doc.productTitle,
+                            //     productTags: doc.productTags,
+                            //     productDescription: doc.productDescription,
+                            //     id: newId
+                            // };
 
-                        // // add to lunr index
-                        // productsIndex.add(lunrDoc);
+                            // // add to lunr index
+                            // productsIndex.add(lunrDoc);
 
-                        cb();
+                            // cb();
 
+                        }
+                    });
+                }
+                else {
+                    cb();
                 }
             });
-        
 
-            // TODO: Create new dir under /public/uploads/product_id/
-            // TODO: Add all the thumbnails to this dir.
+
+
             // TODO: Find out how to use one thumbnail as the main image.
 
 
@@ -157,52 +184,95 @@ module.exports.insertProducts = function(tweets, callback) {
 
 }
 
-function getProductFiles(tweetID, thumbsOnly) {
 
-    var globPath = 'public/uploads/**';
+function getGeneratedThumbs(tweetID, docID, callback) {
 
-    if(thumbsOnly === undefined) { 
-        thumbsOnly = false; 
-    }
-    else { 
-        thumbsOnly = true; 
-        globPath = 'public/uploads/thumbs**';
-    }
+    globPath = path.join(__dirname, '../posters/poster-imgs/thumbs');
+    globPath = globPath + '/**';
 
-    console.log('get product imgs & thumbs for: ')
-    console.log(tweetID);
-    if(thumbsOnly === false) console.log('THUMBS ONLY')
+    glob(globPath, {nosort: true}, function (er, files) {
 
-    var glob = require('glob');
-    var fs = require('fs');
-
-    // loop files in /public/uploads/
-    glob(globPath, {nosort: true}, function (er, files){
-        // sort array
-        files.sort();
-
-        // declare the array of objects
         var fileList = [];
 
-        // loop these files
-        for(var i = 0; i < files.length; i++){
-        // only want files
-            if(fs.lstatSync(files[i]).isDirectory() === false){
-                // declare the file object and set its values
-                var file = {
-                    id: i,
-                    path: files[i].substring(6)
-                };
+        for(var i = 0; i < files.length; i++) {
 
-                // push the file object into the array
-                fileList.push(file);
+            if(fs.lstatSync(files[i]).isDirectory() === false) {
+
+                var iPath = files[i].substring(6);
+                var iCheck = iPath.indexOf(tweetID);
+
+                console.log(files[i]);
+
+                // Does this filename contain the tweet id?
+                if(iCheck !== -1) {
+
+                    var file = {
+                        id: i,
+                        filename: path.parse(files[i]).base,
+                        docID: docID,
+                        tweetID: tweetID,
+                        path: files[i]
+                    };
+
+                    fileList.push(file);
+                }
             }
         }
-
-        // 
-        console.log(fileList);
     });
 }
 
+function moveThumbs(thumbs, cb) {
 
+    if(!thumbs || thumbs.length < 1) return cb('thumbs was not defined');
+
+    async.each(thumbs, function(thumb, callback) {
+
+        var docIdStr = thumb.docID.toString();
+        var to = path.join(__dirname, '../../public/uploads', docIdStr, thumb.filename);
+        var from = thumb.path;
+
+        // Check thumb is ready
+        thumbReady(from, function(success){
+
+            if(success) {
+
+                // Copy file
+                fs.move(from, to, { overwrite: true }, err => {
+                    if (err) return console.error(err)
+                    else {
+                        callback(null);
+                    }
+                }) 
+
+            } 
+            else {
+                console.log('THERE WAS A PROBLEM MOVING: ' + from);
+            }
+        });
+
+    }, function(er) {
+        
+        if(er) {
+            console.log('An error happened while moving thumbs');
+            cb(er);
+        } else {
+            console.log('All thumbs moved successfully');
+            cb(null);
+        }
+    });
+}
+
+function thumbReady(path, cb) {
+
+    fs.stat(path, function(err, stat) {
+        if(err == null) {
+            return cb(true);
+        } else if(err.code == 'ENOENT') {
+            return cb(false);
+        } else {
+            console.log('Some other error: ', err.code);
+            return cb(false);
+        }
+    });
+}
 
