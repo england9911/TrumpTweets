@@ -7,7 +7,6 @@ var OpenType = require('opentype.js')
 var Canvas = require('canvas')
 var Image = Canvas.Image
 var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper
-var moment = require('moment')
 var common = require('../../routes/common')
 var config = common.getConfig()
 var Thumbnail = require('thumbnail')
@@ -247,7 +246,8 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
 
                     console.log('Generating a poster..');
 
-                    var filename = tid + '-' + bgCol + '-24x32.png';
+                    var bgColSafe = bgCol.replace('#','');
+                    var filename = tid + '-' + bgColSafe + '-24x32.png';
                     var stream = canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, '/poster-imgs/' + filename)))
 
 

@@ -14,7 +14,7 @@ var tconfig = require('./twitConf.js');
 var T = new Twit(tconfig);
 
 var tweetOptions = { screen_name: 'realDonaldTrump',
-                     count: 2,
+                     count: 6,
                      tweet_mode: 'extended' };
 
 // Check for DB config
@@ -77,7 +77,7 @@ function insertTweets(db, tweets, callback) {
         var tweetvalues = { 
             "created_at":tweet.created_at,
             "tweet_local_date":tweetDateTimezone,
-            "tweet_id":tweet.id, 
+            "tweet_id":tweet.id.toString(), 
             "text":tweetext, 
             "retweet_count":tweet.retweet_count, 
             "favorite_count":tweet.favorite_count,

@@ -6,6 +6,7 @@ var common = require('../../routes/common');
 var config = common.getConfig();
 var fs = require('fs-extra');
 var glob = require('glob');
+var moment = require('moment-timezone');
 
 
 if(!config.databaseConnectionString) {
@@ -35,29 +36,26 @@ module.exports.insertProducts = function(tweets, callback) {
 
             // TODO: multiple product images, one is main
             // TODO: options changed, show diff image?
-
             // TODO: Sync with Printful API. ******************
 
+            var tweetUnix = moment(tweet.created_at, 'ddd MMM DD HH:mm:ss Z YYYY');
+            var monthYear = tweetUnix.format('MMMM YYYY');
+            var tweetID = tweet.tweet_id.toString();
+
             var doc = {
-                productPermalink: tweet.tweet_id,
-                productTitle: tweet.tweet_id,
+                productPermalink: tweetID,
+                productTitle: tweet.text,
                 productPrice: "30",
-                productDescription: "All posters are on museum quality archival matte paper, and can be sent framed or unframed.",
-                productPublished: new Date(),
-                productTags: "donald trump, twitter, tweet, trump twitter",
+                productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + "</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed.</p>",
+                productPublished: "true",
+                productTags: "donald trump, twitter, tweet, trump twitter, " + monthYear,
                 productOptions: opts,
                 productAddedDate: new Date(),
                 productImage: "/uploads/placeholder.png"
             };
 
-            // Product images get made by putting images into a folder under public/uploads/product_id/
-            // Product images loaded with:
-            // common.getImages(prodid, req, res, function (images){});
-
-
-
             // Check if this tweet has already been stored as a product.
-            productsCol.findOne({'productTitle': tweet.tweet_id}, function (err, result) {
+            productsCol.findOne({'productPermalink': tweetID}, function (err, result) {
 
                 if(err) {
                     console.info(err.stack);
@@ -75,59 +73,37 @@ module.exports.insertProducts = function(tweets, callback) {
                         } else {
 
                             // Get the new document ID.
-                            var newId = newDoc.ops[0]._id;
+                            var newId = newDoc.ops[0]._id.toString();
 
                             // Construct folder path.
-                            var productImgsPath = path.join(__dirname, '../../public/uploads', newId.toString());
+                            var productImgsPath = path.join(__dirname, '../../public/uploads', newId);
                             
                             // Create folder for product images.
                             fs.ensureDir(productImgsPath, function(err3) {
 
-                                if(err3) console.log(err3);
+                                if(err3) console.error(err3);
 
                                 // Get thumbnails for this product/tweet id from their temp location.
-                                getGeneratedThumbs(tweet.tweet_id, newId, function(thumbFiles) {
-
-                                    // console.log("");
-                                    // console.log('thumbs for this product:');
-                                    // console.log(thumbFiles);
+                                getGeneratedThumbs(tweetID, newId, function(thumbFiles) {
 
                                     // Move thumbnails into new folder.
-                                    moveThumbs(thumbFiles, function(err3){
+                                    moveThumbs(thumbFiles, function(err3) {
 
-                                        console.log('matt callback');
-
-                                        if(err) {
-                                            console.err(err3);
+                                        if(err3) {
+                                            console.error(err3);
                                         } 
 
-                                        cb();
+                                        updateMainImg(db, tweetID, newId, function(err4) {
+
+                                            if(err4) {
+                                                console.error(err4);
+                                            } 
+
+                                            cb();
+                                        });
                                     });
                                 });
                             });
-
-                            
-
-                            
-
-                            
-
-
-
-
-                            // // create lunr doc
-                            // var lunrDoc = {
-                            //     productTitle: doc.productTitle,
-                            //     productTags: doc.productTags,
-                            //     productDescription: doc.productDescription,
-                            //     id: newId
-                            // };
-
-                            // // add to lunr index
-                            // productsIndex.add(lunrDoc);
-
-                            // cb();
-
                         }
                     });
                 }
@@ -178,10 +154,71 @@ module.exports.insertProducts = function(tweets, callback) {
 
 
     });
+}
 
+function updateMainImg(db, tweetID, docID, cb) {
 
-    
+    var productsCol = db.collection('products');
 
+    getSavedThumbs(tweetID, docID, true, function(mainImg, err){
+
+        if(err) return cb('Unable to get a product image for: ' + tweetID); 
+
+        var mainImgCut = mainImg.path.split('/public').pop();
+
+        productsCol.updateOne(
+            { "productPermalink":tweetID },
+            { $set: { "productImage":mainImgCut } },
+            function(err,res) { 
+                if(err) {
+                    return cb('Unable to set: ' + mainImgCut + ' as main image. Please try again.');
+                }
+                else {
+                    console.log('Set main product image: ' + mainImgCut);
+                    return cb();
+                }
+            }
+        );
+    });
+}
+
+function getSavedThumbs(tweetID, docID, single, cb) {
+
+    globPath = path.join(__dirname, '../../public/uploads/' + docID + '/**');
+
+    glob(globPath, {nosort: true}, function (er, files) {
+
+        var fileList = [];
+
+        for(var i = 0; i < files.length; i++) {
+
+            if(fs.lstatSync(files[i]).isDirectory() === false) {
+
+                var iPath = files[i];
+                var iCheck = iPath.indexOf(tweetID);
+
+                // Does this filename contain the tweet id?
+                if(iCheck !== -1) {
+
+                    var file = {
+                        id: i,
+                        filename: path.parse(files[i]).base,
+                        docID: docID,
+                        tweetID: tweetID,
+                        path: files[i]
+                    };
+
+                    fileList.push(file);
+                }
+            }
+        }
+
+        // console.log(fileList);
+
+        if(fileList.length == 0) return cb(null, true);
+        else if(single == true) return cb(fileList[0], null);
+        return cb(fileList, null);
+    });
 }
 
 
@@ -201,8 +238,6 @@ function getGeneratedThumbs(tweetID, docID, callback) {
                 var iPath = files[i].substring(6);
                 var iCheck = iPath.indexOf(tweetID);
 
-                console.log(files[i]);
-
                 // Does this filename contain the tweet id?
                 if(iCheck !== -1) {
 
@@ -218,6 +253,8 @@ function getGeneratedThumbs(tweetID, docID, callback) {
                 }
             }
         }
+
+        return callback(fileList);
     });
 }
 
@@ -243,7 +280,6 @@ function moveThumbs(thumbs, cb) {
                         callback(null);
                     }
                 }) 
-
             } 
             else {
                 console.log('THERE WAS A PROBLEM MOVING: ' + from);
@@ -256,7 +292,7 @@ function moveThumbs(thumbs, cb) {
             console.log('An error happened while moving thumbs');
             cb(er);
         } else {
-            console.log('All thumbs moved successfully');
+            console.log('Product thumbs moved successfully');
             cb(null);
         }
     });
