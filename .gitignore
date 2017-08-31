@@ -60,6 +60,7 @@ typings/
 # config
 expressCart/config/
 expressCart/libs/tweets/twitConf.js
+expressCart/libs/printful/printConf.js
 
 *.DS_Store
 

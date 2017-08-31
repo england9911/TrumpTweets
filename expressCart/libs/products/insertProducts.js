@@ -7,7 +7,9 @@ var config = common.getConfig();
 var fs = require('fs-extra');
 var glob = require('glob');
 var moment = require('moment-timezone');
-
+var pconfig = require('./../printful/printConf.js');
+var PrintfulClient = require('./../printful/printfulclient.js');
+var printful = new PrintfulClient(pconfig.printful_api_key);
 
 if(!config.databaseConnectionString) {
     console.log('No MongoDB configured. Please see README.md for help');
@@ -46,7 +48,7 @@ module.exports.insertProducts = function(tweets, callback) {
                 productPermalink: tweetID,
                 productTitle: tweet.text,
                 productPrice: "30",
-                productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + "</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed.</p>",
+                productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + ".</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed.</p>",
                 productPublished: "true",
                 productTags: "donald trump, twitter, tweet, trump twitter, " + monthYear,
                 productOptions: opts,
@@ -89,16 +91,11 @@ module.exports.insertProducts = function(tweets, callback) {
                                     // Move thumbnails into new folder.
                                     moveThumbs(thumbFiles, function(err3) {
 
-                                        if(err3) {
-                                            console.error(err3);
-                                        } 
+                                        if(err3) console.error(err3);
 
                                         updateMainImg(db, tweetID, newId, function(err4) {
 
-                                            if(err4) {
-                                                console.error(err4);
-                                            } 
-
+                                            if(err4) console.error(err4);
                                             cb();
                                         });
                                     });
@@ -112,21 +109,15 @@ module.exports.insertProducts = function(tweets, callback) {
                 }
             });
 
-
-
-            // TODO: Find out how to use one thumbnail as the main image.
-
-
-
         }, function (err) {
 
             if(err) {
                 console.log('An error happened while inserting product data');
-                callback(err, null);
+                callback(err, null, null);
             } else {
                 console.log('All products successfully inserted');
                 console.log('');
-                callback(null, 'All products successfully inserted');
+                callback(null, 'All products successfully inserted', );
             }
         });
 
