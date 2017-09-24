@@ -117,7 +117,7 @@ module.exports.insertProducts = function(tweets, callback) {
             } else {
                 console.log('All products successfully inserted');
                 console.log('');
-                callback(null, 'All products successfully inserted', );
+                callback(null, 'All products successfully inserted', null);
             }
         });
 
