@@ -4,7 +4,7 @@ var products = require('./products/insertProducts');
 
 // TODO: Printful API - hook into expressCart order process and create Printful order when payment has been taken. 
 // TODO: 'Product' in Printful means the actual printful product e.g. poster. Variants mean 24 x 36 poster, for example.
-// TODO: doesn't look like you need to create individual products on Printful. Only orders. https://www.printful.com/docs/orders
+// TODO: doesn't look like you need to create individual 'products' saved on Printful. Only orders. https://www.printful.com/docs/orders
 
 /*
 
