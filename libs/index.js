@@ -2,9 +2,21 @@ var tweets = require('./tweets/getTweets');
 var posters = require('./posters/makePoster');
 var products = require('./products/insertProducts');
 
-// TODO: Printful API - hook into expressCart order process and create Printful order when payment has been taken. 
-// TODO: 'Product' in Printful means the actual printful product e.g. poster. Variants mean 24 x 36 poster, for example.
-// TODO: doesn't look like you need to create individual 'products' saved on Printful. Only orders. https://www.printful.com/docs/orders
+
+
+
+// TODO: 	Get running on Heroku. Tweet/poster process can be a background job: https://devcenter.heroku.com/articles/background-jobs-queueing
+
+// TODO: 	Change git folder structure so the root is in /expressCart/ - Heroku needs to find the package.json there.
+
+
+// TODO: 	Printful API - hook into expressCart order process and create Printful order when payment has 
+//			been taken - e.g. from a PayPal callback with successful flag.
+// TODO: 	'Product' in Printful means the actual printful product e.g. poster. Variants mean 24 x 36 
+//			poster, for example.
+// TODO: 	Doesn't look like you need to create individual 'products' saved on Printful. Only orders. 
+//			https://www.printful.com/docs/orders
+
 
 /*
 

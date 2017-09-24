@@ -2,11 +2,15 @@
   "name": "express-cart",
   "version": "1.0.9",
   "private": true,
+  "engines": {
+    "node": "6.11.1"
+  },
   "scripts": {
     "start": "node app.js",
     "minify": "node bin/minify.js",
     "dbUpgrade": "node bin/mongodbUpgrade.js",
-    "getTweets": "node bin/getTweets.js"
+    "importPosters": "node libs/index.js",
+    "postinstall": "node libs/index.js"
   },
   "dependencies": {
     "async": "^2.5.0",
@@ -64,6 +68,6 @@
     "cart",
     "shopping"
   ],
-  "author": "Mark Moffat",
-  "homepage": "https://markmoffat.com"
+  "author": "Matt England",
+  "homepage": "http://www.trumptweetposters.com"
 }
