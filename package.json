@@ -9,8 +9,7 @@
     "start": "node app.js",
     "minify": "node bin/minify.js",
     "dbUpgrade": "node bin/mongodbUpgrade.js",
-    "importPosters": "node libs/index.js",
-    "postinstall": "node libs/index.js"
+    "importPosters": "node libs/index.js"
   },
   "dependencies": {
     "async": "^2.5.0",
