@@ -5,10 +5,16 @@ var products = require('./products/insertProducts');
 
 
 
-// TODO: 	Get running on Heroku. Tweet/poster process can be a background job: https://devcenter.heroku.com/articles/background-jobs-queueing
+// TODO: 	Heroku scheduled job for the poster gen. Twitter webhook?
 
-// TODO: 	Change git folder structure so the root is in /expressCart/ - Heroku needs to find the package.json there.
+// TODO: 	Environment vars: change mongoDB URI, poster folder location for LIVE app.
 
+// TODO: 	Upload generated posters to S3 bucket 'trumptweetposters'
+
+// 	AWS s3 info stored as Heroku config vars: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME
+
+
+// TODO: Move libs confs to heroku vars.
 
 // TODO: 	Printful API - hook into expressCart order process and create Printful order when payment has 
 //			been taken - e.g. from a PayPal callback with successful flag.
