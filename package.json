@@ -52,7 +52,9 @@
     "stripe": "^4.14.0",
     "thumbnail": "^0.1.9",
     "twit": "^2.2.9",
-    "uglifycss": "0.0.27"
+    "uglifycss": "0.0.27",
+    "aws-sdk": "2.x",
+    "ejs": "2.x"
   },
   "description": "expressCart",
   "main": "app.js",

@@ -5,11 +5,14 @@ var products = require('./products/insertProducts');
 
 
 
-// TODO: 	Heroku scheduled job for the poster gen. Twitter webhook?
+// TODO: 	Upload generated posters to S3 bucket 'trumptweetposters'
+
+// TODO: 	Heroku scheduled job for the poster gen. Twitter webhook? (zapier.com enables this, posts to a URL)
+
+// If you need a scheduled job < 10 min interval, you'll have to use something other than the basic scheduler add-on.
 
 // TODO: 	Environment vars: change mongoDB URI, poster folder location for LIVE app.
 
-// TODO: 	Upload generated posters to S3 bucket 'trumptweetposters'
 
 // 	AWS s3 info stored as Heroku config vars: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME
 

@@ -10,6 +10,7 @@ var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper
 var common = require('../../routes/common')
 var config = common.getConfig()
 var Thumbnail = require('thumbnail')
+var AWS = require('aws-sdk')
 var postersDir = path.join(__dirname, '/poster-imgs')
 var thumbnail = new Thumbnail(postersDir, postersDir + '/thumbs')
 var filenames = []
@@ -24,6 +25,20 @@ if(!config.databaseConnectionString) {
     console.log('No MongoDB configured. Please see README.md for help')
     process.exit(1)
 }
+
+
+
+aws.config.region = 'us-east-1';
+const S3_BUCKET = process.env.S3_BUCKET;
+const s3Params = {
+    Bucket: S3_BUCKET,
+    Key: fileName,
+    Expires: 60,
+    ContentType: fileType,
+    ACL: 'public-read'
+  };
+
+
 
 
 module.exports.make = function(tweets, callback) {
@@ -135,6 +150,52 @@ function makeThumb(filename, cb) {
         }
     });
 }
+
+// function getSignedRequest(file) {
+
+//   const xhr = new XMLHttpRequest();
+//   xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
+
+//   xhr.onreadystatechange = () => {
+
+//     if(xhr.readyState === 4){
+
+//       if(xhr.status === 200){
+
+//         const response = JSON.parse(xhr.responseText);
+//         uploadFile(file, response.signedRequest, response.url);
+//       }
+//       else {
+//         alert('Could not get signed URL.');
+//       }
+//     }
+//   };
+
+//   xhr.send();
+// }
+
+// function uploadFile(file, signedRequest, url) {
+
+//   const xhr = new XMLHttpRequest();
+//   xhr.open('PUT', signedRequest);
+
+//   xhr.onreadystatechange = () => {
+
+//     if(xhr.readyState === 4) {
+
+//       if(xhr.status === 200) {
+
+//         document.getElementById('preview').src = url;
+//         document.getElementById('avatar-url').value = url;
+//       }
+//       else {
+//         console.log('Could not upload file.');
+//       }
+//     }
+//   };
+
+//   xhr.send(file);
+// }
 
 function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callback) {
 
@@ -255,7 +316,35 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     stream.on('close', function() {
 
                         console.log('Saved ' + filename);
-                        callback(filename);
+
+                        // Upload file to S3.
+                        const s3 = new aws.S3();
+                        const fileType = {
+                            ext: 'png', 
+                            mime: 'image/png'
+                        };
+                        const s3Params = {
+                            Bucket: S3_BUCKET,
+                            Key: filename,
+                            Expires: 60,
+                            ContentType: fileType,
+                            ACL: 'public-read'
+                        };
+                        s3.getSignedUrl('putObject', s3Params, (err, data) => {
+
+                            if(err) {
+                              console.log(err);
+                              return res.end();
+                            }
+                            const returnData = {
+                              signedRequest: data,
+                              url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+                            };
+                            res.write(JSON.stringify(returnData));
+                            res.end();
+                            console.log('uploaded: ' + returnData.url);
+                            callback(filename);
+                        });
                     });
                 }
             });
