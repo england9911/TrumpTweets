@@ -28,7 +28,7 @@ if(!config.databaseConnectionString) {
 
 
 
-aws.config.region = 'us-east-1';
+AWS.config.region = 'us-east-1';
 const S3_BUCKET = process.env.S3_BUCKET;
 const s3Params = {
     Bucket: S3_BUCKET,
@@ -318,7 +318,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                         console.log('Saved ' + filename);
 
                         // Upload file to S3.
-                        const s3 = new aws.S3();
+                        const s3 = new AWS.S3();
                         const fileType = {
                             ext: 'png', 
                             mime: 'image/png'
