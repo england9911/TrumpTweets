@@ -329,25 +329,6 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                           }
                         });
 
-                        // const s3Params = {
-                        //     Bucket: S3_BUCKET,
-                        //     Key: filename,
-                        //     Expires: 60,
-                        //     ContentType: fileType,
-                        //     ACL: 'public-read'
-                        // };
-                        // s3.getSignedUrl('putObject', s3Params, (err, data) => {
-
-                        //     if(err) {
-                        //       console.log(err);
-                        //     }
-                        //     const returnData = {
-                        //       signedRequest: data,
-                        //       url: `https://${S3_BUCKET}.s3.amazonaws.com/${filename}`
-                        //     };
-                        //     console.log('uploaded: ' + returnData.url);
-                        //     callback(filename);
-                        // });
                     });
                 }
             });
