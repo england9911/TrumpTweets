@@ -306,35 +306,48 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     // Listener for images creation.
                     stream.on('close', function() {
 
-                        console.log('Saved ' + filename);
+                        console.log('Generated full-size: ' + filename);
 
                         // Upload file to S3.
                         AWS.config.region = 'us-east-1';
                         const S3_BUCKET = process.env.S3_BUCKET;
                         const s3 = new AWS.S3();
-                        const fileType = {
-                            ext: 'png', 
-                            mime: 'image/png'
-                        };
-                        const s3Params = {
-                            Bucket: S3_BUCKET,
-                            Key: filename,
-                            Expires: 60,
-                            ContentType: fileType,
-                            ACL: 'public-read'
-                        };
-                        s3.getSignedUrl('putObject', s3Params, (err, data) => {
+                        const fileBuffer = fs.createReadStream(filename);
 
-                            if(err) {
-                              console.log(err);
-                            }
-                            const returnData = {
-                              signedRequest: data,
-                              url: `https://${S3_BUCKET}.s3.amazonaws.com/${filename}`
-                            };
-                            console.log('uploaded: ' + returnData.url);
+                        s3.putObject({
+                          ACL: 'public-read',
+                          Key: filename,
+                          Body: fileBuffer,
+                          Bucket: S3_BUCKET,
+                          ContentType: 'image/png',
+                        }, (err) => {
+                          if (err) {
+                            console.warn(err);
+                            callback(filename, err);
+                          } else {
                             callback(filename);
+                          }
                         });
+
+                        // const s3Params = {
+                        //     Bucket: S3_BUCKET,
+                        //     Key: filename,
+                        //     Expires: 60,
+                        //     ContentType: fileType,
+                        //     ACL: 'public-read'
+                        // };
+                        // s3.getSignedUrl('putObject', s3Params, (err, data) => {
+
+                        //     if(err) {
+                        //       console.log(err);
+                        //     }
+                        //     const returnData = {
+                        //       signedRequest: data,
+                        //       url: `https://${S3_BUCKET}.s3.amazonaws.com/${filename}`
+                        //     };
+                        //     console.log('uploaded: ' + returnData.url);
+                        //     callback(filename);
+                        // });
                     });
                 }
             });
