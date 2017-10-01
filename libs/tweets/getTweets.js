@@ -92,7 +92,7 @@ function insertTweets(db, tweets, callback) {
             tweetExists(tweetsCol, tweet.id, function(exists) {
 
                 if(exists) {
-                    var idtweet = { tweet_id: tweet.id };
+                    var idtweet = { tweet_id: tweet.id.toString() };
 
                     // Update the retweet_count and favorite_count only.
                     tweetsCol.updateOne(
@@ -142,10 +142,14 @@ function insertTweets(db, tweets, callback) {
 // ---------------------------------------------------------------
 function tweetExists(tweetsCol, id, cb) {
 
+    if (typeof id === 'number') {
+        id = id.toString();
+    }
+
     tweetsCol.find({ tweet_id:id }).toArray(function(err, results) {
 
         if (err) throw err;
-
+]
         if(results.length > 0) {
             return cb(true);
         }
