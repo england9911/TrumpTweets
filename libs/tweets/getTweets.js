@@ -14,7 +14,7 @@ var tconfig = require('./twitConf.js');
 var T = new Twit(tconfig);
 
 var tweetOptions = { screen_name: 'realDonaldTrump',
-                     count: 1,
+                     count: 2,
                      tweet_mode: 'extended' };
 
 // Check for DB config
@@ -64,6 +64,8 @@ function insertTweets(db, tweets, callback) {
 
     // Load the tweets collection (table).
     var tweetsCol = db.collection('tweets');
+    var updatedTweets = 0;
+    var insertedTweets = 0;
 
     // Take the tweets from the Twit response and save or update information.
     async.each(tweets, function (tweet, cb) {
@@ -101,6 +103,7 @@ function insertTweets(db, tweets, callback) {
                         } }, 
                         function(err, res) {
                             console.log('1 record updated');
+                            updatedTweets++;
                             if (err) return cb(err);
                             return cb();
                         }
@@ -110,6 +113,7 @@ function insertTweets(db, tweets, callback) {
                     tweetsCol.insert(
                         tweetvalues,
                         function (err) { 
+                            if(!err) insertedTweets++;
                             return cb(err); 
                         }
                     );
@@ -126,9 +130,9 @@ function insertTweets(db, tweets, callback) {
             callback(err, null);
         } 
         else {
-            console.log('All tweets successfully inserted');
+            console.log('Inserted: ' + insertedTweets + ' tweets, updated: ' + updatedTweets + ' tweets.');
             console.log('');
-            callback(null, 'All tweets successfully inserted');
+            callback(null, 'Inserted: ' + insertedTweets + ' tweets, updated: ' + updatedTweets + ' tweets.');
         }
         db.close();
     });
