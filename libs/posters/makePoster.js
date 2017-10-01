@@ -28,15 +28,6 @@ if(!config.databaseConnectionString) {
 
 
 
-AWS.config.region = 'us-east-1';
-const S3_BUCKET = process.env.S3_BUCKET;
-const s3Params = {
-    Bucket: S3_BUCKET,
-    Key: fileName,
-    Expires: 60,
-    ContentType: fileType,
-    ACL: 'public-read'
-  };
 
 
 
@@ -318,6 +309,8 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                         console.log('Saved ' + filename);
 
                         // Upload file to S3.
+                        AWS.config.region = 'us-east-1';
+                        const S3_BUCKET = process.env.S3_BUCKET;
                         const s3 = new AWS.S3();
                         const fileType = {
                             ext: 'png', 
