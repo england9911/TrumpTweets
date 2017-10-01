@@ -149,7 +149,7 @@ function tweetExists(tweetsCol, id, cb) {
     tweetsCol.find({ tweet_id:id }).toArray(function(err, results) {
 
         if (err) throw err;
-]
+
         if(results.length > 0) {
             return cb(true);
         }
