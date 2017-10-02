@@ -27,11 +27,6 @@ if(!config.databaseConnectionString) {
 }
 
 
-
-
-
-
-
 module.exports.make = function(tweets, callback) {
 
     mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
@@ -41,7 +36,6 @@ module.exports.make = function(tweets, callback) {
         // **************************
         // TODO:
         // Emojis? font?
-
 
         async.each(tweets, function (tweet, cb) {
 
