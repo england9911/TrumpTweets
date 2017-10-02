@@ -303,7 +303,6 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     var filePath = path.join(__dirname, '/poster-imgs/' + filename);
                     var stream = canvas.createPNGStream().pipe(fs.createWriteStream(filePath))
 
-
                     // Listener for images creation.
                     stream.on('close', function() {
 
