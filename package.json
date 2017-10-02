@@ -9,7 +9,9 @@
     "start": "node app.js",
     "minify": "node bin/minify.js",
     "dbUpgrade": "node bin/mongodbUpgrade.js",
-    "importPosters": "node libs/index.js"
+    "importPosters": "node libs/index.js",
+    "heroku-prebuild": "echo This runs before Heroku installs your dependencies.",
+    "heroku-postbuild": "echo This runs afterwards."
   },
   "dependencies": {
     "async": "^2.5.0",
