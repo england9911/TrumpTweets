@@ -29,7 +29,7 @@ module.exports.insertProducts = function(tweets, callback) {
 
         var productsCol = db.collection('products');
 
-        console.log('Inserting products...')
+        console.log('Inserting products..')
 
         async.each(tweets, function (tweet, cb) {
 
