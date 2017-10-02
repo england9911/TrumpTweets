@@ -300,7 +300,8 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
 
                     var bgColSafe = bgCol.replace('#','');
                     var filename = tid + '-' + bgColSafe + '-24x32.png';
-                    var stream = canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, '/poster-imgs/' + filename)))
+                    var filePath = path.join(__dirname, '/poster-imgs/' + filename);
+                    var stream = canvas.createPNGStream().pipe(fs.createWriteStream(filePath))
 
 
                     // Listener for images creation.
@@ -312,7 +313,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                         AWS.config.region = 'us-east-1';
                         const S3_BUCKET = process.env.S3_BUCKET;
                         const s3 = new AWS.S3();
-                        const fileBuffer = fs.createReadStream(filename);
+                        const fileBuffer = fs.createReadStream(filePath);
 
                         s3.putObject({
                           ACL: 'public-read',
