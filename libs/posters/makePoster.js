@@ -295,7 +295,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     var bgColSafe = bgCol.replace('#','');
                     var filename = tid + '-' + bgColSafe + '-24x32.png';
                     var filePath = path.join(__dirname, '/poster-imgs/' + filename);
-                    var stream = canvas.createPNGStream().pipe(fs.createWriteStream(filePath))
+                    var stream = canvas.createPNGStream().pipe(fs.createWriteStream(filePath));
 
                     // Listener for images creation.
                     stream.on('close', function() {
