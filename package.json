@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "async": "^2.5.0",
+    "aws-sdk": "2.x",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.8.4",
     "canvas": "^1.6.5",
@@ -24,6 +25,7 @@
     "cookie-parser": "~1.4.3",
     "debug": "^3.0.0",
     "decode-html": "^1.0.2",
+    "ejs": "2.x",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.11.3",
@@ -52,9 +54,7 @@
     "stripe": "^4.14.0",
     "thumbnail": "^0.1.9",
     "twit": "^2.2.9",
-    "uglifycss": "0.0.27",
-    "aws-sdk": "2.x",
-    "ejs": "2.x"
+    "uglifycss": "0.0.27"
   },
   "description": "expressCart",
   "main": "app.js",

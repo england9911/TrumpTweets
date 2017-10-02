@@ -136,52 +136,7 @@ function makeThumb(filename, cb) {
     });
 }
 
-// function getSignedRequest(file) {
-
-//   const xhr = new XMLHttpRequest();
-//   xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
-
-//   xhr.onreadystatechange = () => {
-
-//     if(xhr.readyState === 4){
-
-//       if(xhr.status === 200){
-
-//         const response = JSON.parse(xhr.responseText);
-//         uploadFile(file, response.signedRequest, response.url);
-//       }
-//       else {
-//         alert('Could not get signed URL.');
-//       }
-//     }
-//   };
-
-//   xhr.send();
-// }
-
-// function uploadFile(file, signedRequest, url) {
-
-//   const xhr = new XMLHttpRequest();
-//   xhr.open('PUT', signedRequest);
-
-//   xhr.onreadystatechange = () => {
-
-//     if(xhr.readyState === 4) {
-
-//       if(xhr.status === 200) {
-
-//         document.getElementById('preview').src = url;
-//         document.getElementById('avatar-url').value = url;
-//       }
-//       else {
-//         console.log('Could not upload file.');
-//       }
-//     }
-//   };
-
-//   xhr.send(file);
-// }
-
+// Make the full-size poster.
 function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callback) {
 
     OpenType.load(path.join(__dirname,'/fonts/MyriadProBoldSemiC.ttf'), function(err1, font){
