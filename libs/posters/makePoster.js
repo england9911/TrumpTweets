@@ -305,12 +305,6 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                         // Upload file to S3.
                         AWS.config.region = 'us-east-1';
                         const S3_BUCKET = process.env.S3_BUCKET_NAME;
-
-                        console.log('s3 bucket:');
-                        console.log(S3_BUCKET);
-                        console.log('----------');
-                        console.log(process.env);
-
                         const s3 = new AWS.S3();
                         const fileBuffer = fs.createReadStream(filePath);
 
@@ -322,9 +316,11 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                           ContentType: 'image/png',
                         }, (err) => {
                           if (err) {
+                            console.log('error uploading to s3')
                             console.warn(err);
                             callback(filename, err);
                           } else {
+                            console.log('Uploaded: ' + filename + ' to s3 successfully.')
                             callback(filename);
                           }
                         });
