@@ -300,7 +300,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     // Listener for images creation.
                     stream.on('close', function() {
 
-                        console.log('Generated full-size: ' + filename);
+                        console.log('Generated full-size: ' + filePath);
 
                         // Upload file to S3.
                         AWS.config.region = 'us-east-1';
