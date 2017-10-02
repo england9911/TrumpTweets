@@ -304,7 +304,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
 
                         // Upload file to S3.
                         AWS.config.region = 'us-east-1';
-                        const S3_BUCKET = process.env.S3_BUCKET;
+                        const S3_BUCKET = process.env.S3_BUCKET_NAME;
 
                         console.log('s3 bucket:');
                         console.log(S3_BUCKET);
