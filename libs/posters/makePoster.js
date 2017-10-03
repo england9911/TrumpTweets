@@ -255,34 +255,56 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     // Listener for images creation.
                     stream.on('close', function() {
 
-                        console.log('Generated full-size: ' + filePath);
+                        checkIfFile(filePath, function(err, isFile) {
 
-                        // Upload file to S3.
-                        AWS.config.region = 'us-east-1';
-                        const S3_BUCKET = process.env.S3_BUCKET_NAME;
-                        const s3 = new AWS.S3();
-                        const fileBuffer = fs.createReadStream(filePath);
+                          if (isFile) {
 
-                        s3.putObject({
-                          ACL: 'public-read',
-                          Key: filename,
-                          Body: fileBuffer,
-                          Bucket: S3_BUCKET,
-                          ContentType: 'image/png',
-                        }, (err) => {
-                          if (err) {
-                            console.log('error uploading to s3')
-                            console.warn(err);
-                            callback(filename, err);
-                          } else {
-                            console.log('Uploaded: ' + filename + ' to s3 successfully.')
-                            callback(filename);
+                            console.log('Generated full-size: ' + filePath);
+
+                            // Upload file to S3.
+                            AWS.config.region = 'us-east-2';
+                            const S3_BUCKET = process.env.S3_BUCKET_NAME;
+                            const s3 = new AWS.S3();
+                            const fileBuffer = fs.createReadStream(filePath);
+
+                            s3.putObject({
+                              ACL: 'public-read',
+                              Key: filename,
+                              Body: fileBuffer,
+                              Bucket: S3_BUCKET,
+                              ContentType: 'image/png',
+                            }, (err) => {
+                              if (err) {
+                                console.log('error uploading to s3')
+                                console.warn(err);
+                                callback(filename, err);
+                              } else {
+                                console.log('Uploaded: ' + filename + ' to s3 successfully.')
+                                callback(filename);
+                              }
+                            });
+                          }
+                          else {
+
+                            console.log('File does not exist: ' + filePath);
                           }
                         });
-
                     });
                 }
             });
         }
     });
 };
+
+function checkIfFile(file, cb) {
+  fs.stat(file, function fsStat(err, stats) {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        return cb(null, false);
+      } else {
+        return cb(err);
+      }
+    }
+    return cb(null, stats.isFile());
+  });
+}
