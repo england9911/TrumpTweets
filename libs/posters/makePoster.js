@@ -56,7 +56,7 @@ module.exports.make = function(tweets, callback) {
                             if (err) {
                                 console.log(err)
                                 cb2(err)
-                            } 
+                            }
                             else {
                                 cb2()
                             }
@@ -64,36 +64,36 @@ module.exports.make = function(tweets, callback) {
                             filenames.push(filename);
                         });
                         cCount++;
-                    }, 
+                    },
                     function (err2) {
-                        
+
                         if(err2) {
                             console.log(err2)
                             cb(err2)
-                        } 
+                        }
                         else {
                             tweetsCol.updateOne(
                                 { "tweet_id":tweet.tweet_id },
                                 { $set: { "posters_generated" : true } },
-                                function(err,res) { 
+                                function(err,res) {
                                     if (err) return cb(err);
                                     return cb();
                                 }
                             );
                         }
-                    });                        
+                    });
                 }
-            } 
+            }
             else {
                 cb();
             }
-        }, 
+        },
         function (err) {
 
             if(err) {
                 db.close();
                 callback(err);
-            } 
+            }
             else {
                 // Generate thumbs after all posters are made.
                 var x = 0;
@@ -105,13 +105,13 @@ module.exports.make = function(tweets, callback) {
 
                         // any more items in array? continue loop
                         if(x < files.length) {
-                            loopArray(files);   
+                            loopArray(files);
                         }
                         else {
                             db.close();
                             callback(null);
                         }
-                    }); 
+                    });
                 }
 
                 loopArray(filenames);
@@ -126,7 +126,7 @@ function makeThumb(filename, cb) {
 
     thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
 
-        if (err) { 
+        if (err) {
             console.log(err);
         }
         else {
@@ -147,8 +147,8 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
         else {
             var cWidth = 7200
             var cHeight = 10800
-            var cPaddingX = (cWidth / 16)    
-            var cPaddingY = (cWidth / 10)        
+            var cPaddingX = (cWidth / 16)
+            var cPaddingY = (cWidth / 10)
             var canvas = new Canvas(cWidth, cHeight)
 
             // Canvas background colour.
@@ -209,7 +209,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
             ctx.textAlign = 'left'
             ctx.textBaseline = 'middle'
             ctx.font = "150px 'Aktiv Grotesk'"
-            
+
             OpenType.load(path.join(__dirname, '/fonts/AktivGrotesk.ttf'), function(err, font2) {
 
                 if(err1) {
@@ -245,7 +245,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     //     canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, fileDate + '-' + bgCol + '-24x32.png')))
                     // });
 
-                    console.log('Generating a poster..');
+                    console.log('Generating a poster...');
 
                     var bgColSafe = bgCol.replace('#','');
                     var filename = tid + '-' + bgColSafe + '-24x32.png';
