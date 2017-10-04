@@ -2,3 +2,4 @@ graphicsmagick
 graphicsmagick-dbg
 libpng-dev
 zlib1g-dev
+libjasper-dev
