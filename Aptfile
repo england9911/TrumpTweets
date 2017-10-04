@@ -3,3 +3,7 @@ graphicsmagick-dbg
 libpng-dev
 zlib1g-dev
 libjasper-dev
+libcairo2-dev 
+libjpeg-dev 
+libpango1.0-dev
+libgif-dev

@@ -18,7 +18,7 @@
     "aws-sdk": "2.x",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.8.4",
-    "canvas": "^1.6.4",
+    "canvas": "^1.6.5",
     "canvas-text-wrapper": "^0.10.0",
     "cheerio": "^1.0.0-rc.2",
     "colors": "^1.1.2",
