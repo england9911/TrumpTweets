@@ -127,6 +127,7 @@ function makeThumb(filename, cb) {
     thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
 
         if (err) {
+            console.log('Could not create a thumbnail...')
             console.log(err);
         }
         else {
