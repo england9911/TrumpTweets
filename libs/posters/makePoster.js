@@ -259,7 +259,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
 
                           if (isFile) {
 
-                            console.log('Generated full-size: ' + filePath);
+                            console.log('Generated full-size img: ' + filePath);
 
                             // Upload file to S3.
                             AWS.config.region = 'us-east-2';
@@ -275,8 +275,8 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                               ContentType: 'image/png',
                             }, (err) => {
                               if (err) {
-                                console.log('error uploading to s3')
-                                console.warn(err);
+                                console.log('error uploading to s3:')
+                                console.log(err);
                                 callback(filename, err);
                               } else {
                                 console.log('Uploaded: ' + filename + ' to s3 successfully.')
