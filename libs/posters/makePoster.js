@@ -18,6 +18,12 @@ var filenames = []
 var bgColours = ['#2977BC','#D6353D','#FCFAEC']
 var textColours = ['#FFF','#FFF','#000']
 
+AWS.config.region = 'us-east-2';
+const S3_BUCKET = process.env.S3_BUCKET_NAME;
+const s3 = new AWS.S3({ params: {Bucket: S3_BUCKET} });
+
+
+
 
 // Check for DB config
 if(!config.databaseConnectionString) {
@@ -123,12 +129,37 @@ function makeThumb(filename, cb) {
 
     if(!filename) return;
 
+
     // Replace gm/thumbnail npm package with: https://github.com/lovell/sharp
     // or similar, something that does not use gm/im libraries.
     // OR: https://github.com/EyalAr/lwip
 
     // Also need to upload the thumb to s3.
     // See answer here: https://stackoverflow.com/questions/35959200/when-using-node-sharp-package-to-resize-image-and-upload-to-s3-it-is-rotated
+
+    s3.getObject({Key: filename}, function(err, data) {
+        if (err) {
+            console.log(err, err.stack); // an error occurred
+        }
+        else {
+            
+            sharp(imageData).resize(800, null).toBuffer(function (err2, redata) {
+                if (err) console.log(err2);
+
+                s3.putObject({
+                    Key: 'thumbs/' + filename,
+                    Body: redata
+                }, function (err, redata) {
+                    if (err) {
+                        console.log('Failed to resize image due to an error: ' + err);
+                    } else {
+                        console.log('s3 thumb uploaded to ' + 'images/' + width + '/' + fileName);
+                        cb();
+                    }
+                });
+            });
+        }
+    });
 
     // thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
 
@@ -269,16 +300,12 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                             console.log('Generated full-size img: ' + filePath);
 
                             // Upload file to S3.
-                            AWS.config.region = 'us-east-2';
-                            const S3_BUCKET = process.env.S3_BUCKET_NAME;
-                            const s3 = new AWS.S3();
                             const fileBuffer = fs.createReadStream(filePath);
 
                             s3.putObject({
                               ACL: 'public-read',
                               Key: filename,
                               Body: fileBuffer,
-                              Bucket: S3_BUCKET,
                               ContentType: 'image/png',
                             }, (err) => {
                               if (err) {
