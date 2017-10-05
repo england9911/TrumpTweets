@@ -143,7 +143,7 @@ function makeThumb(filename, cb) {
                     if (err) {
                         console.log('Failed to resize due to an error: ' + err);
                     } else {
-                        console.log('s3 thumb uploaded to ' + 'images/' + width + '/' + fileName);
+                        console.log('s3 thumb uploaded to ' + 'thumb/' + filename);
                         cb();
                     }
                 });
