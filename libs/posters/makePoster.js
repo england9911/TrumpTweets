@@ -1,5 +1,4 @@
 var fs = require('fs')
-var gm = require('gm')
 var path = require('path')
 var mongodb = require('mongodb')
 var async = require('async')
