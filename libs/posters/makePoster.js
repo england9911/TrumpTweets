@@ -128,21 +128,12 @@ function makeThumb(filename, cb) {
 
     if(!filename) return;
 
-
-    // Replace gm/thumbnail npm package with: https://github.com/lovell/sharp
-    // or similar, something that does not use gm/im libraries.
-    // OR: https://github.com/EyalAr/lwip
-
-    // Also need to upload the thumb to s3.
-    // See answer here: https://stackoverflow.com/questions/35959200/when-using-node-sharp-package-to-resize-image-and-upload-to-s3-it-is-rotated
-
     s3.getObject({Key: filename}, function(err, data) {
         if (err) {
             console.log(err, err.stack); // an error occurred
         }
         else {
-            
-            sharp(imageData).resize(800, null).toBuffer(function (err2, redata) {
+            sharp(data).resize(800, null).toBuffer(function (err2, redata) {
                 if (err) console.log(err2);
 
                 s3.putObject({
@@ -159,18 +150,6 @@ function makeThumb(filename, cb) {
             });
         }
     });
-
-    // thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
-
-    //     if (err) {
-    //         console.log('Could not create a thumbnail..')
-    //         console.log(err);
-    //     }
-    //     else {
-    //         console.log('Created a thumbnail for: ' + filename)
-    //         cb();
-    //     }
-    // });
 }
 
 // Make the full-size poster.
