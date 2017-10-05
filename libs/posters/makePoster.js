@@ -124,6 +124,9 @@ function makeThumb(filename, cb) {
 
     if(!filename) return;
 
+    // Replace gm/thumbnail npm package with: https://github.com/lovell/sharp
+    // or similar, something that does not use gm/im libraries.
+
     thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
 
         if (err) {
