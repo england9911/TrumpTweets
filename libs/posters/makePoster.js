@@ -282,7 +282,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                     //     canvas.createPNGStream().pipe(fs.createWriteStream(path.join(__dirname, fileDate + '-' + bgCol + '-24x32.png')))
                     // });
 
-                    console.log('Generating a poster..');
+                    console.log('Generating a poster...');
 
                     var bgColSafe = bgCol.replace('#','');
                     var filename = tid + '-' + bgColSafe + '-24x32.png';
