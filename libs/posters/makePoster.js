@@ -9,10 +9,9 @@ var Image = Canvas.Image
 var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper
 var common = require('../../routes/common')
 var config = common.getConfig()
-var Thumbnail = require('thumbnail')
+var sharp = require('sharp')
 var AWS = require('aws-sdk')
 var postersDir = path.join(__dirname, '/poster-imgs')
-var thumbnail = new Thumbnail(postersDir, postersDir + '/thumbs')
 var filenames = []
 
 // These two need an equal number of items in each object.
@@ -126,18 +125,21 @@ function makeThumb(filename, cb) {
 
     // Replace gm/thumbnail npm package with: https://github.com/lovell/sharp
     // or similar, something that does not use gm/im libraries.
+    // OR: https://github.com/EyalAr/lwip
 
-    thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
+    // See answer here: https://stackoverflow.com/questions/35959200/when-using-node-sharp-package-to-resize-image-and-upload-to-s3-it-is-rotated
 
-        if (err) {
-            console.log('Could not create a thumbnail..')
-            console.log(err);
-        }
-        else {
-            console.log('Created a thumbnail for: ' + filename)
-            cb();
-        }
-    });
+    // thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
+
+    //     if (err) {
+    //         console.log('Could not create a thumbnail..')
+    //         console.log(err);
+    //     }
+    //     else {
+    //         console.log('Created a thumbnail for: ' + filename)
+    //         cb();
+    //     }
+    // });
 }
 
 // Make the full-size poster.
