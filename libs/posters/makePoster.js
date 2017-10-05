@@ -1,3 +1,4 @@
+var sharp = require('sharp')
 var fs = require('fs')
 var path = require('path')
 var mongodb = require('mongodb')
@@ -8,7 +9,6 @@ var Image = Canvas.Image
 var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper
 var common = require('../../routes/common')
 var config = common.getConfig()
-var sharp = require('sharp')
 var AWS = require('aws-sdk')
 var postersDir = path.join(__dirname, '/poster-imgs')
 var filenames = []
