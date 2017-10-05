@@ -137,7 +137,7 @@ function makeThumb(filename, cb) {
             console.log('got image: ');
             console.log(data);
 
-            sharp(data).resize(800, null).toBuffer(function (err2, redata) {
+            sharp(data.Body).resize(800, null).toBuffer(function (err2, redata) {
                 if (err2) {
                     console.log('could not resize img:');
                     console.log(err2);
@@ -152,6 +152,7 @@ function makeThumb(filename, cb) {
                     }, function (err3, redata) {
                         if (err3) {
                             console.log('Failed to resize due to an error: ' + err3);
+                            cb();
                         } else {
                             console.log('s3 thumb uploaded to ' + 'thumbs/' + filename);
                             cb();
