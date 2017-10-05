@@ -138,19 +138,26 @@ function makeThumb(filename, cb) {
             console.log(data);
 
             sharp(data).resize(800, null).toBuffer(function (err2, redata) {
-                if (err2) console.log(err2);
+                if (err2) {
+                    console.log('could not resize img:');
+                    console.log(err2);
+                }
+                else {
+                    console.log('Resized img:');
+                    console.log(redata);
 
-                s3.putObject({
-                    Key: 'thumbs/' + filename,
-                    Body: redata
-                }, function (err3, redata) {
-                    if (err3) {
-                        console.log('Failed to resize due to an error: ' + err3);
-                    } else {
-                        console.log('s3 thumb uploaded to ' + 'thumbs/' + filename);
-                        cb();
-                    }
-                });
+                    s3.putObject({
+                        Key: 'thumbs/' + filename,
+                        Body: redata
+                    }, function (err3, redata) {
+                        if (err3) {
+                            console.log('Failed to resize due to an error: ' + err3);
+                        } else {
+                            console.log('s3 thumb uploaded to ' + 'thumbs/' + filename);
+                            cb();
+                        }
+                    });
+                }
             });
         }
     });
