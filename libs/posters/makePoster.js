@@ -151,7 +151,7 @@ function makeThumb(filename, cb) {
                     Body: redata
                 }, function (err, redata) {
                     if (err) {
-                        console.log('Failed to resize image due to an error: ' + err);
+                        console.log('Failed to resize poster due to an error: ' + err);
                     } else {
                         console.log('s3 thumb uploaded to ' + 'images/' + width + '/' + fileName);
                         cb();
