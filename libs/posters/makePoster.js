@@ -127,6 +127,7 @@ function makeThumb(filename, cb) {
     // or similar, something that does not use gm/im libraries.
     // OR: https://github.com/EyalAr/lwip
 
+    // Also need to upload the thumb to s3.
     // See answer here: https://stackoverflow.com/questions/35959200/when-using-node-sharp-package-to-resize-image-and-upload-to-s3-it-is-rotated
 
     // thumbnail.ensureThumbnail(filename, 800, null, function (err, filenamed) {
