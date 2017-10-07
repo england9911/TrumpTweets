@@ -99,19 +99,26 @@ module.exports.make = function(tweets, callback) {
                 callback(err);
             }
             else {
+                console.log('top level files:');
+                console.log(files);
                 // Generate thumbs after all posters are made.
                 var x = 0;
                 var loopArray = function(files) {
 
-                    makeThumb(files[x],function(){
+                    makeThumb(files[x], function() {
+
+                        console.log('individual file:');
+                        console.log(files[x]);
 
                         x++;
 
                         // any more items in array? continue loop
                         if(x < files.length) {
+                            console.log('more files to go..');
                             loopArray(files);
                         }
                         else {
+                            console.log('finished looping for thumbs');
                             db.close();
                             callback(null);
                         }
@@ -176,19 +183,19 @@ function makeThumb(filename, cb) {
 
 
 
-    s3.getObject({Key: filename}).promise()
-        .then(data => sharp(data.Body)
-        .resize(800, null)
-        .toFormat('png')
-        .toBuffer()
-    )
-    .then(buffer => s3.putObject({
-        Body: buffer,
-        ContentType: 'image/png',
-        Key: 'thumbs/' + filename,
-    }).promise()
-    )
-    .then(() => cb());
+    // s3.getObject({Key: filename}).promise()
+    //     .then(data => sharp(data.Body)
+    //     .resize(800, null)
+    //     .toFormat('png')
+    //     .toBuffer()
+    // )
+    // .then(buffer => s3.putObject({
+    //     Body: buffer,
+    //     ContentType: 'image/png',
+    //     Key: 'thumbs/' + filename,
+    // }).promise()
+    // )
+    // .then(() => cb());
 
 
 
