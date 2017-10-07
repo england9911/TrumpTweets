@@ -139,6 +139,9 @@ function makeThumb(filename, cb) {
             console.log(data);
 
             sharp(data.Body).resize(800, null).toBuffer(function (err2, redata) {
+
+                console.log('Got here.');
+
                 if (err2) {
                     console.log('could not resize img:');
                     console.log(err2);
