@@ -182,7 +182,7 @@ function makeThumb(filename, cb) {
         .toFormat('png')
         .toBuffer()
     )
-    .then(buffer => S3.putObject({
+    .then(buffer => s3.putObject({
         Body: buffer,
         ContentType: 'image/png',
         Key: 'thumbs/' + filename,
