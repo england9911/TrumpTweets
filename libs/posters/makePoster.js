@@ -185,19 +185,19 @@ function makeThumb(filename, cb) {
 
 
 
-    // s3.getObject({Key: filename}).promise()
-    //     .then(data => sharp(data.Body)
-    //     .resize(800, null)
-    //     .toFormat('png')
-    //     .toBuffer()
-    // )
-    // .then(buffer => s3.putObject({
-    //     Body: buffer,
-    //     ContentType: 'image/png',
-    //     Key: 'thumbs/' + filename,
-    // }).promise()
-    // )
-    // .then(() => cb());
+    s3.getObject({Key: filename}).promise()
+        .then(data => sharp(data.Body)
+        .resize(800, null)
+        .toFormat('png')
+        .toBuffer()
+    )
+    .then(buffer => s3.putObject({
+        Body: buffer,
+        ContentType: 'image/png',
+        Key: 'thumbs/' + filename,
+    }).promise()
+    )
+    .then(() => cb());
 
 
 
