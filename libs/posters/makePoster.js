@@ -130,6 +130,7 @@ function makeThumb(filename, cb) {
 
     s3.getObject({Key: filename}, function(err, data) {
         if (err) {
+            console.log('Could not resize...');
             console.log(err, err.stack); // an error occurred
         }
         else {
