@@ -188,7 +188,7 @@ function makeThumb(filename, cb) {
         Key: 'thumbs/' + filename,
     }).promise()
     )
-    .then(() => cb();
+    .then(() => cb());
 
 
 
