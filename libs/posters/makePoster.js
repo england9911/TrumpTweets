@@ -100,7 +100,7 @@ module.exports.make = function(tweets, callback) {
             }
             else {
                 console.log('top level files:');
-                console.log(files);
+                console.log(filenames);
                 // Generate thumbs after all posters are made.
                 var x = 0;
                 var loopArray = function(files) {
