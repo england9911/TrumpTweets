@@ -126,49 +126,73 @@ module.exports.make = function(tweets, callback) {
 
 function makeThumb(filename, cb) {
 
-    if(!filename) return;
+    if(!filename) {
+        console.log('no filename..')
+        return;
+    }
 
-    s3.getObject({Key: filename}, function(err, data) {
-        if (err) {
-            console.log('Could not resize...');
-            console.log(err, err.stack); // an error occurred
-        }
-        else {
+    // s3.getObject({Key: filename}, function(err, data) {
+    //     if (err) {
+    //         console.log('Could not resize...');
+    //         console.log(err, err.stack); // an error occurred
+    //     }
+    //     else {
 
-            console.log('got image: ');
-            console.log(data);
-            console.log('body:');
-            console.log(data.Body);
+    //         console.log('got image: ');
+    //         console.log(data);
+    //         console.log('body:');
+    //         console.log(data.Body);
 
-            sharp(data.Body).resize(800, null).toBuffer().then(function(outputBuffer) {
+    //         sharp(data.Body).resize(800, null).toBuffer(function (err2, redata) {
 
-                console.log('SHARP CALLBACK');
-                console.log('');
+    //             console.log('SHARP CALLBACK');
+    //             console.log('');
 
-                if (err2) {
-                    console.log('could not resize img:');
-                    console.log(err2);
-                }
-                else {
-                    console.log('Resized img:');
-                    console.log(outputBuffer);
+    //             if (err2) {
+    //                 console.log('could not resize img:');
+    //                 console.log(err2);
+    //             }
+    //             else {
+    //                 console.log('Resized img:');
+    //                 console.log(redata);
 
-                    s3.putObject({
-                        Key: 'thumbs/' + filename,
-                        Body: outputBuffer
-                    }, function (err3, redata) {
-                        if (err3) {
-                            console.log('Failed to resize due to an error: ' + err3);
-                            cb();
-                        } else {
-                            console.log('s3 thumb uploaded to ' + 'thumbs/' + filename);
-                            cb();
-                        }
-                    });
-                }
-            });
-        }
-    });
+    //                 s3.putObject({
+    //                     Key: 'thumbs/' + filename,
+    //                     Body: redata
+    //                 }, function (err3, redata) {
+    //                     if (err3) {
+    //                         console.log('Failed to resize due to an error: ' + err3);
+    //                         cb();
+    //                     } else {
+    //                         console.log('s3 thumb uploaded to ' + 'thumbs/' + filename);
+    //                         cb();
+    //                     }
+    //                 });
+    //             }
+    //         });
+    //     }
+    // });
+
+
+
+
+    S3.getObject({Key: filename}).promise()
+        .then(data => Sharp(data.Body)
+        .resize(800, null)
+        .toFormat('png')
+        .toBuffer()
+    )
+    .then(buffer => S3.putObject({
+        Body: buffer,
+        ContentType: 'image/png',
+        Key: 'thumbs/' + filename,
+    }).promise()
+    )
+    .then(() => cb();
+
+
+
+
 }
 
 // Make the full-size poster.
