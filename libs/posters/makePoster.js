@@ -176,7 +176,7 @@ function makeThumb(filename, cb) {
 
 
 
-    S3.getObject({Key: filename}).promise()
+    s3.getObject({Key: filename}).promise()
         .then(data => Sharp(data.Body)
         .resize(800, null)
         .toFormat('png')
