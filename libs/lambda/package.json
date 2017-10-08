@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "async": "^2.5.0",
+    "gm": "^1.23.0",
+    "util": "^0.10.3"
+  },
+  "author": "Matt England",
+  "homepage": "http://www.trumptweetposters.com"
+}
