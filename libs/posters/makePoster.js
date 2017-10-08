@@ -105,7 +105,7 @@ module.exports.make = function(tweets, callback) {
                 var x = 0;
                 var loopArray = function(files) {
 
-                    console.log('loopArray..');
+                    console.log('loopArray: ' + x);
 
                     makeThumb(files[x], function() {
 
@@ -182,7 +182,7 @@ function makeThumb(filename, cb) {
     //     }
     // });
 
-
+    console.log('filename: ' + filename);
 
 
     s3.getObject({Key: filename}).promise()
