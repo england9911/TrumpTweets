@@ -95,6 +95,7 @@ module.exports.make = function(tweets, callback) {
         function (err) {
 
             if(err) {
+                console.log('error happened: ')
                 db.close();
                 callback(err);
             }
@@ -103,7 +104,7 @@ module.exports.make = function(tweets, callback) {
                 console.log(filenames);
                 // Generate thumbs after all posters are made.
                 var x = 0;
-                var loopArray = function(files) {
+                var loopArray = function(files, x) {
 
                     console.log('loopArray: ');
                     console.log('x: ' + x + ' length: ' + files.length);
@@ -118,7 +119,7 @@ module.exports.make = function(tweets, callback) {
                         // any more items in array? continue loop
                         if(x < files.length) {
                             console.log('more files to go..');
-                            loopArray(files);
+                            loopArray(files, x);
                         }
                         else {
                             console.log('finished looping for thumbs');
@@ -128,7 +129,7 @@ module.exports.make = function(tweets, callback) {
                     });
                 }
 
-                loopArray(filenames);
+                loopArray(filenames, x);
             }
         });
     });
