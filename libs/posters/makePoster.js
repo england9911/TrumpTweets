@@ -100,36 +100,39 @@ module.exports.make = function(tweets, callback) {
                 callback(err);
             }
             else {
-                console.log('top level files:');
-                console.log(filenames);
-                // Generate thumbs after all posters are made.
-                var x = 0;
-                var loopArray = function(files, x) {
+                // console.log('top level files:');
+                // console.log(filenames);
+                // // Generate thumbs after all posters are made.
+                // var x = 0;
+                // var loopArray = function(files, x) {
 
-                    console.log('loopArray: ');
-                    console.log('x: ' + x + ' length: ' + files.length);
+                //     console.log('loopArray: ');
+                //     console.log('x: ' + x + ' length: ' + files.length);
 
-                    makeThumb(files[x], function() {
+                //     makeThumb(files[x], function() {
 
-                        console.log('makethumb cb, individual file:');
-                        console.log(files[x]);
+                //         console.log('makethumb cb, individual file:');
+                //         console.log(files[x]);
 
-                        x++;
+                //         x++;
 
-                        // any more items in array? continue loop
-                        if(x < files.length) {
-                            console.log('more files to go..');
-                            loopArray(files, x);
-                        }
-                        else {
-                            console.log('finished looping for thumbs');
-                            db.close();
-                            callback(null);
-                        }
-                    });
-                }
+                //         // any more items in array? continue loop
+                //         if(x < files.length) {
+                //             console.log('more files to go..');
+                //             loopArray(files, x);
+                //         }
+                //         else {
+                //             console.log('finished looping for thumbs');
+                //             db.close();
+                //             callback(null);
+                //         }
+                //     });
+                // }
 
-                loopArray(filenames, x);
+                // loopArray(filenames, x);
+
+                db.close();
+                callback();
             }
         });
     });
@@ -143,6 +146,9 @@ function makeThumb(filename, cb) {
     }
 
         console.log('filename: ' + filename);
+
+        // This process is killing Heroku with an H15 error - vastly exceeding memory allowance.
+        // Outsource this method to AWS Lambda.
 
 
     s3.getObject({Key: filename}, function(err, data) {

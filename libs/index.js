@@ -2,10 +2,6 @@ var tweets = require('./tweets/getTweets');
 var posters = require('./posters/makePoster');
 var products = require('./products/insertProducts');
 
-const WORKERS = process.env.WEB_CONCURRENCY || 1;
-for (let i = 0; i < WORKERS; i++) {
-  cluster.fork();
-}
 
 
 
