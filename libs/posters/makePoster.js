@@ -175,7 +175,7 @@ function makeThumb(filename, cb) {
                         Body: redata
                     }, function (err3, redata) {
                         if (err3) {
-                            console.log('Failed to resize due to an error: ' + err3);
+                            console.log('Failed to upload thumb due to an error: ' + err3);
                             cb();
                         } else {
                             console.log('s3 thumb uploaded to ' + 'thumbs/' + filename);
