@@ -105,7 +105,8 @@ module.exports.make = function(tweets, callback) {
                 var x = 0;
                 var loopArray = function(files) {
 
-                    console.log('loopArray: ' + x);
+                    console.log('loopArray: ');
+                    console.log('x: ' + x + ' length: ' + files.length);
 
                     makeThumb(files[x], function() {
 
