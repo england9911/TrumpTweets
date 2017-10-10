@@ -100,37 +100,7 @@ module.exports.make = function(tweets, callback) {
                 callback(err);
             }
             else {
-                // console.log('top level files:');
-                // console.log(filenames);
-                // // Generate thumbs after all posters are made.
-                // var x = 0;
-                // var loopArray = function(files, x) {
-
-                //     console.log('loopArray: ');
-                //     console.log('x: ' + x + ' length: ' + files.length);
-
-                //     makeThumb(files[x], function() {
-
-                //         console.log('makethumb cb, individual file:');
-                //         console.log(files[x]);
-
-                //         x++;
-
-                //         // any more items in array? continue loop
-                //         if(x < files.length) {
-                //             console.log('more files to go..');
-                //             loopArray(files, x);
-                //         }
-                //         else {
-                //             console.log('finished looping for thumbs');
-                //             db.close();
-                //             callback(null);
-                //         }
-                //     });
-                // }
-
-                // loopArray(filenames, x);
-
+                // Lambda will run to resize images into thumbs.
                 db.close();
                 callback();
             }
@@ -138,81 +108,6 @@ module.exports.make = function(tweets, callback) {
     });
 }
 
-function makeThumb(filename, cb) {
-
-    if(!filename) {
-        console.log('no filename..')
-        return;
-    }
-
-        console.log('filename: ' + filename);
-
-        // This process is killing Heroku with an H15 error - vastly exceeding memory allowance.
-        // Outsource this method to AWS Lambda.
-
-
-    s3.getObject({Key: filename}, function(err, data) {
-        if (err) {
-            console.log('Could not resize...');
-            console.log(err, err.stack); // an error occurred
-        }
-        else {
-
-            console.log('got image: ');
-            console.log(data);
-            console.log('body:');
-            console.log(data.Body);
-
-            sharp(data.Body).resize(800, null).toBuffer(function (err2, redata) {
-
-                console.log('SHARP CALLBACK');
-                console.log('');
-
-                if (err2) {
-                    console.log('could not resize img:');
-                    console.log(err2);
-                }
-                else {
-                    console.log('Resized img:');
-                    console.log(redata);
-
-                    s3.putObject({
-                        Key: 'thumbs/' + filename,
-                        Body: redata
-                    }, function (err3, redata) {
-                        if (err3) {
-                            console.log('Failed to upload thumb due to an error: ' + err3);
-                            cb();
-                        } else {
-                            console.log('s3 thumb uploaded to ' + 'thumbs/' + filename);
-                            cb();
-                        }
-                    });
-                }
-            });
-        }
-    });
-
-
-
-    // s3.getObject({Key: filename}).promise()
-    //     .then(data => sharp(data.Body)
-    //     .resize(800, null)
-    //     .toFormat('png')
-    //     .toBuffer()
-    // )
-    // .then(buffer => s3.putObject({
-    //     Body: buffer,
-    //     ContentType: 'image/png',
-    //     Key: 'thumbs/' + filename,
-    // }).promise()
-    // )
-    // .then(() => cb());
-
-
-
-
-}
 
 // Make the full-size poster.
 function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callback) {

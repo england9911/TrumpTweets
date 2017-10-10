@@ -7,6 +7,7 @@ var config = common.getConfig();
 var fs = require('fs-extra');
 var glob = require('glob');
 var moment = require('moment-timezone');
+var AWS = require('aws-sdk');
 var pconfig = require('./../printful/printConf.js');
 var PrintfulClient = require('./../printful/printfulclient.js');
 var printful = new PrintfulClient(pconfig.printful_api_key);
@@ -15,6 +16,10 @@ if(!config.databaseConnectionString) {
     console.log('No MongoDB configured. Please see README.md for help');
     process.exit(1);
 }
+
+const S3_BUCKET = process.env.S3_BUCKET_NAME;
+const S3_THUMBS = process.env.S3_THUMBS;
+const s3 = new AWS.S3();
 
 
 module.exports.insertProducts = function(tweets, callback) {
@@ -79,7 +84,7 @@ module.exports.insertProducts = function(tweets, callback) {
 
                             // Construct folder path.
                             var productImgsPath = path.join(__dirname, '../../public/uploads', newId);
-                            
+
                             // Create folder for product images.
                             fs.ensureDir(productImgsPath, function(err3) {
 
@@ -123,12 +128,12 @@ module.exports.insertProducts = function(tweets, callback) {
 
         // ------------------------------------------------------------------------
 
-        
+
 
 
 
         // ------------------------------------------------------------------------
-        
+
 
 
 
@@ -153,14 +158,14 @@ function updateMainImg(db, tweetID, docID, cb) {
 
     getSavedThumbs(tweetID, docID, true, function(mainImg, err){
 
-        if(err) return cb('Unable to get a product image for: ' + tweetID); 
+        if(err) return cb('Unable to get a product image for: ' + tweetID);
 
         var mainImgCut = mainImg.path.split('/public').pop();
 
         productsCol.updateOne(
             { "productPermalink":tweetID },
             { $set: { "productImage":mainImgCut } },
-            function(err,res) { 
+            function(err,res) {
                 if(err) {
                     return cb('Unable to set: ' + mainImgCut + ' as main image. Please try again.');
                 }
@@ -203,8 +208,6 @@ function getSavedThumbs(tweetID, docID, single, cb) {
                 }
             }
         }
-
-        // console.log(fileList);
 
         if(fileList.length == 0) return cb(null, true);
         else if(single == true) return cb(fileList[0], null);
@@ -270,15 +273,15 @@ function moveThumbs(thumbs, cb) {
                     else {
                         callback(null);
                     }
-                }) 
-            } 
+                })
+            }
             else {
                 console.log('THERE WAS A PROBLEM MOVING: ' + from);
             }
         });
 
     }, function(er) {
-        
+
         if(er) {
             console.log('An error happened while moving thumbs');
             cb(er);
