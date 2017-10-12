@@ -21,7 +21,6 @@ const S3_BUCKET = process.env.S3_BUCKET_NAME;
 const S3_THUMBS = process.env.S3_THUMBS;
 const s3 = new AWS.S3();
 
-
 module.exports.insertProducts = function(tweets, callback) {
 
     mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
@@ -82,29 +81,10 @@ module.exports.insertProducts = function(tweets, callback) {
                             // Get the new document ID.
                             var newId = newDoc.ops[0]._id.toString();
 
-                            // Construct folder path.
-                            var productImgsPath = path.join(__dirname, '../../public/uploads', newId);
+                            updateMainImg(db, tweetID, newId, function(err4) {
 
-                            // Create folder for product images.
-                            fs.ensureDir(productImgsPath, function(err3) {
-
-                                if(err3) console.error(err3);
-
-                                // Get thumbnails for this product/tweet id from their temp location.
-                                getGeneratedThumbs(tweetID, newId, function(thumbFiles) {
-
-                                    // Move thumbnails into new folder.
-                                    moveThumbs(thumbFiles, function(err3) {
-
-                                        if(err3) console.error(err3);
-
-                                        updateMainImg(db, tweetID, newId, function(err4) {
-
-                                            if(err4) console.error(err4);
-                                            cb();
-                                        });
-                                    });
-                                });
+                                if(err4) console.log(err4);
+                                cb();
                             });
                         }
                     });
@@ -154,9 +134,13 @@ module.exports.insertProducts = function(tweets, callback) {
 
 function updateMainImg(db, tweetID, docID, cb) {
 
+    // TODO: Save *just* the filename? we can then use env vars to change the path.
+    // TODO: Set up a CNAME for posters.trumptweetposters.com and point it to s3 bucket
+    // TODO: Set up a CNAME for media.trumptweetposters.com and point it to s3 thumb bucket
+
     var productsCol = db.collection('products');
 
-    getSavedThumbs(tweetID, docID, true, function(mainImg, err){
+    getSavedThumbs(tweetID, docID, true, function(mainImg, err) {
 
         if(err) return cb('Unable to get a product image for: ' + tweetID);
 
@@ -176,6 +160,19 @@ function updateMainImg(db, tweetID, docID, cb) {
             }
         );
     });
+}
+
+function setS3ProductThumbs(tweetID, docID, single, cb) {
+
+    // TODO: We have thumbs stored in the root of the bucket. Those need to be moved 
+    // TODO: into a folder named by the new docID. Then, we need to save that path into 
+    // TODO: the DB. Don't save the full URL *with* the s3 path. we just want to keep 
+    // TODO: /docID/thumb.png
+
+    // TODO: MOVE the THREE thumbs into that folder. SAVE just one filename to the DB.
+
+    // TODO: Set up a CNAME for posters.trumptweetposters.com and point it to s3 bucket
+    // TODO: Set up a CNAME for media.trumptweetposters.com and point it to s3 thumb bucket
 }
 
 function getSavedThumbs(tweetID, docID, single, cb) {
@@ -216,6 +213,8 @@ function getSavedThumbs(tweetID, docID, single, cb) {
 }
 
 
+// Each product has it's ID, which is used as part of image filenames. 
+// Thumbs are stored in a separate s3 bucket.
 function getGeneratedThumbs(tweetID, docID, callback) {
 
     globPath = path.join(__dirname, '../posters/poster-imgs/thumbs');
