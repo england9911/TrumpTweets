@@ -81,10 +81,13 @@ module.exports.insertProducts = function(tweets, callback) {
                             // Get the new document ID.
                             var newId = newDoc.ops[0]._id.toString();
 
-                            updateMainImg(db, tweetID, newId, function(err4) {
+                            setS3ProductThumbs(tweetID, newId, function(err3) {
 
-                                if(err4) console.log(err4);
-                                cb();
+                                updateMainImg(db, tweetID, newId, function(err4) {
+
+                                    if(err4) console.log(err4);
+                                    cb();
+                                });
                             });
                         }
                     });
@@ -162,17 +165,65 @@ function updateMainImg(db, tweetID, docID, cb) {
     });
 }
 
-function setS3ProductThumbs(tweetID, docID, single, cb) {
+function setS3ProductThumbs(tweetID, docID, cb) {
 
     // TODO: We have thumbs stored in the root of the bucket. Those need to be moved 
     // TODO: into a folder named by the new docID. Then, we need to save that path into 
-    // TODO: the DB. Don't save the full URL *with* the s3 path. we just want to keep 
+    // TODO: the DB. Don't save the full URL *with* the s3 url. we just want to keep 
     // TODO: /docID/thumb.png
 
     // TODO: MOVE the THREE thumbs into that folder. SAVE just one filename to the DB.
 
     // TODO: Set up a CNAME for posters.trumptweetposters.com and point it to s3 bucket
     // TODO: Set up a CNAME for media.trumptweetposters.com and point it to s3 thumb bucket
+
+
+
+    async.waterfall([
+        function list(next) {
+            s3.listObjects({
+                Bucket: S3_THUMBS,
+                Prefix: tweetID.toString()
+            }, 
+            function(err,data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else     next(data);
+            });
+        },
+        function download(response, next) {
+
+            console.log('download');
+            console.log(response);
+
+
+            // // Download the image from S3 into a buffer.
+            // s3.getObject({
+            //         Bucket: S3_THUMBS,
+            //         Key: srcKey
+            //     },
+            //     next);
+        },
+        function move(response, next) {
+            console.log('move');
+            console.log(response);
+        }        
+        ], function (err) {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log('proper success mind');
+                // console.log(
+                //     'Successfully resized ' + tweetID + '/' + srcKey +
+                //     ' and uploaded to ' + dstBucket + '/' + dstKey
+                // );
+            }
+
+            cb();
+        }
+    );
+
+
+
 }
 
 function getSavedThumbs(tweetID, docID, single, cb) {
