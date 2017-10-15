@@ -208,6 +208,9 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log(response);
         }        
         ], function (err) {
+
+            console.log('Finished waterfall, calling back');
+
             if (err) {
                 console.error(err);
             } else {
