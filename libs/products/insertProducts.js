@@ -186,6 +186,11 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 Prefix: tweetID.toString()
             }, 
             function(err,data) {
+
+                console.log('list');
+                console.log(data);
+                console.log();
+
                 if (err) console.log(err, err.stack); // an error occurred
                 else     next(data);
             });
@@ -194,7 +199,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             console.log('download');
             console.log(response);
-
+            console.log();
 
             // // Download the image from S3 into a buffer.
             // s3.getObject({
@@ -206,6 +211,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
         function move(response, next) {
             console.log('move');
             console.log(response);
+            console.log();
         }        
         ], function (err) {
 
