@@ -14,7 +14,7 @@ var tconfig = require('./twitConf.js');
 var T = new Twit(tconfig);
 
 var tweetOptions = { screen_name: 'realDonaldTrump',
-                     count: 2,
+                     count: 3,
                      tweet_mode: 'extended' };
 
 // Check for DB config
