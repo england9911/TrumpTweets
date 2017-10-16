@@ -9,18 +9,21 @@ var util = require('util');
 var MAX_WIDTH  = 800;
 var MAX_HEIGHT = 1200;
 
-// get reference to S3 client 
+// get reference to S3 client
 var s3 = new AWS.S3();
- 
+
 exports.handler = function(event, context, callback) {
     // Read options from the event.
     console.log("Reading options from event:\n", util.inspect(event, {depth: 5}));
     var srcBucket = event.Records[0].s3.bucket.name;
     // Object key may have spaces or unicode non-ASCII characters.
     var srcKey    =
-    decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));  
+    decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));
+    var twIDarr   = srcKey.split("-");
+    var twID      = twIDarr[0];
     var dstBucket = srcBucket + "-thumbnails";
-    var dstKey    = "thumb-" + srcKey;
+    // Add a 'folder' name of the tweet ID.
+    var dstKey    = twID + "/thumb-" + srcKey;
 
     // Sanity check: validate that source and destination are different buckets.
     if (srcBucket == dstBucket) {
