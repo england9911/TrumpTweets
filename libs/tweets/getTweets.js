@@ -132,9 +132,11 @@ function insertTweets(db, tweets, callback) {
         else {
             console.log('Inserted: ' + insertedTweets + ' tweets, updated: ' + updatedTweets + ' tweets.');
             console.log('');
-            if(insertedTweets === 0 && updatedTweets > 0) {
+            if(insertedTweets === 0) {
+              if(updatedTweets > 0 || updatedTweets === 0) {
                 console.log('Exiting, no need to generate anything.');
                 process.exit(1);
+              }
             }
             callback(null, 'Inserted: ' + insertedTweets + ' tweets, updated: ' + updatedTweets + ' tweets.');
         }
