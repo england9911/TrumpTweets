@@ -184,23 +184,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             s3.listObjects({
                 Bucket: S3_THUMBS,
                 Prefix: tweetID.toString()
-            }, 
-            function(err,data) {
-
-                console.log('list');
-                console.log(data);
-                console.log();
-
-                if (err) {
-                    console.log('list err:');
-                    console.log(err, err.stack); // an error occurred
-                }
-                else {
-                    console.log('list moving on..');
-                    console.log('');
-                    next(data);
-                }
-            });
+            }, next);
         },
         function download(response, next) {
 

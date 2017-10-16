@@ -23,7 +23,7 @@ exports.handler = function(event, context, callback) {
     var twID      = twIDarr[0];
     var dstBucket = srcBucket + "-thumbnails";
     // Add a 'folder' name of the tweet ID.
-    var dstKey    = twID + "/thumb-" + srcKey;
+    var dstKey    = "thumb-" + srcKey;
 
     // Sanity check: validate that source and destination are different buckets.
     if (srcBucket == dstBucket) {
