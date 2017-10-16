@@ -183,7 +183,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
         function list(next) {
             var listing = s3.listObjects({
                 Bucket: S3_THUMBS,
-                Prefix: tweetID.toString()
+                Prefix: tweetID.toString(),
+                Delimiter: "/"
             }, function(err, data) {
 
                 console.log('err');
