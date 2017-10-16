@@ -185,6 +185,12 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 Bucket: S3_THUMBS,
                 Prefix: tweetID.toString()
             }, function(err, data) {
+
+                console.log('err');
+                console.log(err);
+                console.log('data');
+                console.log(data);
+
                 if(err) console.log(err);
                 next(data.Contents);
             });
