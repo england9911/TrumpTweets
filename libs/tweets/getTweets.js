@@ -14,7 +14,7 @@ var tconfig = require('./twitConf.js');
 var T = new Twit(tconfig);
 
 var tweetOptions = { screen_name: 'realDonaldTrump',
-                     count: 4,
+                     count: 2,
                      tweet_mode: 'extended' };
 
 // Check for DB config
@@ -76,12 +76,12 @@ function insertTweets(db, tweets, callback) {
         var tweetUnix = moment(tweet.created_at, 'ddd MMM DD HH:mm:ss Z YYYY');
         var tweetDateTimezone = moment.tz(tweetUnix, 'US/Eastern').format('dddd, MMMM Do YYYY, h:mm a');
 
-        var tweetvalues = { 
+        var tweetvalues = {
             "created_at":tweet.created_at,
             "tweet_local_date":tweetDateTimezone,
-            "tweet_id":tweet.id.toString(), 
-            "text":tweetext, 
-            "retweet_count":tweet.retweet_count, 
+            "tweet_id":tweet.id.toString(),
+            "text":tweetext,
+            "retweet_count":tweet.retweet_count,
             "favorite_count":tweet.favorite_count,
             "screen_name":tweet.user.screen_name,
             "posters_generated":false
@@ -96,11 +96,11 @@ function insertTweets(db, tweets, callback) {
 
                     // Update the retweet_count and favorite_count only.
                     tweetsCol.updateOne(
-                        idtweet, 
+                        idtweet,
                         { $set: {
-                            "retweet_count":tweet.retweet_count, 
+                            "retweet_count":tweet.retweet_count,
                             "favorite_count":tweet.favorite_count,
-                        } }, 
+                        } },
                         function(err, res) {
                             console.log('1 record updated');
                             updatedTweets++;
@@ -112,23 +112,23 @@ function insertTweets(db, tweets, callback) {
                 else {
                     tweetsCol.insert(
                         tweetvalues,
-                        function (err) { 
+                        function (err) {
                             if(!err) insertedTweets++;
-                            return cb(err); 
+                            return cb(err);
                         }
                     );
                 }
             });
-        } 
+        }
         else {
             cb();
         };
-    }, 
+    },
     function (err) {
         if(err) {
             console.log('An error happened while inserting tweet data');
             callback(err, null);
-        } 
+        }
         else {
             console.log('Inserted: ' + insertedTweets + ' tweets, updated: ' + updatedTweets + ' tweets.');
             console.log('');
