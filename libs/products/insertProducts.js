@@ -182,8 +182,12 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
     async.waterfall([
         function list(next) {
+
+            console.log('wait...');
             
             sleep.sleep(1);
+
+            console.log("waited. bucket: " + S3_THUMBS)
 
             s3.listObjects({
                 Bucket: S3_THUMBS,
