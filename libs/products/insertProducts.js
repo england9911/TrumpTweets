@@ -8,6 +8,7 @@ var fs = require('fs-extra');
 var glob = require('glob');
 var moment = require('moment-timezone');
 var AWS = require('aws-sdk');
+var sleep = require('sleep');
 var pconfig = require('./../printful/printConf.js');
 var PrintfulClient = require('./../printful/printfulclient.js');
 var printful = new PrintfulClient(pconfig.printful_api_key);
@@ -181,7 +182,10 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
     async.waterfall([
         function list(next) {
-            var listing = s3.listObjects({
+            
+            sleep.sleep(1);
+
+            s3.listObjects({
                 Bucket: S3_THUMBS,
                 Delimiter: "/"
             }, function(err, data) {
