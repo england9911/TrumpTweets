@@ -180,8 +180,20 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
 
     async.waterfall([
-        function list(next) {
-            var listing = s3.listObjects({
+        function download(next) {
+
+            console.log('download');
+            // console.log(response);
+            // console.log();
+
+            // // Download the image from S3 into a buffer.
+            // s3.getObject({
+            //         Bucket: S3_THUMBS,
+            //         Key: srcKey
+            //     },
+            //     next);
+
+            s3.getObject({
                 Bucket: S3_THUMBS,
                 Prefix: tweetID.toString(),
                 Delimiter: "/"
@@ -195,24 +207,13 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 if(err) console.log(err);
                 next(data.Contents);
             });
-        },
-        function download(response, next) {
 
-            console.log('download');
-            console.log(response);
-            console.log();
-
-            // // Download the image from S3 into a buffer.
-            // s3.getObject({
-            //         Bucket: S3_THUMBS,
-            //         Key: srcKey
-            //     },
-            //     next);
         },
         function move(response, next) {
             console.log('move');
             console.log(response);
             console.log();
+            next();
         }        
         ], function (err) {
 
