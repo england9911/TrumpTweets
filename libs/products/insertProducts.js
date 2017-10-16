@@ -181,10 +181,13 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
     async.waterfall([
         function list(next) {
-            s3.listObjects({
+            var listing = s3.listObjects({
                 Bucket: S3_THUMBS,
                 Prefix: tweetID.toString()
-            }, next);
+            }, function(err, data) {
+                if(err) console.log(err);
+                next(data.Contents);
+            });
         },
         function download(response, next) {
 
