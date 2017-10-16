@@ -84,11 +84,11 @@ module.exports.insertProducts = function(tweets, callback) {
 
                             setS3ProductThumbs(tweetID, newId, function(err3) {
 
-                                updateMainImg(db, tweetID, newId, function(err4) {
+                                // updateMainImg(db, tweetID, newId, function(err4) {
 
-                                    if(err4) console.log(err4);
+                                    // if(err4) console.log(err4);
                                     cb();
-                                });
+                                // });
                             });
                         }
                     });
@@ -200,9 +200,15 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     console.log('NO IMAGES RETURNED!');
                 }
 
+                console.log();
 
+                var bucketContents = data.Contents;
+                var rootFiles = [];
+                for (var i = 0; i < bucketContents.length; i++){
+                    rootFiles.push(bucketContents[i].Key);
+                }
 
-                next(data.Contents);
+                next(rootFiles);
             });
         },
         function download(files, next) {
