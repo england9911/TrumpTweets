@@ -192,6 +192,9 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 console.log(data);
 
                 if(err) console.log(err);
+                else if (data.Contents.length === 0) {
+                    console.log('NO IMAGES RETURNED!');
+                }
 
 
 
