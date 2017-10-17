@@ -193,6 +193,10 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             // Also, thumbs bucket can be listed via the AWS CLI.
             // Also, it works when run from index.js directly, listing files that were uploaded to both buckets manually via website.
             // Also, when run here, we can see the manually uploaded files ^^, but NOT the generated files.
+            // TODO: Check that the callback out of posters.make() is not being called too early / not after ALL posters are generated.
+            // Extending sleep time doesn't seem to make a difference.
+            // what's different about objects uploaded via web, and from this process -  it can't be lambda as the generated
+            // thumb from the web upload is listed fine.
 
             s3.listObjects({
                 Bucket: S3_THUMBS,
