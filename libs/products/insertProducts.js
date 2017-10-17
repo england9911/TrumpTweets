@@ -187,14 +187,14 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             sleep.sleep(1);
 
-            console.log("waited. bucket: " + S3_BUCKET)
+            console.log("waited. bucket: " + S3_THUMBS)
 
 
 
-
+            // This WORKS when set to S3_BUCKET. Permissions are screwed somewhere.
 
             s3.listObjects({
-                Bucket: S3_BUCKET,
+                Bucket: S3_THUMBS,
                 Delimiter: "/"
             }, function(err, data) {
 
@@ -220,6 +220,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log('download');
             console.log(files);
             console.log();
+            next();
 
             // Only move files matching tweetID
 
@@ -235,6 +236,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log('move');
             console.log(response);
             console.log();
+            next();
         }
         ], function (err) {
 
