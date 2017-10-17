@@ -1,35 +1,35 @@
-// var tweets = require('./tweets/getTweets');
-// var posters = require('./posters/makePoster');
-// var products = require('./products/insertProducts');
+var tweets = require('./tweets/getTweets');
+var posters = require('./posters/makePoster');
+var products = require('./products/insertProducts');
 
 
-var AWS = require('aws-sdk');
-const S3_BUCKET = process.env.S3_BUCKET_NAME;
-const S3_THUMBS = process.env.S3_THUMBS;
-const s3 = new AWS.S3();
+// var AWS = require('aws-sdk');
+// const S3_BUCKET = process.env.S3_BUCKET_NAME;
+// const S3_THUMBS = process.env.S3_THUMBS;
+// const s3 = new AWS.S3();
 
-s3.listObjects({
-    Bucket: S3_THUMBS,
-    Delimiter: "/"
-}, function(err, data) {
+// s3.listObjects({
+//     Bucket: S3_THUMBS,
+//     Delimiter: "/"
+// }, function(err, data) {
 
 
-    if(err) console.log(err);
-    else if (data.Contents.length === 0) {
-        console.log('NO IMAGES RETURNED!');
-    }
+//     if(err) console.log(err);
+//     else if (data.Contents.length === 0) {
+//         console.log('NO IMAGES RETURNED!');
+//     }
 
-    console.log();
+//     console.log();
 
-    var bucketContents = data.Contents;
-    var rootFiles = [];
-    for (var i = 0; i < bucketContents.length; i++) {
-        rootFiles.push(bucketContents[i].Key);
-    }
+//     var bucketContents = data.Contents;
+//     var rootFiles = [];
+//     for (var i = 0; i < bucketContents.length; i++) {
+//         rootFiles.push(bucketContents[i].Key);
+//     }
 
-    console.log('root files:');
-    console.log(rootFiles);
-});
+//     console.log('root files:');
+//     console.log(rootFiles);
+// });
 
 
 // TODO: 	Upload generated posters to S3 bucket 'trumptweetposters'
@@ -103,22 +103,22 @@ s3.listObjects({
 // TODO: Make an 'official' twitter account. Make new API keys.
 
 
-// tweets.importTweets(function(success) {
+tweets.importTweets(function(success) {
 
-// 	tweets.loadTweets(function(errLoad, tweets) {
+	tweets.loadTweets(function(errLoad, tweets) {
 
-// 		posters.make(tweets, function(errMake) {
+		posters.make(tweets, function(errMake) {
 
-// 			products.insertProducts(tweets, function(errInsert) {
+			products.insertProducts(tweets, function(errInsert) {
 
-// 				if(success) {
-// 					console.log('INSERTED PRODUCTS.');
-// 	            } else {
-// 					console.log('Could not create products.');
-// 	            }
+				if(success) {
+					console.log('INSERTED PRODUCTS.');
+	            } else {
+					console.log('Could not create products.');
+	            }
 
-// 	            process.exit();
-//         	});
-// 		  });
-//     });
-// });
+	            process.exit();
+        	});
+		  });
+    });
+});

@@ -185,7 +185,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             console.log('wait...');
 
-            sleep.sleep(10);
+            sleep.sleep(30);
 
             console.log("waited. bucket: " + S3_THUMBS)
 
@@ -197,6 +197,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             // Extending sleep time doesn't seem to make a difference.
             // what's different about objects uploaded via web, and from this process -  it can't be lambda as the generated
             // thumb from the web upload is listed fine.
+
+            // The generated thumbs ARE listed when called from index.js separately, a couple of minutes AFTER they were generated.
 
             s3.listObjects({
                 Bucket: S3_THUMBS,
