@@ -178,84 +178,108 @@ function setS3ProductThumbs(tweetID, docID, cb) {
     // TODO: Set up a CNAME for posters.trumptweetposters.com and point it to s3 bucket
     // TODO: Set up a CNAME for media.trumptweetposters.com and point it to s3 thumb bucket
 
+    s3.listObjects({
+        Bucket: S3_THUMBS,
+        Delimiter: "/"
+    }, function(err, data) {
 
 
-    async.waterfall([
-        function list(next) {
-
-            console.log('wait...');
-
-            sleep.sleep(1);
-
-            console.log("waited. bucket: " + S3_THUMBS)
-
-
-
-            // This WORKS when set to S3_BUCKET. Permissions are screwed somewhere.
-            // Also, thumbs bucket can be listed via the AWS CLI.
-
-            s3.listObjects({
-                Bucket: S3_THUMBS,
-                Delimiter: "/"
-            }, function(err, data) {
-
-
-                if(err) console.log(err);
-                else if (data.Contents.length === 0) {
-                    console.log('NO IMAGES RETURNED!');
-                }
-
-                console.log();
-
-                var bucketContents = data.Contents;
-                var rootFiles = [];
-                for (var i = 0; i < bucketContents.length; i++) {
-                    rootFiles.push(bucketContents[i].Key);
-                }
-
-                next(rootFiles);
-            });
-        },
-        function download(files, next) {
-
-            console.log('download');
-            console.log(files);
-            console.log();
-            next();
-
-            // Only move files matching tweetID
-
-            // // Download the image from S3 into a buffer.
-            // s3.getObject({
-            //         Bucket: S3_THUMBS,
-            //         Key: srcKey
-            //     },
-            //     next);
-
-        },
-        function move(response, next) {
-            console.log('move');
-            console.log(response);
-            console.log();
-            next();
+        if(err) console.log(err);
+        else if (data.Contents.length === 0) {
+            console.log('NO IMAGES RETURNED!');
         }
-        ], function (err) {
 
-            console.log('Finished waterfall, calling back');
+        console.log();
 
-            if (err) {
-                console.log(err);
-            } else {
-                console.log('proper success mind');
-                // console.log(
-                //     'Successfully resized ' + tweetID + '/' + srcKey +
-                //     ' and uploaded to ' + dstBucket + '/' + dstKey
-                // );
-            }
-
-            cb();
+        var bucketContents = data.Contents;
+        var rootFiles = [];
+        for (var i = 0; i < bucketContents.length; i++) {
+            rootFiles.push(bucketContents[i].Key);
         }
-    );
+
+        console.log('root files:')
+        console.log(rootFiles);
+    });
+
+
+    // async.waterfall([
+    //     function list(next) {
+
+    //         console.log('wait...');
+
+    //         sleep.sleep(1);
+
+    //         console.log("waited. bucket: " + S3_THUMBS)
+
+
+
+    //         // This WORKS when set to S3_BUCKET. Permissions are screwed somewhere.
+    //         // Also, thumbs bucket can be listed via the AWS CLI.
+    //         // Also, it works when run from index.js directly, listing files that were uploaded to both buckets manually via website.
+    //         //
+
+    //         s3.listObjects({
+    //             Bucket: S3_THUMBS,
+    //             Delimiter: "/"
+    //         }, function(err, data) {
+
+
+    //             if(err) console.log(err);
+    //             else if (data.Contents.length === 0) {
+    //                 console.log('NO IMAGES RETURNED!');
+    //             }
+
+    //             console.log();
+
+    //             var bucketContents = data.Contents;
+    //             var rootFiles = [];
+    //             for (var i = 0; i < bucketContents.length; i++) {
+    //                 rootFiles.push(bucketContents[i].Key);
+    //             }
+
+    //             next(rootFiles);
+    //         });
+    //     },
+    //     function download(files, next) {
+
+    //         console.log('download');
+    //         console.log(files);
+    //         console.log();
+    //         next();
+
+    //         // Only move files matching tweetID
+
+    //         // // Download the image from S3 into a buffer.
+    //         // s3.getObject({
+    //         //         Bucket: S3_THUMBS,
+    //         //         Key: srcKey
+    //         //     },
+    //         //     next);
+
+    //     },
+    //     function move(response, next) {
+    //         console.log('move');
+    //         console.log(response);
+    //         console.log();
+    //         next();
+    //     }
+    //     ], function (err) {
+
+    //         console.log('Finished waterfall, calling back');
+
+    //         if (err) {
+    //             console.log(err);
+    //         } else {
+    //             console.log('proper success mind');
+    //             // console.log(
+    //             //     'Successfully resized ' + tweetID + '/' + srcKey +
+    //             //     ' and uploaded to ' + dstBucket + '/' + dstKey
+    //             // );
+    //         }
+
+    //         cb();
+    //     }
+    // );
 
 
 
