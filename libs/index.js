@@ -1,8 +1,35 @@
-var tweets = require('./tweets/getTweets');
-var posters = require('./posters/makePoster');
-var products = require('./products/insertProducts');
+// var tweets = require('./tweets/getTweets');
+// var posters = require('./posters/makePoster');
+// var products = require('./products/insertProducts');
 
 
+var AWS = require('aws-sdk');
+const S3_BUCKET = process.env.S3_BUCKET_NAME;
+const S3_THUMBS = process.env.S3_THUMBS;
+const s3 = new AWS.S3();
+
+s3.listObjects({
+    Bucket: S3_THUMBS,
+    Delimiter: "/"
+}, function(err, data) {
+
+
+    if(err) console.log(err);
+    else if (data.Contents.length === 0) {
+        console.log('NO IMAGES RETURNED!');
+    }
+
+    console.log();
+
+    var bucketContents = data.Contents;
+    var rootFiles = [];
+    for (var i = 0; i < bucketContents.length; i++) {
+        rootFiles.push(bucketContents[i].Key);
+    }
+
+    console.log('root files:')
+    console.log(rootFiles);
+});
 
 
 // TODO: 	Upload generated posters to S3 bucket 'trumptweetposters'
@@ -19,17 +46,17 @@ var products = require('./products/insertProducts');
 
 // TODO: Move libs confs to heroku vars.
 
-// TODO: 	Printful API - hook into expressCart order process and create Printful order when payment has 
+// TODO: 	Printful API - hook into expressCart order process and create Printful order when payment has
 //			been taken - e.g. from a PayPal callback with successful flag.
-// TODO: 	'Product' in Printful means the actual printful product e.g. poster. Variants mean 24 x 36 
+// TODO: 	'Product' in Printful means the actual printful product e.g. poster. Variants mean 24 x 36
 //			poster, for example.
-// TODO: 	Doesn't look like you need to create individual 'products' saved on Printful. Only orders. 
+// TODO: 	Doesn't look like you need to create individual 'products' saved on Printful. Only orders.
 //			https://www.printful.com/docs/orders
 
 
 /*
 
- Example request body for creating a new order, see: https://www.printful.com/docs/orders under 
+ Example request body for creating a new order, see: https://www.printful.com/docs/orders under
  'Create order with external ID, custom item names and retail price information.'
 
 {
@@ -76,22 +103,22 @@ var products = require('./products/insertProducts');
 // TODO: Make an 'official' twitter account. Make new API keys.
 
 
-tweets.importTweets(function(success) {
+// tweets.importTweets(function(success) {
 
-	tweets.loadTweets(function(errLoad, tweets) {
+// 	tweets.loadTweets(function(errLoad, tweets) {
 
-		posters.make(tweets, function(errMake) {
+// 		posters.make(tweets, function(errMake) {
 
-			products.insertProducts(tweets, function(errInsert) {
+// 			products.insertProducts(tweets, function(errInsert) {
 
-				if(success) {
-					console.log('INSERTED PRODUCTS.');
-	            } else {
-					console.log('Could not create products.');
-	            }
+// 				if(success) {
+// 					console.log('INSERTED PRODUCTS.');
+// 	            } else {
+// 					console.log('Could not create products.');
+// 	            }
 
-	            process.exit();
-        	});    
-		});                
-    });
-});
+// 	            process.exit();
+//         	});
+// 		});
+//     });
+// });
