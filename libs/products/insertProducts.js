@@ -185,20 +185,10 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             console.log('wait...');
 
+            // This seems to be the key. The generated thumbs aren't available for a good few seconds.
             sleep.sleep(30);
 
             console.log("waited. bucket: " + S3_THUMBS)
-
-            // This WORKS when set to S3_BUCKET. Permissions are screwed somewhere.
-            // Also, thumbs bucket can be listed via the AWS CLI.
-            // Also, it works when run from index.js directly, listing files that were uploaded to both buckets manually via website.
-            // Also, when run here, we can see the manually uploaded files ^^, but NOT the generated files.
-            // TODO: Check that the callback out of posters.make() is not being called too early / not after ALL posters are generated.
-            // Extending sleep time doesn't seem to make a difference.
-            // what's different about objects uploaded via web, and from this process -  it can't be lambda as the generated
-            // thumb from the web upload is listed fine.
-
-            // The generated thumbs ARE listed when called from index.js separately, a couple of minutes AFTER they were generated.
 
             s3.listObjects({
                 Bucket: S3_THUMBS,
