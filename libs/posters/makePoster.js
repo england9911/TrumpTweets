@@ -101,6 +101,7 @@ module.exports.make = function(tweets, callback) {
             }
             else {
                 // Lambda will run to resize images into thumbs.
+                console.log('posters.make is calling back...')
                 db.close();
                 callback();
             }
