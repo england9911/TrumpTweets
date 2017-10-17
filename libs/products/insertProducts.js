@@ -192,6 +192,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
 
             // This WORKS when set to S3_BUCKET. Permissions are screwed somewhere.
+            // Also, thumbs bucket can be listed via the AWS CLI.
 
             s3.listObjects({
                 Bucket: S3_THUMBS,
