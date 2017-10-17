@@ -196,7 +196,6 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             s3.listObjects({
                 Bucket: S3_THUMBS,
-                ACL: 'public-read',
                 Delimiter: "/"
             }, function(err, data) {
 
