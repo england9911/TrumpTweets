@@ -80,6 +80,7 @@ exports.handler = function(event, context, callback) {
                     Bucket: dstBucket,
                     Key: dstKey,
                     Body: data,
+                    ACL:'public-read',
                     ContentType: contentType
                 },
                 next);
