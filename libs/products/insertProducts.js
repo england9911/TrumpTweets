@@ -168,9 +168,9 @@ function updateMainImg(db, tweetID, docID, cb) {
 
 function setS3ProductThumbs(tweetID, docID, cb) {
 
-    // TODO: We have thumbs stored in the root of the bucket. Those need to be moved 
-    // TODO: into a folder named by the new docID. Then, we need to save that path into 
-    // TODO: the DB. Don't save the full URL *with* the s3 url. we just want to keep 
+    // TODO: We have thumbs stored in the root of the bucket. Those need to be moved
+    // TODO: into a folder named by the new docID. Then, we need to save that path into
+    // TODO: the DB. Don't save the full URL *with* the s3 url. we just want to keep
     // TODO: /docID/thumb.png
 
     // TODO: MOVE the THREE thumbs into that folder. SAVE just one filename to the DB.
@@ -184,7 +184,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
         function list(next) {
 
             console.log('wait...');
-            
+
             sleep.sleep(1);
 
             console.log("waited. bucket: " + S3_THUMBS)
@@ -194,10 +194,6 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 Delimiter: "/"
             }, function(err, data) {
 
-                console.log('err');
-                console.log(err);
-                console.log('data');
-                console.log(data);
 
                 if(err) console.log(err);
                 else if (data.Contents.length === 0) {
@@ -221,6 +217,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log(files);
             console.log();
 
+            // Only move files matching tweetID
+
             // // Download the image from S3 into a buffer.
             // s3.getObject({
             //         Bucket: S3_THUMBS,
@@ -235,7 +233,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log('move');
             console.log(response);
             console.log();
-        }        
+        }
         ], function (err) {
 
             console.log('Finished waterfall, calling back');
@@ -296,7 +294,7 @@ function getSavedThumbs(tweetID, docID, single, cb) {
 }
 
 
-// Each product has it's ID, which is used as part of image filenames. 
+// Each product has it's ID, which is used as part of image filenames.
 // Thumbs are stored in a separate s3 bucket.
 function getGeneratedThumbs(tweetID, docID, callback) {
 
