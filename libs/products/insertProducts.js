@@ -187,10 +187,14 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             sleep.sleep(1);
 
-            console.log("waited. bucket: " + S3_THUMBS)
+            console.log("waited. bucket: " + S3_BUCKET)
+
+
+
+
 
             s3.listObjects({
-                Bucket: S3_THUMBS,
+                Bucket: S3_BUCKET,
                 Delimiter: "/"
             }, function(err, data) {
 
@@ -204,7 +208,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 var bucketContents = data.Contents;
                 var rootFiles = [];
-                for (var i = 0; i < bucketContents.length; i++){
+                for (var i = 0; i < bucketContents.length; i++) {
                     rootFiles.push(bucketContents[i].Key);
                 }
 
@@ -226,8 +230,6 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             //     },
             //     next);
 
-
-
         },
         function move(response, next) {
             console.log('move');
@@ -239,7 +241,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log('Finished waterfall, calling back');
 
             if (err) {
-                console.error(err);
+                console.log(err);
             } else {
                 console.log('proper success mind');
                 // console.log(
