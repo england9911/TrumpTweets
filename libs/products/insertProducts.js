@@ -194,26 +194,30 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 Bucket: S3_THUMBS,
                 Delimiter: "/",
                 Prefix: "thumb-" + tweetID
-            }, next(err, data));
+            }, function(err, data) {
+
+                if(err) console.log(err);
+                else if (data.Contents.length === 0) {
+                    console.log('NO IMAGES RETURNED!');
+                }
+
+                console.log('list objects cb');
+
+                var bucketContents = data.Contents;
+                var rootFiles = [];
+                for (var i = 0; i < bucketContents.length; i++) {
+                    rootFiles.push(bucketContents[i].Key);
+                }
+
+                download(rootFiles);
+            });
         },
-        function download(data, next) {
+        function download(files, next) {
 
-            if(err) console.log(err);
-            else if (data.Contents.length === 0) {
-                console.log('NO IMAGES RETURNED!');
-            }
-
-            console.log('list objects cb');
-
-            var bucketContents = data.Contents;
-            var rootFiles = [];
-            for (var i = 0; i < bucketContents.length; i++) {
-                rootFiles.push(bucketContents[i].Key);
-            }
-
-            console.log('download files:');
-            console.log(rootFiles);
+            console.log('download');
+            console.log(files);
             console.log();
+            next();
 
             // Only move files matching tweetID
 
