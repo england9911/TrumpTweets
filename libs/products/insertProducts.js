@@ -179,6 +179,24 @@ function setS3ProductThumbs(tweetID, docID, cb) {
     // TODO: Set up a CNAME for media.trumptweetposters.com and point it to s3 thumb bucket
 
 
+    async.waterfall([
+        function (callback) {
+            console.log('First Step --> ');
+            callback(null, '1', '2');
+        },
+        function (arg1, arg2, callback) {
+            console.log('Second Step --> ' + arg1 + ' ' + arg2);
+            callback(null, '3');
+        },
+        function (arg1, callback) {
+            console.log('Third Step --> ' + arg1);
+            callback(null, 'final result');
+        }
+    ], function (err, result) {
+        console.log('Main Callback --> ' + result);
+    });
+
+
 
     async.waterfall([
         function list(next) {
@@ -209,7 +227,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     rootFiles.push(bucketContents[i].Key);
                 }
 
-                download(rootFiles);
+                download(null, rootFiles);
             });
         },
         function download(files, next) {
@@ -217,7 +235,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log('download');
             console.log(files);
             console.log();
-            next();
+            move(null, files);
 
             // Only move files matching tweetID
 
@@ -235,7 +253,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log();
             next();
         }
-        ], function (err) {
+        ], function (err, result) {
 
             console.log('Finished waterfall, calling back');
 
