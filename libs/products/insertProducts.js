@@ -249,7 +249,9 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     console.log(err);
                 }).pipe(file);
 
-                console.log('after getting object..')
+                console.log('after getting object:')
+
+                console.log(file);
 
                 console.log('going to put obj back..')
 
