@@ -222,8 +222,12 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             for (var i = 0; i < files.length; i++) {
 
-                const filebuffer = fs.createWriteStream(tweetID + '--' + i + '.png');
+                console.log('file: ' + files[i]);
+
+                var filebuffer = fs.createWriteStream(tweetID + '--' + i + '.png');
                 var filename = docID + '/' + files[i];
+
+                console.log('new path: ' + filename);
 
                 // Download the image from S3 into a buffer.
                 s3.getObject({
@@ -235,6 +239,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 // When the local file is created.
                 filebuffer.on('close', function() {
+
+                    console.log('buffer close');
 
                     // Upload back to s3 with new path.
                     s3.putObject({
