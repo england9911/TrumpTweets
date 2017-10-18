@@ -227,7 +227,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     rootFiles.push(bucketContents[i].Key);
                 }
 
-                download(null, rootFiles);
+                next(null, rootFiles);
             });
         },
         function download(files, next) {
@@ -235,7 +235,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log('download');
             console.log(files);
             console.log();
-            move(null, files);
+            next(null, files);
 
             // Only move files matching tweetID
 
