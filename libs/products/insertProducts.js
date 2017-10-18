@@ -225,64 +225,109 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 console.log('file: ' + files[i]);
 
-                var filebuffer = fs.createWriteStream(tweetID + '--' + i + '.png');
+                var filenameOrig = tweetID + '--' + i + '.png';
+                var file = fs.createWriteStream(filenameOrig);
                 var filename = docID + '/' + files[i];
 
                 console.log('new path: ' + filename);
 
-                // Download the image from S3 into a buffer.
+                filebuff.on('close', function() {
+
+                    console.log('created temp local file');
+                });
+
+                console.log('getting object...')
+
+
+                // Download the image from S3 into a temp local file.
                 s3.getObject({
                     Bucket: S3_THUMBS,
                     Key: files[i]
-                })
-                .createReadStream()
-                .pipe(filebuffer);
+                }).createReadStream().on('error', function(err){
+                    console.log(err);
+                }).pipe(file);
 
-                // When the local file is created.
-                filebuffer.on('close', function() {
+                console.log('after getting object..')
 
-                    console.log('buffer close');
+                console.log('going to put obj back..')
 
-                    // Upload back to s3 with new path.
-                    s3.putObject({
-                      Bucket: S3_THUMBS,
-                      ACL: 'public-read',
-                      Key: filename,
-                      Body: filebuffer,
-                      ContentType: 'image/png',
-                    }, (err) => {
-                      if (err) {
-                        console.log('error re-uploading to s3:')
-                        next(err);
-                      } else {
-                        console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
-
-                        // Delete the existing object.
-                        s3.deleteObject({Bucket:S3_THUMBS, Key: filename}, function(err, data) {
-                           if (err) next(err, err.stack); // an error occurred
-
-                           console.log('Deleted original: ' + filename);
-                           if(i == files.length) next(null);
-                         });
-                      }
-                    });
-                })
-                .on('error', function(err){
-                    console.log('there was an error reading ' + filename);
+                // Upload back to s3 with new path.
+                s3.putObject({
+                  Bucket: S3_THUMBS,
+                  ACL: 'public-read',
+                  Key: filename,
+                  Body: file,
+                  ContentType: 'image/png',
+                }, (err) => {
+                  if (err) {
+                    console.log('error re-uploading to s3:')
                     next(err);
+                  } else {
+                    console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+                    if(i == files.length) next(null, filenames);
+                  }
                 });
+
+
+
+                // // When the local file is created.
+                // filebuff.on('close', function() {
+
+                //     console.log('filebuff close');
+                //     const filebuffer = fs.createReadStream(filebuff);
+
+                //     // Upload back to s3 with new path.
+                //     s3.putObject({
+                //       Bucket: S3_THUMBS,
+                //       ACL: 'public-read',
+                //       Key: filename,
+                //       Body: filebuffer,
+                //       ContentType: 'image/png',
+                //     }, (err) => {
+                //       if (err) {
+                //         console.log('error re-uploading to s3:')
+                //         next(err);
+                //       } else {
+                //         console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+
+                        
+
+                //         if(i == files.length) next(null, filenames);
+                //       }
+                //     });
+                // })
+                // .on('error', function(err){
+                //     console.log('there was an error reading ' + filename);
+                //     next(err);
+                // });
 
 
             }
             
 
         },
-        function move(response, next) {
+        function delete(files, next) {
             console.log('-----');
-            console.log('move');
-            console.log(response);
+            console.log('delete');
+            console.log(files);
             console.log();
-            next();
+
+            for (var i = 0; i < files.length; i++) {
+
+                console.log('deleting original thumb: ' + files[i]);
+
+                // Delete the existing object.
+                s3.deleteObject({Bucket:S3_THUMBS, Key: filename}, function(err, data) {
+                   if (err) next(err); // an error occurred
+                   console.log('Deleted original: ' + filename);
+                   if(i == files.length) {
+                        console.log('Finished deleting.');
+                        next(null);
+                   }
+                });
+            }
+
+            next(null);
         }
         ], function (err, result) {
 
