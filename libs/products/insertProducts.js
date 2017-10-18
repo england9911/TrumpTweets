@@ -268,13 +268,10 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                       }
                     });
 
-                    
+
                 });
 
-                console.log('getting object...')
-
-
-                            };
+            };
         },
         function del(files, next) {
             console.log('-----');
