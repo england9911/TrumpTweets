@@ -268,6 +268,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     });
                 })
                 .on('error', function(err){
+                    console.log('there was an error reading ' + filename);
                     next(err);
                 });
 
