@@ -226,7 +226,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 console.log('file: ' + files[i]);
 
                 var filenameOrig = tweetID + '--' + i + '.png';
-                var file = fs.createWriteStream(filenameOrig);
+                var fullpath = path.join(__dirname, '/poster-imgs/' + filenameOrig);
+                var file = fs.createWriteStream(fullpath);
                 var filename = docID + '/' + files[i];
 
                 console.log('new path: ' + filename);
@@ -244,6 +245,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     Bucket: S3_THUMBS,
                     Key: files[i]
                 }).createReadStream().on('error', function(err){
+                    console.log('error reading:');
                     console.log(err);
                 }).pipe(file);
 
