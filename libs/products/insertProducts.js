@@ -192,16 +192,16 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             s3.listObjects({
                 Bucket: S3_THUMBS,
-                Delimiter: "/"
+                Delimiter: "/",
+                Prefix: "thumb-" + tweetID
             }, function(err, data) {
-
 
                 if(err) console.log(err);
                 else if (data.Contents.length === 0) {
                     console.log('NO IMAGES RETURNED!');
                 }
 
-                console.log();
+                console.log('list objects cb');
 
                 var bucketContents = data.Contents;
                 var rootFiles = [];
