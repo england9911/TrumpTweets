@@ -179,31 +179,15 @@ function setS3ProductThumbs(tweetID, docID, cb) {
     // TODO: Set up a CNAME for media.trumptweetposters.com and point it to s3 thumb bucket
 
 
-    async.waterfall([
-        function (callback) {
-            console.log('First Step --> ');
-            callback(null, '1', '2');
-        },
-        function (arg1, arg2, callback) {
-            console.log('Second Step --> ' + arg1 + ' ' + arg2);
-            callback(null, '3');
-        },
-        function (arg1, callback) {
-            console.log('Third Step --> ' + arg1);
-            callback(null, 'final result');
-        }
-    ], function (err, result) {
-        console.log('Main Callback --> ' + result);
-    });
 
-
-
+    // If any error is passed to a successive function, the waterfall goes 
+    // straight to it's top-level callback.
     async.waterfall([
         function list(next) {
 
             console.log('wait...');
 
-            // This seems to be the key. The generated thumbs aren't available for a good few seconds.
+            // The generated thumbs aren't available for a good few seconds.
             sleep.sleep(30);
 
             console.log("waited. bucket: " + S3_THUMBS)
@@ -214,20 +198,16 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 Prefix: "thumb-" + tweetID
             }, function(err, data) {
 
-                if(err) console.log(err);
+                if(err) next(err);
                 else if (data.Contents.length === 0) {
-                    console.log('NO IMAGES RETURNED!');
+                    next('NO IMAGES RETURNED!', null);
                 }
-
-                console.log('list objects cb');
 
                 var bucketContents = data.Contents;
                 var rootFiles = [];
                 for (var i = 0; i < bucketContents.length; i++) {
                     rootFiles.push(bucketContents[i].Key);
                 }
-
-                console.log(rootFiles);
 
                 next(null, rootFiles);
             });
@@ -240,14 +220,53 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log();
             next(null, files);
 
-            // Only move files matching tweetID
+            for (var i = 0; i < files.length; i++) {
 
-            // // Download the image from S3 into a buffer.
-            // s3.getObject({
-            //         Bucket: S3_THUMBS,
-            //         Key: srcKey
-            //     },
-            //     next);
+                const filebuffer = fs.createWriteStream(tweetID + '--' + i + '.png');
+                var filename = docID + '/' + files[i];
+
+                // Download the image from S3 into a buffer.
+                s3.getObject({
+                    Bucket: S3_THUMBS,
+                    Key: files[i]
+                })
+                .createReadStream()
+                .pipe(filebuffer);
+
+                // When the local file is created.
+                filebuffer.on('close', function() {
+
+                    // Upload back to s3 with new path.
+                    s3.putObject({
+                      Bucket: S3_THUMBS,
+                      ACL: 'public-read',
+                      Key: filename,
+                      Body: filebuffer,
+                      ContentType: 'image/png',
+                    }, (err) => {
+                      if (err) {
+                        console.log('error re-uploading to s3:')
+                        next(err);
+                      } else {
+                        console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+
+                        // Delete the existing object.
+                        s3.deleteObject({Bucket:S3_THUMBS, Key: filename}, function(err, data) {
+                           if (err) next(err, err.stack); // an error occurred
+
+                           console.log('Deleted original: ' + filename);
+                           if(i == files.length) next(null);
+                         });
+                      }
+                    });
+                })
+                .on('error', function(err){
+                    next(err);
+                });
+
+
+            }
+            
 
         },
         function move(response, next) {
