@@ -187,7 +187,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             console.log('wait...');
 
-            // The generated thumbs aren't available for a good few seconds.
+            // The generated thumbs aren't available for a good few seconds. Wait for 
+            // lambda to do it's thing.
             sleep.sleep(30);
 
             console.log("waited. bucket: " + S3_THUMBS)
@@ -218,7 +219,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log('download');
             console.log(files);
             console.log();
-            next(null, files);
+            // next(null, files);
 
             for (var i = 0; i < files.length; i++) {
 
