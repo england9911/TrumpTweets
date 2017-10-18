@@ -231,7 +231,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 console.log('new path: ' + filename);
 
-                filebuff.on('close', function() {
+                file.on('close', function() {
 
                     console.log('created temp local file');
                 });
