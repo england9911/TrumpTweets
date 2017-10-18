@@ -232,43 +232,54 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 console.log('new path: ' + filename);
 
-                file.on('open', function() {
+                file.on('close', function() {
 
-                    console.log('created temp local file');
+                    checkIfFile(filePath, function(err, isFile) {
 
-                    // Download the image from S3 into a temp local file.
-                    s3.getObject({
-                        Bucket: S3_THUMBS,
-                        Key: files[i]
-                    }).createReadStream().on('error', function(err){
-                        console.log('error reading:');
-                        console.log(err);
-                    }).pipe(file);
+                        if(isFile) {
 
-                    console.log('after getting object:')
+                            console.log('created temp local file');
 
-                    console.log(file);
+                            // Download the image from S3 into a temp local file.
+                            s3.getObject({
+                                Bucket: S3_THUMBS,
+                                Key: files[i]
+                            }).createReadStream().on('error', function(err){
+                                console.log('error reading:');
+                                console.log(err);
+                            }).pipe(file);
 
-                    console.log('going to put obj back..')
+                            console.log('after getting object:')
 
-                    // Upload back to s3 with new path.
-                    s3.putObject({
-                      Bucket: S3_THUMBS,
-                      ACL: 'public-read',
-                      Key: filename,
-                      Body: file,
-                      ContentType: 'image/png',
-                    }, (err) => {
-                      if (err) {
-                        console.log('error re-uploading to s3:')
-                        next(err);
-                      } else {
-                        console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
-                        if(i == files.length) next(null, filenames);
-                      }
+                            console.log(file);
+
+                            console.log('going to put obj back..')
+
+                            // Upload back to s3 with new path.
+                            s3.putObject({
+                              Bucket: S3_THUMBS,
+                              ACL: 'public-read',
+                              Key: filename,
+                              Body: file,
+                              ContentType: 'image/png',
+                            }, (err) => {
+                              if (err) {
+                                console.log('error re-uploading to s3:')
+                                next(err);
+                              } else {
+                                console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+                                if(i == files.length) next(null, filenames);
+                              }
+                            });
+
+                        }
+                        else {
+
+                            console.log('File does not exist: ' + filePath);
+                        }
+
+
                     });
-
-
                 });
 
             };
@@ -433,6 +444,20 @@ function moveThumbs(thumbs, cb) {
         }
     });
 }
+
+function checkIfFile(file, cb) {
+  fs.stat(file, function fsStat(err, stats) {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        return cb(null, false);
+      } else {
+        return cb(err);
+      }
+    }
+    return cb(null, stats.isFile());
+  });
+}
+
 
 function thumbReady(path, cb) {
 
