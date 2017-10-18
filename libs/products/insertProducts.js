@@ -267,46 +267,9 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     if(i == files.length) next(null, filenames);
                   }
                 });
-
-
-
-                // // When the local file is created.
-                // filebuff.on('close', function() {
-
-                //     console.log('filebuff close');
-                //     const filebuffer = fs.createReadStream(filebuff);
-
-                //     // Upload back to s3 with new path.
-                //     s3.putObject({
-                //       Bucket: S3_THUMBS,
-                //       ACL: 'public-read',
-                //       Key: filename,
-                //       Body: filebuffer,
-                //       ContentType: 'image/png',
-                //     }, (err) => {
-                //       if (err) {
-                //         console.log('error re-uploading to s3:')
-                //         next(err);
-                //       } else {
-                //         console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
-
-                        
-
-                //         if(i == files.length) next(null, filenames);
-                //       }
-                //     });
-                // })
-                // .on('error', function(err){
-                //     console.log('there was an error reading ' + filename);
-                //     next(err);
-                // });
-
-
-            }
-            
-
+            };
         },
-        function delete(files, next) {
+        function del(files, next) {
             console.log('-----');
             console.log('delete');
             console.log(files);
