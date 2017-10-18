@@ -227,11 +227,14 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     rootFiles.push(bucketContents[i].Key);
                 }
 
+                console.log(rootFiles);
+
                 next(null, rootFiles);
             });
         },
         function download(files, next) {
 
+            console.log('-----');
             console.log('download');
             console.log(files);
             console.log();
@@ -248,6 +251,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
         },
         function move(response, next) {
+            console.log('-----');
             console.log('move');
             console.log(response);
             console.log();
