@@ -221,70 +221,100 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log();
             // next(null, files);
 
-            for (var i = 0; i < files.length; i++) {
+            async.eachSeries(files, function(file, callback) {
 
-                console.log('file: ' + files[i]);
+                console.log(file);
+                callback();
 
-                var filenameOrig = tweetID + '--' + i + '.png';
-                var fullpath = path.join(__dirname, '/poster-imgs/' + filenameOrig);
-                var file = fs.createWriteStream(fullpath);
-                var filename = docID + '/' + files[i];
+            }, function(err) {
 
-                console.log('new path: ' + filename);
-
-                file.on('close', function() {
-
-                    console.log('file close');
-
-                    checkIfFile(filePath, function(err, isFile) {
-
-                        console.log('is file: ' + isFile);
-
-                        if(isFile) {
-
-                            console.log('created temp local file: ' + filePath);
-
-                            // Download the image from S3 into a temp local file.
-                            s3.getObject({
-                                Bucket: S3_THUMBS,
-                                Key: files[i]
-                            }).createReadStream().on('error', function(err){
-                                console.log('error reading:');
-                                console.log(err);
-                            }).pipe(file);
-
-                            console.log('after getting object:')
-
-                            console.log(file);
-
-                            // Upload back to s3 with new path.
-                            s3.putObject({
-                              Bucket: S3_THUMBS,
-                              ACL: 'public-read',
-                              Key: filename,
-                              Body: file,
-                              ContentType: 'image/png',
-                            }, (err) => {
-                              if (err) {
-                                console.log('error re-uploading to s3:')
-                                next(err);
-                              } else {
-                                console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
-                                if(i == files.length) next(null, filenames);
-                              }
-                            });
-
-                        }
-                        else {
-
-                            console.log('File does not exist: ' + filePath);
-                        }
+                console.log('ended.');
+            });
 
 
-                    });
-                });
+            // async.eachSeries(Object.keys(config), function (key, next){ 
+            //   search(config[key].query, function(err, result) { // <----- I added an err here
+            //     if (err) return next(err)  // <---- don't keep going if there was an error
 
-            };
+            //     var json = JSON.stringify({
+            //       "result": result
+            //     });
+            //     results[key] = {
+            //       "result": result
+            //     }
+            //     next()    /* <---- critical piece.  This is how the forEach knows to continue to
+            //                        the next loop.  Must be called inside search's callback so that
+            //                        it doesn't loop prematurely.*/
+            //   })
+            // }, function(err) {
+            //   console.log('iterating done');
+            // }); 
+
+
+            // for (var i = 0; i < files.length; i++) {
+
+            //     console.log('file: ' + files[i]);
+
+            //     var filenameOrig = tweetID + '--' + i + '.png';
+            //     var fullpath = path.join(__dirname, '/poster-imgs/' + filenameOrig);
+            //     var file = fs.createWriteStream(fullpath);
+            //     var filename = docID + '/' + files[i];
+
+            //     console.log('new path: ' + filename);
+
+            //     file.on('close', function() {
+
+            //         console.log('file close');
+
+            //         checkIfFile(filePath, function(err, isFile) {
+
+            //             console.log('is file: ' + isFile);
+
+            //             if(isFile) {
+
+            //                 console.log('created temp local file: ' + filePath);
+
+            //                 // Download the image from S3 into a temp local file.
+            //                 s3.getObject({
+            //                     Bucket: S3_THUMBS,
+            //                     Key: files[i]
+            //                 }).createReadStream().on('error', function(err){
+            //                     console.log('error reading:');
+            //                     console.log(err);
+            //                 }).pipe(file);
+
+            //                 console.log('after getting object:')
+
+            //                 console.log(file);
+
+            //                 // Upload back to s3 with new path.
+            //                 s3.putObject({
+            //                   Bucket: S3_THUMBS,
+            //                   ACL: 'public-read',
+            //                   Key: filename,
+            //                   Body: file,
+            //                   ContentType: 'image/png',
+            //                 }, (err) => {
+            //                   if (err) {
+            //                     console.log('error re-uploading to s3:')
+            //                     next(err);
+            //                   } else {
+            //                     console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+            //                     if(i == files.length) next(null, filenames);
+            //                   }
+            //                 });
+
+            //             }
+            //             else {
+
+            //                 console.log('File does not exist: ' + filePath);
+            //             }
+
+
+            //         });
+            //     });
+
+            // };
         },
         function del(files, next) {
             console.log('-----');
