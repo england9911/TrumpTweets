@@ -247,7 +247,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                             s3.putObject({
                               Bucket: S3_THUMBS,
                               ACL: 'public-read',
-                              Key: filename.toString(),
+                              Key: filename,
                               Body: file,
                               ContentType: 'image/png'
                             }, (err) => {
