@@ -234,11 +234,15 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 file.on('close', function() {
 
+                    console.log('file close');
+
                     checkIfFile(filePath, function(err, isFile) {
+
+                        console.log('is file: ' + isFile);
 
                         if(isFile) {
 
-                            console.log('created temp local file');
+                            console.log('created temp local file: ' + filePath);
 
                             // Download the image from S3 into a temp local file.
                             s3.getObject({
@@ -252,8 +256,6 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                             console.log('after getting object:')
 
                             console.log(file);
-
-                            console.log('going to put obj back..')
 
                             // Upload back to s3 with new path.
                             s3.putObject({
