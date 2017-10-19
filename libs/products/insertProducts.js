@@ -228,7 +228,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 console.log(thumb);
 
                 var filenameOrig = tweetID + '--' + i + '.png';
-                var fullpath = path.join(__dirname, '/poster-imgs/' + filenameOrig);
+                var fullpath = path.join(__dirname, '../posters/poster-imgs/' + filenameOrig);
                 var file = fs.createWriteStream(fullpath);
                 var filename = docID + '/' + thumb;
 
