@@ -233,43 +233,39 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 var filename = docID + '/' + thumb;
 
 
-                file.on('close', function() {
+                file.on('open', function() {
 
+                    console.log('open file')
 
-                    // Download the image from S3 into a temp local file.
-                    s3.getObject({
-                        Bucket: S3_THUMBS,
-                        Key: files[i]
-                    }).createReadStream().on('error', function(err){
-                        console.log('error reading:');
-                        console.log(err);
-                    }).pipe(file);
+                    const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: file}).createReadStream();
 
-                    console.log('after getting object:')
-
-                    console.log(file);
-
-                    // Upload back to s3 with new path.
-                    s3.putObject({
-                      Bucket: S3_THUMBS,
-                      ACL: 'public-read',
-                      Key: filename,
-                      Body: file,
-                      ContentType: 'image/png',
-                    }, (err) => {
-                      if (err) {
-                        console.log('error re-uploading to s3:')
-                        next(err);
-                      } else {
-                        console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
-                        i++;
-                        callback();
-                      }
+                    s3Stream.on('open', function(){
+                      s3Stream.pipe(file);
                     });
 
 
+                    console.log('after getting object:')
+                    console.log(file);
+                    callback();
 
-                    
+                    // // Upload back to s3 with new path.
+                    // s3.putObject({
+                    //   Bucket: S3_THUMBS,
+                    //   ACL: 'public-read',
+                    //   Key: filename,
+                    //   Body: file,
+                    //   ContentType: 'image/png'
+                    // }, (err) => {
+                    //   if (err) {
+                    //     console.log('error re-uploading to s3:')
+                    //     next(err);
+                    //   } else {
+                    //     console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+                    //     i++;
+                    //     callback();
+                    //   }
+                    // });
+
 
                 });
 
