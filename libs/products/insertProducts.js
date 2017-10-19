@@ -240,13 +240,12 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: file}).createReadStream();
 
                     s3Stream.on('open', function(){
-                      s3Stream.pipe(file);
+                        console.log('open s3 stream')
+                        s3Stream.pipe(file).on('close', callback());
                     });
 
 
-                    console.log('after getting object:')
-                    console.log(file);
-                    callback();
+
 
                     // // Upload back to s3 with new path.
                     // s3.putObject({
