@@ -221,14 +221,61 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log();
             // next(null, files);
 
-            async.eachSeries(files, function(file, callback) {
+            async.eachSeries(files, function(thumb, callback) {
 
-                console.log(file);
-                callback();
+                console.log(thumb);
 
+                var filenameOrig = tweetID + '--' + i + '.png';
+                var fullpath = path.join(__dirname, '/poster-imgs/' + filenameOrig);
+                var file = fs.createWriteStream(fullpath);
+                var filename = docID + '/' + thumb;
+
+
+                file.on('close', function() {
+
+
+                    // Download the image from S3 into a temp local file.
+                    s3.getObject({
+                        Bucket: S3_THUMBS,
+                        Key: files[i]
+                    }).createReadStream().on('error', function(err){
+                        console.log('error reading:');
+                        console.log(err);
+                    }).pipe(file);
+
+                    console.log('after getting object:')
+
+                    console.log(file);
+
+                    // Upload back to s3 with new path.
+                    s3.putObject({
+                      Bucket: S3_THUMBS,
+                      ACL: 'public-read',
+                      Key: filename,
+                      Body: file,
+                      ContentType: 'image/png',
+                    }, (err) => {
+                      if (err) {
+                        console.log('error re-uploading to s3:')
+                        next(err);
+                      } else {
+                        console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+                        callback();
+                      }
+                    });
+
+
+
+                    
+
+                });
+
+
+                
             }, function(err) {
 
                 console.log('ended.');
+                next(null, filenames);
             });
 
 
