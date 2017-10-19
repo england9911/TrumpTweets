@@ -221,6 +221,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log();
             // next(null, files);
 
+            var i = 0;
+
             async.eachSeries(files, function(thumb, callback) {
 
                 console.log(thumb);
@@ -260,6 +262,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                         next(err);
                       } else {
                         console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+                        i++;
                         callback();
                       }
                     });
@@ -271,9 +274,11 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 });
 
 
+
                 
             }, function(err) {
 
+                if(err) console.log(err);
                 console.log('ended.');
                 next(null, filenames);
             });
