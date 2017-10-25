@@ -253,14 +253,17 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                               Body: file,
                               ContentType: 'image/png'
                             }, (err) => {
-                              if (err) {
-                                console.log('error re-uploading to s3:')
-                                next(err);
-                              } else {
-                                console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
-                                i++;
-                                callback();
-                              }
+                                if (err) {
+                                    console.log('error re-uploading to s3:')
+                                    return callback(err);
+                                } else {
+                                    console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+                                    if(i == files.length) {
+                                        next(null, filenames);
+                                        i++;
+                                    }
+                                    else callback();
+                                }
                             });
                         });
                     });
@@ -268,8 +271,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             }, function(err) {
 
-                if(err) console.log(err);
                 console.log('ended.');
+                if(err) console.log(err);
                 next(null, filenames);
             });
 
