@@ -237,7 +237,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                     console.log('open file')
 
-                    const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: thumb}).createReadStream();
+                    const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: files[i]}).createReadStream();
 
                     s3Stream.on('open', function(){
                         console.log('open s3 stream')
