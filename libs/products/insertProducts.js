@@ -235,12 +235,14 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 file.on('open', function() {
 
-                    console.log('open file')
+                    console.log('open local file: ' + fullpath);
 
                     const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: files[i]}).createReadStream();
 
-                    s3Stream.on('open', function(){
+                    s3Stream.on('end', function() {
+
                         console.log('open s3 stream')
+
                         s3Stream.pipe(file).on('close', function() {
 
                             // Upload back to s3 with new path.
@@ -262,14 +264,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                             });
                         });
                     });
-
-
-
                 });
 
-
-
-                
             }, function(err) {
 
                 if(err) console.log(err);
