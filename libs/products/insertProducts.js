@@ -237,9 +237,12 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                     console.log('open local file: ' + fullpath);
 
-                    const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: files[i]}).createReadStream();
-
-                    s3Stream.on('end', function() {
+                    var s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: files[i]}).createReadStream()
+                    .on('error', function(err) {
+                      console.log('READSTREAM error');
+                      console.log(err);
+                    })
+                    .on('end', function() {
 
                         console.log('open s3 stream')
 
