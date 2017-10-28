@@ -227,7 +227,6 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             async.eachSeries(files, function(thumb, callback) {
 
-                watch(thumb);
                 debugger;
 
                 var filenameOrig = tweetID + '--' + i + '.png';
