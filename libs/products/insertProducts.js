@@ -221,11 +221,14 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             console.log();
             // next(null, files);
 
+            debugger;
+
             var i = 0;
 
             async.eachSeries(files, function(thumb, callback) {
 
-                console.log(thumb);
+                watch(thumb);
+                debugger;
 
                 var filenameOrig = tweetID + '--' + i + '.png';
                 var fullpath = path.join(__dirname, '../posters/poster-imgs/' + filenameOrig);
@@ -236,6 +239,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 file.on('open', function() {
 
                     console.log('open local file: ' + fullpath);
+                    debugger;
 
                     var s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: files[i]}).createReadStream()
                     .on('error', function(err) {
@@ -245,8 +249,11 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     .on('end', function() {
 
                         console.log('open s3 stream')
+                        debugger;
 
                         s3Stream.pipe(file).on('close', function() {
+
+                            debugger;
 
                             // Upload back to s3 with new path.
                             s3.putObject({
@@ -256,11 +263,14 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                               Body: file,
                               ContentType: 'image/png'
                             }, (err) => {
+
+                                debugger;
                                 if (err) {
                                     console.log('error re-uploading to s3:')
                                     return callback(err);
                                 } else {
                                     console.log('Re-uploaded: ' + filename + ' to s3 successfully.')
+                                    debugger;
                                     if(i == files.length) {
                                         next(null, filenames);
                                         i++;
@@ -273,6 +283,8 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                 });
 
             }, function(err) {
+
+                debugger;
 
                 console.log('ended.');
                 if(err) console.log(err);
