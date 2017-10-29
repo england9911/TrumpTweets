@@ -1,2 +1,2 @@
-web: node --inspect app.js
+web: node app.js
 worker: node libs/index.js
