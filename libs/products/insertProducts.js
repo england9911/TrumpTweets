@@ -80,7 +80,7 @@ module.exports.insertProducts = function(tweets, callback) {
 
                             setS3ProductThumbs(tweetID, newId, function(err3, newThumb) {
 
-                                updateMainImg(db, newThumb, function(err4) {
+                                updateMainImg(db, newThumb, tweetID, function(err4) {
 
                                     if(err4) console.log(err4);
                                     cb();
@@ -132,7 +132,7 @@ module.exports.insertProducts = function(tweets, callback) {
     });
 }
 
-function updateMainImg(db, newThumb, cb) {
+function updateMainImg(db, newThumb, tweetID, cb) {
 
     // TODO: Save *just* the filename? we can then use env vars to change the path.
     // TODO: Set up a CNAME for posters.trumptweetposters.com and point it to s3 bucket
@@ -140,26 +140,19 @@ function updateMainImg(db, newThumb, cb) {
 
     var productsCol = db.collection('products');
 
-    getSavedThumbs(tweetID, docID, true, function(mainImg, err) {
-
-        if(err) return cb('Unable to get a product image for: ' + tweetID);
-
-        var mainImgCut = mainImg.path.split('/public').pop();
-
-        productsCol.updateOne(
-            { "productPermalink":tweetID },
-            { $set: { "productImage":mainImgCut } },
-            function(err,res) {
-                if(err) {
-                    return cb('Unable to set: ' + mainImgCut + ' as main image. Please try again.');
-                }
-                else {
-                    console.log('Set main product image: ' + mainImgCut);
-                    return cb();
-                }
+    productsCol.updateOne(
+        { "productPermalink":tweetID },
+        { $set: { "productImage":newThumb } },
+        function(err,res) {
+            if(err) {
+                return cb('Unable to set: ' + newThumb + ' as main image. Please try again.');
             }
-        );
-    });
+            else {
+                console.log('Set main product image: ' + newThumb);
+                return cb(null);
+            }
+        }
+    ); 
 }
 
 
@@ -212,80 +205,20 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             var i = 0;
             var newThumbs = [];
 
-            // async.map PUT HERE.
-            // Square each number in the array [1, 2, 3, 4]
-            async.map(files, square, function (err, results) {
-              // Square has been called on each of the numbers
-              // so we're now done!
-              console.log("Finished!");
-              console.log(results);
-            });
-
-            async.eachSeries(files, function(thumb, callback2) {
-
-                var filenameOrig = tweetID + '--' + i + '.png';
-                var fullpath = path.join(__dirname, '../posters/poster-imgs/' + filenameOrig);
-                var filename = docID + '/' + thumb;
-                newThumbs.push(filename);
-
-                console.log('----');
-                console.log(newThumbs);
-                console.log('----');
-
-                const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: files[i]}).createReadStream();
-                const fileStream = fs.createWriteStream(fullpath);
-                s3Stream.on('error', function() {
-
-                });
-                fileStream.on('error', function() {
-
-                });
-                // This is what gets called when the object has been written locally with pipe().
-                fileStream.on('close', () => {
-                    // console.log('Created local file: ' + filename + ' successfully.');
-                });
-
-                s3Stream.pipe(fileStream).on('close', function() {
-
-                    const fileBuffer = fs.createReadStream(fullpath);
-
-                    // Upload back to s3 with new path.
-                    s3.putObject({
-                      Bucket: S3_THUMBS,
-                      ACL: 'public-read',
-                      Key: filename,
-                      Body: fileBuffer,
-                      ContentType: 'image/png'
-                    }, 
-                    function(err2, data) {
-                        if(err2) console.log(err2);
-                        console.log('Re-uploaded file: ' + filename + ' to s3 successfully.');
-                        newThumbs.push(fullUrl);
-
-                        if(i != files.length) {
-                            var fullUrl = 'https://' + S3_THUMBS + '.s3.amazonaws.com/' + filename;
-                            i++;
-                        }
-                        
-                        debugger;
-                        callback2(null, newThumbs);
-                    });
-                });
-
+            // Pass each file to the renameThumb function. Return full array of new 
+            // filenames with docID in the path.
+            async.mapSeries(files, function(item, callback) {
+                console.log('map....')
+                renameThumb(tweetID, docID, item, callback);
             }, function(err, newThumbs) {
-
-                console.log('Finished renaming thumbs. newThumbs: ');
-                console.log(newThumbs);
-                debugger;
-
-                if(err) console.log(err);
-                next(files, newThumbs);
+                console.log('map next.')
+                next(null, files, newThumbs);
             });
-
         },
         function del(files, newThumbs, next) {
 
             console.log(files);
+            console.log(newThumbs);
             console.log('deleting original thumbs..');
             console.log();
 
@@ -293,15 +226,13 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             async.eachSeries(files, function(thumb, callback3) {
 
-                debugger;
-
                 // Delete the existing object.
                 s3.deleteObject({Bucket:S3_THUMBS, Key: thumb}, function(err, data) {
                     if (err) next(err); 
 
                     if(i == files.length) {
-                        var rand = randomIntFromInterval(1, files.length);
-                        newThumb = files[rand];
+                        var rand = randomIntFromInterval(1, newThumbs.length);
+                        newThumb = newThumbs[rand];
                         console.log('Choose random thumb for database: ' + newThumb);
                         next(null, newThumb);
                     }
@@ -324,9 +255,54 @@ function setS3ProductThumbs(tweetID, docID, cb) {
     );
 }
 
-function renameThumb(origThumb, docID, cb) {
+// Take the tweet thumb, and add the product docID to it's path 
+// for future reference in the app.
+function renameThumb(tweetID, docID, item, cb) {
 
+    console.log('-----');
     
+    var ts = Math.round((new Date()).getTime() / 1000);
+    var filenameLoc = tweetID + '--' + ts + '.png';
+    var fullpath = path.join(__dirname, '../posters/poster-imgs/' + filenameLoc);
+    var filename = docID + '/' + item;
+
+    console.log(filename);
+    
+
+    const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: item}).createReadStream();
+    const fileStream = fs.createWriteStream(fullpath);
+    s3Stream.on('error', function() {
+
+    });
+    fileStream.on('error', function() {
+
+    });
+    // This is what gets called when the object has been written 
+    // locally with pipe().
+    fileStream.on('close', () => {
+        // console.log('Created local file: ' + filename + ' successfully.');
+    });
+
+    s3Stream.pipe(fileStream).on('close', function() {
+
+        const fileBuffer = fs.createReadStream(fullpath);
+
+        // Upload back to s3 with new path.
+        s3.putObject({
+          Bucket: S3_THUMBS,
+          ACL: 'public-read',
+          Key: filename,
+          Body: fileBuffer,
+          ContentType: 'image/png'
+        }, function(err2, data) {
+            if(err2) console.log(err2);
+            console.log('Re-uploaded file: ' + filename + ' to s3 successfully.');
+            var fullUrl = 'https://' + S3_THUMBS + '.s3.amazonaws.com/' + filename;
+            console.log(fullUrl);
+            debugger;
+            cb(null, fullUrl);
+        });
+    });
 }
 
 function randomIntFromInterval(min, max) {
