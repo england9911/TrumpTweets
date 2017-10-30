@@ -1,4 +1,4 @@
-require('dotenv').config()
+// require('dotenv').config()
 
 var sharp = require('sharp')
 var fs = require('fs')

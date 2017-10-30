@@ -1,5 +1,5 @@
 // expressCart stuff.
-require('dotenv').config()
+// require('dotenv').config()
 
 var mongodb = require('mongodb');
 var async = require('async');
