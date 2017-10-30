@@ -68,4 +68,6 @@ typings/
 
 *.DS_Store
 
-.env
+*.png
+*.jpg
+*.jpeg
