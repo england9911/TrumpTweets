@@ -48,7 +48,7 @@ module.exports.insertProducts = function(tweets, callback) {
             var doc = {
                 productPermalink: tweetID,
                 productTitle: tweet.text,
-                productPrice: "30",
+                productPrice: "34.99",
                 productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + ".</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed.</p>",
                 productPublished: "true",
                 productTags: "donald trump, twitter, tweet, trump twitter, " + monthYear,
