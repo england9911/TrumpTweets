@@ -24,6 +24,8 @@ var backupConfig = {
 }
 
 
+console.log(backupConfig);
+
 
 //  For one time backup
 MBackup(backupConfig).then(resolved => {
