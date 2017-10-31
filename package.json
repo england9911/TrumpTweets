@@ -50,6 +50,7 @@
     "opentype.js": "^0.7.3",
     "paypal-rest-sdk": "^1.6.9",
     "rimraf": "^2.5.2",
+    "s3-mongo-backup": "^2.0.2",
     "serve-favicon": "^2.2.1",
     "sharp": "^0.18.4",
     "sitemap": "^1.6.0",
