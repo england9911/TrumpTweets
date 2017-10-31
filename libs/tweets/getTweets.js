@@ -11,12 +11,19 @@ var config = common.getConfig();
 
 var Twit = require('twit');
 var assert = require('assert');
-var tconfig = require('./twitConf.js');
+
+var tconfig = {
+    consumer_key:         process.env.TWITTER_API_KEY,
+    consumer_secret:      process.env.TWITTER_API_SECRET,
+    access_token:         process.env.TWITTER_ACCESS_TOKEN,
+    access_token_secret:  process.env.TWITTER_TOKEN_SECRET,
+    timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+}
 
 var T = new Twit(tconfig);
 
-var tweetOptions = { screen_name: 'realDonaldTrump',
-                     count: 1,
+var tweetOptions = { screen_name: process.env.TWITTER_TARGET,
+                     count: process.env.TWITTER_TWEET_COUNT,
                      tweet_mode: 'extended' };
 
 // Check for DB config
