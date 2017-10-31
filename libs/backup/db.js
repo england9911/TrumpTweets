@@ -1,3 +1,4 @@
+var common = require('../../routes/common');
 var config = common.getConfig();
 
 // Check for DB config
