@@ -24,13 +24,9 @@ var backupConfig = {
 
 
 
-MBackup(backupConfig)
-  .then(
-    onResolve => {
-    // When everything was successful
-      console.log(onResolve);
-}
-    onReject => {
-    // When Anything goes wrong!
-      console.log(onReject);
+//  For one time backup
+MBackup(backupConfig).then(resolved => {
+    console.log(resolved);
+}, rejected => {
+    console.error(rejected);
 });
