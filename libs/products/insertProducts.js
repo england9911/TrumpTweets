@@ -231,7 +231,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
                     if (err) next(err); 
 
                     if(i == files.length) {
-                        var rand = randomIntFromInterval(1, newThumbs.length);
+                        var rand = randomIntFromInterval(0, newThumbs.length);
                         newThumb = newThumbs[rand];
                         console.log('Choose random thumb for database: ' + newThumb);
                         next(null, newThumb);
