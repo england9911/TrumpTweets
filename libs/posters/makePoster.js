@@ -6,6 +6,7 @@ var path = require('path')
 var mongodb = require('mongodb')
 var async = require('async')
 var OpenType = require('opentype.js')
+var emoji = require('apple-color-emoji');
 var Canvas = require('canvas')
 var Image = Canvas.Image
 var CanvasTextWrapper = require('canvas-text-wrapper').CanvasTextWrapper
@@ -132,6 +133,27 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
 
             ctx.fillStyle = bgCol
             ctx.fillRect(0, 0, cWidth, cHeight)
+
+            emoji.imageDir = path.join(__dirname,'../../node_modules/apple-color-emoji/images') // the directory where the images are located (on the server)
+            emoji.basePath = path.join(__dirname,'../../node_modules/apple-color-emoji/images')// the base path or URL where images are located
+
+            // console.log(emoji);
+
+            console.log('text:')
+            console.log(textStr);
+
+            // replace an emoji in a string with an <img>
+            // (only if there is no native support in the browser)
+            emoji.replace(textStr) //=> 'this is an <img class="emoji" src="/path/to/d83c-df4e.png" alt="🍎">'
+
+            console.log('text replaced:')
+            console.log(textStr);
+
+            // if you don't like <img> tags, you can use the regex directly
+            // myString.replace(emoji.regex, function(char) {
+            //   return '<span style="background-image: url(' + emoji.getImage(char) + ')"></span>';
+            // });
+
 
             // Main tweet text.
             ctx = canvas.getContext('2d')
