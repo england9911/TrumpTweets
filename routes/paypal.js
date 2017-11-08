@@ -66,7 +66,7 @@ router.get('/checkout_return', function (req, res, next){
             // folders, so there is only the tweet id to search by. If we know the colour 
             // and tweet ID then we can easily find the file.
             /*
-
+            REQUEST BODY:
             {
                 "external_id": "9887112",
                 "recipient": {
@@ -96,6 +96,130 @@ router.get('/checkout_return', function (req, res, next){
                 }],
                 "retail_costs": {
                     "shipping": "24.50"
+                }
+            }
+
+            RESPONSE (success = 200)
+
+            {
+                "code": 200,
+                "result": {
+                    "id": 4895688,
+                    "external_id": "9887112",
+                    "status": "pending",
+                    "shipping": "STANDARD",
+                    "created": 1510131010,
+                    "updated": 1510131010,
+                    "recipient": {
+                        "name": "John Doe",
+                        "company": null,
+                        "address1": "19749 Dearborn St",
+                        "address2": null,
+                        "city": "Chatsworth",
+                        "state_code": "CA",
+                        "state_name": "California",
+                        "country_code": "US",
+                        "country_name": "United States",
+                        "zip": "91311",
+                        "phone": null,
+                        "email": null
+                    },
+                    "items": [
+                        {
+                            "id": 3773637,
+                            "external_id": null,
+                            "variant_id": 2,
+                            "quantity": 1,
+                            "price": "18.00",
+                            "retail_price": "19.99",
+                            "name": "Niagara Falls poster",
+                            "product": {
+                                "variant_id": 2,
+                                "product_id": 1,
+                                "image": "https://d1yg28hrivmbqm.cloudfront.net/products/poster_24x36.jpg",
+                                "name": "Enhanced Matte Paper Poster 24×36"
+                            },
+                            "custom_product": [],
+                            "files": [
+                                {
+                                    "id": 36282734,
+                                    "type": "default",
+                                    "hash": null,
+                                    "url": "http://example.com/files/posters/poster_2.jpg",
+                                    "filename": "poster_2.jpg",
+                                    "mime_type": null,
+                                    "size": 0,
+                                    "width": null,
+                                    "height": null,
+                                    "dpi": null,
+                                    "status": "failed",
+                                    "created": 1510131007,
+                                    "thumbnail_url": null,
+                                    "preview_url": null,
+                                    "visible": false
+                                }
+                            ],
+                            "options": [],
+                            "sku": null
+                        },
+                        {
+                            "id": 3773638,
+                            "external_id": null,
+                            "variant_id": 1,
+                            "quantity": 3,
+                            "price": "13.00",
+                            "retail_price": "17.99",
+                            "name": "Grand Canyon poster",
+                            "product": {
+                                "variant_id": 1,
+                                "product_id": 1,
+                                "image": "https://d1yg28hrivmbqm.cloudfront.net/products/poster_18x24.jpg",
+                                "name": "Enhanced Matte Paper Poster 18×24"
+                            },
+                            "custom_product": [],
+                            "files": [
+                                {
+                                    "id": 36282735,
+                                    "type": "default",
+                                    "hash": null,
+                                    "url": "http://example.com/files/posters/poster_3.jpg",
+                                    "filename": "poster_3.jpg",
+                                    "mime_type": null,
+                                    "size": 0,
+                                    "width": null,
+                                    "height": null,
+                                    "dpi": null,
+                                    "status": "failed",
+                                    "created": 1510131007,
+                                    "thumbnail_url": null,
+                                    "preview_url": null,
+                                    "visible": false
+                                }
+                            ],
+                            "options": [],
+                            "sku": null
+                        }
+                    ],
+                    "costs": {
+                        "subtotal": "57.00",
+                        "discount": "0.00",
+                        "shipping": "9.95",
+                        "digitization": "0.00",
+                        "tax": "7.03",
+                        "vat": "0.00",
+                        "total": "73.98"
+                    },
+                    "retail_costs": {
+                        "subtotal": "73.96",
+                        "discount": "0.00",
+                        "shipping": "24.50",
+                        "tax": "0.00",
+                        "vat": "0.00",
+                        "total": "98.46"
+                    },
+                    "shipments": [],
+                    "gift": null,
+                    "packing_slip": null
                 }
             }
 
