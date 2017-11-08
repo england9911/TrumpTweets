@@ -51,12 +51,63 @@ router.get('/checkout_return', function (req, res, next){
             paymentMessage = 'Your payment was successfully completed';
             paymentDetails = '<p><strong>Order ID: </strong>' + paymentOrderId + '</p><p><strong>Transaction ID: </strong>' + payment.id + '</p>';
 
+            
+
+
+            // TODO: Send order to Printful.
+            // 24x36 matte poster = ID:2
+            // info stored in: req.session
+            // https://www.printful.com/docs/orders
+            //
+            // POST to: https://api.printful.com/orders?confirm=1
+            // Skip the draft phase, go straight to confirmed order to be fulfilled.
+            //
+            // Need to load the print file from s3, these are not currently saved into 
+            // folders, so there is only the tweet id to search by. If we know the colour 
+            // and tweet ID then we can easily find the file.
+            /*
+
+            {
+                "external_id": "9887112",
+                "recipient": {
+                    "name": "John Doe",
+                    "address1": "19749 Dearborn St",
+                    "city": "Chatsworth",
+                    "state_code": "CA",
+                    "country_code": "US",
+                    "zip": "91311"
+                },
+                "items": [{
+                    "variant_id": 2,
+                    "quantity": 1,
+                    "name": "Niagara Falls poster",
+                    "retail_price": "19.99",
+                    "files": [{
+                        "url": "http://example.com/files/posters/poster_2.jpg"
+                    }]
+                }, {
+                    "variant_id": 1,
+                    "quantity": 3,
+                    "name": "Grand Canyon poster",
+                    "retail_price": "17.99",
+                    "files": [{
+                        "url": "http://example.com/files/posters/poster_3.jpg"
+                    }]
+                }],
+                "retail_costs": {
+                    "shipping": "24.50"
+                }
+            }
+
+            */
+
             // clear the cart
             if(req.session.cart){
                 req.session.cart = null;
                 req.session.orderId = null;
                 req.session.totalCartAmount = 0;
             }
+
         }
 
         // failed
