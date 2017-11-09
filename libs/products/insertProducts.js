@@ -10,9 +10,8 @@ var glob = require('glob');
 var moment = require('moment-timezone');
 var AWS = require('aws-sdk');
 var sleep = require('sleep');
-var pconfig = require('./../printful/printConf.js');
 var PrintfulClient = require('./../printful/printfulclient.js');
-var printful = new PrintfulClient(pconfig.printful_api_key);
+var printful = new PrintfulClient(process.env.PRINTFUL_API_KEY);
 
 if(!config.databaseConnectionString) {
     console.log('No MongoDB configured. Please see README.md for help');
@@ -22,6 +21,225 @@ if(!config.databaseConnectionString) {
 const S3_BUCKET = process.env.S3_BUCKET_NAME;
 const S3_THUMBS = process.env.S3_THUMBS;
 const s3 = new AWS.S3();
+
+module.exports.printfulOrder = function(req, order, callback) {
+
+    // Ref: /libs/printful/printfulclient.js
+    // Ref: /routes/paypal.js
+
+    // TODO: Send order to Printful.
+    // 24x36 matte poster = ID:2
+    // info stored in: req.session
+    // https://www.printful.com/docs/orders
+    //
+    // POST to: https://api.printful.com/orders?confirm=1
+    // Skip the draft phase, go straight to confirmed order to be fulfilled.
+    //
+    // Need to load the print file from s3, these are not currently saved into 
+    // folders, so there is only the tweet id to search by. If we know the colour 
+    // and tweet ID then we can easily find the file.
+
+    console.log('REQ:');
+    console.log(req);
+    console.log('---------------');
+    console.log(order);
+    console.log('');
+
+
+    var recipientDetails = {
+        name: 'sale',
+        address1: 'sale',
+        city: 'sale',
+        state_code: 'sale',
+        country_code: 'sale',
+        zip: 'sale'
+    };
+
+    // Loop and add to this array for each item.
+    var recipientItems = [
+        {
+            variant_id: 2, 
+            name: 'Niagara Falls poster', // Display name
+            retail_price: '35.00', // Retail price for packing slip
+            quantity: 1,
+            files: [
+                { url: 'http://example.com/files/posters/poster_1.jpg' }
+            ]
+        },
+        {
+            variant_id: 2, 
+            name: 'Niagara Falls poster 2', // Display name
+            retail_price: '35.00', // Retail price for packing slip
+            quantity: 1,
+            files: [
+                { url: 'http://example.com/files/posters/poster_1.jpg' }
+            ]
+        }
+    ];
+
+    // Post with instant confirmation - straight to fulfillment.
+    // printful.post('orders',
+    //     {
+    //         recipient: recipientDetails,
+    //         items: recipientItems
+    //     },
+    //     {confirm: 1}
+    // ).success(ok_callback).error(error_callback);
+
+
+    /*
+            RESPONSE (success = 200)
+
+            {
+                "code": 200,
+                "result": {
+                    "id": 4895688,
+                    "external_id": "9887112",
+                    "status": "pending",
+                    "shipping": "STANDARD",
+                    "created": 1510131010,
+                    "updated": 1510131010,
+                    "recipient": {
+                        "name": "John Doe",
+                        "company": null,
+                        "address1": "19749 Dearborn St",
+                        "address2": null,
+                        "city": "Chatsworth",
+                        "state_code": "CA",
+                        "state_name": "California",
+                        "country_code": "US",
+                        "country_name": "United States",
+                        "zip": "91311",
+                        "phone": null,
+                        "email": null
+                    },
+                    "items": [
+                        {
+                            "id": 3773637,
+                            "external_id": null,
+                            "variant_id": 2,
+                            "quantity": 1,
+                            "price": "18.00",
+                            "retail_price": "19.99",
+                            "name": "Niagara Falls poster",
+                            "product": {
+                                "variant_id": 2,
+                                "product_id": 1,
+                                "image": "https://d1yg28hrivmbqm.cloudfront.net/products/poster_24x36.jpg",
+                                "name": "Enhanced Matte Paper Poster 24×36"
+                            },
+                            "custom_product": [],
+                            "files": [
+                                {
+                                    "id": 36282734,
+                                    "type": "default",
+                                    "hash": null,
+                                    "url": "http://example.com/files/posters/poster_2.jpg",
+                                    "filename": "poster_2.jpg",
+                                    "mime_type": null,
+                                    "size": 0,
+                                    "width": null,
+                                    "height": null,
+                                    "dpi": null,
+                                    "status": "failed",
+                                    "created": 1510131007,
+                                    "thumbnail_url": null,
+                                    "preview_url": null,
+                                    "visible": false
+                                }
+                            ],
+                            "options": [],
+                            "sku": null
+                        },
+                        {
+                            "id": 3773638,
+                            "external_id": null,
+                            "variant_id": 1,
+                            "quantity": 3,
+                            "price": "13.00",
+                            "retail_price": "17.99",
+                            "name": "Grand Canyon poster",
+                            "product": {
+                                "variant_id": 1,
+                                "product_id": 1,
+                                "image": "https://d1yg28hrivmbqm.cloudfront.net/products/poster_18x24.jpg",
+                                "name": "Enhanced Matte Paper Poster 18×24"
+                            },
+                            "custom_product": [],
+                            "files": [
+                                {
+                                    "id": 36282735,
+                                    "type": "default",
+                                    "hash": null,
+                                    "url": "http://example.com/files/posters/poster_3.jpg",
+                                    "filename": "poster_3.jpg",
+                                    "mime_type": null,
+                                    "size": 0,
+                                    "width": null,
+                                    "height": null,
+                                    "dpi": null,
+                                    "status": "failed",
+                                    "created": 1510131007,
+                                    "thumbnail_url": null,
+                                    "preview_url": null,
+                                    "visible": false
+                                }
+                            ],
+                            "options": [],
+                            "sku": null
+                        }
+                    ],
+                    "costs": {
+                        "subtotal": "57.00",
+                        "discount": "0.00",
+                        "shipping": "9.95",
+                        "digitization": "0.00",
+                        "tax": "7.03",
+                        "vat": "0.00",
+                        "total": "73.98"
+                    },
+                    "retail_costs": {
+                        "subtotal": "73.96",
+                        "discount": "0.00",
+                        "shipping": "24.50",
+                        "tax": "0.00",
+                        "vat": "0.00",
+                        "total": "98.46"
+                    },
+                    "shipments": [],
+                    "gift": null,
+                    "packing_slip": null
+                }
+            }
+
+            */
+}
+
+// Printful callbacks.
+/**
+ * Callback for success
+ * data - result element from the API response
+ * info - additional data about the request and response
+ */
+var ok_callback = function(data, info){
+    console.log('SUCCESS');
+    console.log(data);
+    //If response includes paging information, show total number available
+    if(info.total_items){
+        console.log('Total items available: '+info.total_items);
+    }
+}
+
+/**
+ * Callback for failure
+ * data - error message
+ * info - additional data about the request
+ */
+var error_callback = function(message, info){
+    console.log('ERROR ' + message);
+    //Dump raw response
+    console.log(info.response_raw);
+}
 
 module.exports.insertProducts = function(tweets, callback) {
 
