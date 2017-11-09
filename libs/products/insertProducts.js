@@ -39,6 +39,8 @@ module.exports.printfulOrder = function(req, order, callback) {
     // folders, so there is only the tweet id to search by. If we know the colour 
     // and tweet ID then we can easily find the file.
 
+    // TODO: ***** Get a successful snadbox payment callback to start testing this. ***
+
     console.log('REQ:');
     console.log(req);
     console.log('---------------');
