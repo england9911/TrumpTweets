@@ -58,9 +58,10 @@ typings/
 .env
 
 # config
-#expressCart/config/
-#expressCart/libs/tweets/twitConf.js
-#expressCart/libs/printful/printConf.js
+config/
+config/*
+libs/tweets/twitConf.js
+libs/printful/printConf.js
 
 #config/
 #libs/tweets/twitConf.js
