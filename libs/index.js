@@ -11,9 +11,6 @@ var products = require('./products/insertProducts');
 
 // TODO: 	Environment vars: change mongoDB URI, poster folder location for LIVE app.
 
-
-// TODO: Move libs confs to heroku vars.
-
 // TODO: 	Printful API - hook into expressCart order process and create Printful order when payment has
 //			been taken - e.g. from a PayPal callback with successful flag.
 // TODO: 	'Product' in Printful means the actual printful product e.g. poster. Variants mean 24 x 36
