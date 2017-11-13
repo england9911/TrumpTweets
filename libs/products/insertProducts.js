@@ -29,14 +29,9 @@ module.exports.printfulOrder = function(req, order, callback) {
 
     // TODO: Send order to Printful.
     // 24x36 matte poster unframed = ID:2
-    // 24x36 matte poster framed = ID: 4
-    // -- If framed, add X to price.
     // All variant IDs: https://www.printful.com/products    
     //
-    // Disabled frame option as there is no priced option in expressCart currently. 
-    // Potentially add that in myself at a later stage, now concentrating on a MVP.
-    //
-    // info stored in: req.session
+    // Order info stored in: req.session
     // https://www.printful.com/docs/orders
     // --
     // Order info is also saved in DB by this point. Can be loaded by ID at req.session.orderId
@@ -49,6 +44,12 @@ module.exports.printfulOrder = function(req, order, callback) {
     // and tweet ID then we can easily find the file.
 
     // TODO: ***** Get a successful snadbox payment callback to start testing this. ***
+
+
+    // 24x36 matte poster framed = ID: 4
+    // -- If framed, add X to price.
+    // Disabled framed option as there is no priced option in expressCart currently. 
+    // Potentially add that in myself at a later stage, now concentrating on a MVP.
 
 
 
