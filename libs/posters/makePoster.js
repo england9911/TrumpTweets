@@ -150,15 +150,15 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
             // Handle 280 chars. Decrease Y padding & font size to fit text in.
             if(textStr.length > 160) {
                 cPaddingY = (cWidth / 14)
-                ctx.font = "550px 'Myriad Pro'"
+                ctx.font = "500px 'Myriad Pro'"
             } 
             else if(textStr.length > 200) {
                 cPaddingY = (cWidth / 16)
-                ctx.font = "500px 'Myriad Pro'"
+                ctx.font = "450px 'Myriad Pro'"
             }
             else if(textStr.length > 240) {
                 cPaddingY = (cWidth / 18)
-                ctx.font = "450px 'Myriad Pro'"
+                ctx.font = "400px 'Myriad Pro'"
             }
 
             CanvasTextWrapper(canvas, textStr, {
