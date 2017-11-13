@@ -32,6 +32,10 @@ module.exports.printfulOrder = function(req, order, callback) {
     // 24x36 matte poster framed = ID: 4
     // -- If framed, add X to price.
     // All variant IDs: https://www.printful.com/products    
+    //
+    // Disabled frame option as there is no priced option in expressCart currently. 
+    // Potentially add that in myself at a later stage, now concentrating on a MVP.
+    //
     // info stored in: req.session
     // https://www.printful.com/docs/orders
     // --
@@ -266,7 +270,8 @@ module.exports.insertProducts = function(tweets, callback) {
 
         async.each(tweets, function (tweet, cb) {
 
-            var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["Yes","No"]}}'
+            var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["No","Yes"]}}'
+            var optsNoFrame = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]}}'
             var insertThis = false;
             var tweetUnix = moment(tweet.created_at, 'ddd MMM DD HH:mm:ss Z YYYY');
             var monthYear = tweetUnix.format('MMMM YYYY');
@@ -276,10 +281,10 @@ module.exports.insertProducts = function(tweets, callback) {
                 productPermalink: tweetID,
                 productTitle: tweet.text,
                 productPrice: "34.99",
-                productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + ".</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed.</p>",
+                productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + ".</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed. If you choose the framed option, you'll notice a small amount is added to your total to cover the cost.</p>",
                 productPublished: "true",
                 productTags: "donald trump, twitter, tweet, trump twitter, " + monthYear,
-                productOptions: opts,
+                productOptions: optsNoFrame,
                 productAddedDate: new Date(),
                 productImage: "/uploads/placeholder.png"
             };

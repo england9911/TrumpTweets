@@ -125,7 +125,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
             var cWidth = 7200
             var cHeight = 10800
             var cPaddingX = (cWidth / 16)
-            var cPaddingY = (cWidth / 10)
+            var cPaddingY = cPaddingX * 4
             var canvas = new Canvas(cWidth, cHeight)
 
             // Canvas background colour.
@@ -149,15 +149,15 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
 
             // Handle 280 chars. Decrease Y padding & font size to fit text in.
             if(textStr.length > 160) {
-                cPaddingY = (cWidth / 14)
+                cPaddingY = cPaddingX * 3
                 ctx.font = "500px 'Myriad Pro'"
             } 
             else if(textStr.length > 200) {
-                cPaddingY = (cWidth / 16)
+                cPaddingY = cPaddingX * 2
                 ctx.font = "450px 'Myriad Pro'"
             }
             else if(textStr.length > 240) {
-                cPaddingY = (cWidth / 18)
+                cPaddingY = cPaddingX
                 ctx.font = "400px 'Myriad Pro'"
             }
 
@@ -166,7 +166,7 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
                 textAlign: ctx.textAlign,
                 verticalAlign: ctx.textBaseline,
                 paddingX: cPaddingX,
-                paddingY: cPaddingX * 4,
+                paddingY: cPaddingY,
                 lineHeight: ctx.lineHeight
             });
 

@@ -17,7 +17,7 @@
     "menuTitle": "Menu",
     "menuLocation": "side",
     "footerHtml": "",
-    "googleAnalytics": "",
+    "googleAnalytics": "<script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-109015003-1\"></script><script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-109015003-1');</script>",
     "customCss": "",
     "currencySymbol": "$",
     "paymentGateway": "paypal",
