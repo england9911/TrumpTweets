@@ -56,12 +56,12 @@ module.exports.printfulOrder = function(req, order, callback) {
 
 
     var recipientDetails = {
-        name: 'sale',
-        address1: 'sale',
-        city: 'sale',
-        state_code: 'sale',
-        country_code: 'sale',
-        zip: 'sale'
+        name: 'John Doe',
+        address1: '19749 Dearborn St',
+        city: 'Chatsworth',
+        state_code: 'CA',
+        country_code: 'US',
+        zip: '91311'        
     };
 
     // Loop and add to this array for each item.
