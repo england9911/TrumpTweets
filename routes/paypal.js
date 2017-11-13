@@ -106,6 +106,7 @@ router.get('/checkout_return', function (req, res, next){
 
                 // Call custom lib to order from Printful here.
                 if(payment.state === 'approved') {
+                    console.log('Approved payment. Place order with Printful.');
                     products.printfulOrder(req, order, function(err) {
                         console.log('CALLBACK FOR printfulOrder()  ' + err);
                     });
