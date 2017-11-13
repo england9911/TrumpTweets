@@ -30,26 +30,12 @@ module.exports.printfulOrder = function(req, order, callback) {
     // TODO: Send order to Printful.
     // 24x36 matte poster unframed = ID:2
     // 24x36 matte poster framed = ID: 4
+    // -- If framed, add X to price.
     // All variant IDs: https://www.printful.com/products    
     // info stored in: req.session
     // https://www.printful.com/docs/orders
     // --
-    // Order info is also saved in DB by this point and will include:
-    // orderPaymentId: payment.id,
-    // orderPaymentGateway: 'Paypal',
-    // orderTotal: req.session.totalCartAmount,
-    // orderEmail: req.body.shipEmail,
-    // orderFirstname: req.body.shipFirstname,
-    // orderLastname: req.body.shipLastname,
-    // orderAddr1: req.body.shipAddr1,
-    // orderAddr2: req.body.shipAddr2,
-    // orderCountry: req.body.shipCountry,
-    // orderState: req.body.shipState,
-    // orderPostcode: req.body.shipPostcode,
-    // orderPhoneNumber: req.body.shipPhoneNumber,
-    // orderStatus: payment.state,
-    // orderDate: new Date(),
-    // orderProducts: req.session.cart
+    // Order info is also saved in DB by this point. Can be loaded by ID at req.session.orderId
 
     // POST to: https://api.printful.com/orders?confirm=1
     // Skip the draft phase, go straight to confirmed order to be fulfilled.
