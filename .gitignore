@@ -58,14 +58,10 @@ typings/
 .env
 
 # config
-config/
-config/*
+#config/
+#config/*
 libs/tweets/twitConf.js
 libs/printful/printConf.js
-
-#config/
-#libs/tweets/twitConf.js
-#libs/printful/printConf.js
 
 *.DS_Store
 
