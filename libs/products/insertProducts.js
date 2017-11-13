@@ -31,6 +31,7 @@ module.exports.printfulOrder = function(req, order, callback) {
     // 24x36 matte poster = ID:2
     // info stored in: req.session
     // https://www.printful.com/docs/orders
+
     //
     // POST to: https://api.printful.com/orders?confirm=1
     // Skip the draft phase, go straight to confirmed order to be fulfilled.

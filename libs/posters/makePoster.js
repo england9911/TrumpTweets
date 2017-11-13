@@ -42,7 +42,7 @@ module.exports.make = function(tweets, callback) {
 
         // **************************
         // TODO:
-        // Emojis? font?
+        // 280 chars, less top padding on text
 
         async.each(tweets, function (tweet, cb) {
 
@@ -128,14 +128,19 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
             var cPaddingY = (cWidth / 10)
             var canvas = new Canvas(cWidth, cHeight)
 
+            // Handle 280 chars. Decrease Y padding to fit text in.
+            if(textStr.length > 190) cPaddingY = (cWidth / 15)
+
             // Canvas background colour.
             var ctx = canvas.getContext('2d')
 
             ctx.fillStyle = bgCol
             ctx.fillRect(0, 0, cWidth, cHeight)
 
-            // Strip emojis.
-            textStr = emojiStrip(textStr);
+            // Strip emojis until there is an easy way to convert them to svg. You can 
+            // replace with .png, but they only go up to 128x128 or something similarly 
+            // silly.
+            textStr = emojiStrip(textStr)
 
             // Main tweet text.
             ctx = canvas.getContext('2d')
