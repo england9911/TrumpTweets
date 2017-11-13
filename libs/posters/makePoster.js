@@ -128,9 +128,6 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
             var cPaddingY = (cWidth / 10)
             var canvas = new Canvas(cWidth, cHeight)
 
-            // Handle 280 chars. Decrease Y padding to fit text in.
-            if(textStr.length > 190) cPaddingY = (cWidth / 15)
-
             // Canvas background colour.
             var ctx = canvas.getContext('2d')
 
@@ -149,6 +146,20 @@ function makePoster(tid, textStr, screenName, tweetDate, bgCol, textCol, callbac
             ctx.textBaseline = 'top'
             ctx.font = "600px 'Myriad Pro'"
             ctx.lineHeight = 1.1
+
+            // Handle 280 chars. Decrease Y padding & font size to fit text in.
+            if(textStr.length > 160) {
+                cPaddingY = (cWidth / 14)
+                ctx.font = "550px 'Myriad Pro'"
+            } 
+            else if(textStr.length > 200) {
+                cPaddingY = (cWidth / 16)
+                ctx.font = "500px 'Myriad Pro'"
+            }
+            else if(textStr.length > 240) {
+                cPaddingY = (cWidth / 18)
+                ctx.font = "450px 'Myriad Pro'"
+            }
 
             CanvasTextWrapper(canvas, textStr, {
                 font: ctx.font,
