@@ -50,7 +50,7 @@ module.exports.printfulOrder = function(req, order, callback) {
     // -- If framed, add X to price.
     // Disabled framed option as there is no priced option in expressCart currently. 
     // Potentially add that in myself at a later stage, now concentrating on a MVP.
-
+    // TODO: When adding products, add a separate product for the framed version.
 
 
     console.log('REQ:');
@@ -271,17 +271,18 @@ module.exports.insertProducts = function(tweets, callback) {
 
         async.each(tweets, function (tweet, cb) {
 
-            var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["No","Yes"]}}'
+            // var opts = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]},"Frame":{"optName":"Frame","optLabel":"Framed","optType":"select","optOptions":["No","Yes"]}}'
             var optsNoFrame = '{"Poster Colour":{"optName":"Poster Colour","optLabel":"Poster Colour","optType":"select","optOptions":["blue","red","white"]}}'
-            var insertThis = false;
-            var tweetUnix = moment(tweet.created_at, 'ddd MMM DD HH:mm:ss Z YYYY');
-            var monthYear = tweetUnix.format('MMMM YYYY');
-            var tweetID = tweet.tweet_id.toString();
+            var insertThis = false
+            var tweetUnix = moment(tweet.created_at, 'ddd MMM DD HH:mm:ss Z YYYY')
+            var monthYear = tweetUnix.format('MMMM YYYY')
+            var tweetID = tweet.tweet_id.toString()
 
+            // Unframed product. Cost at Printful: $18.00
             var doc = {
                 productPermalink: tweetID,
                 productTitle: tweet.text,
-                productPrice: "34.99",
+                productPrice: "28.99",
                 productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + ".</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed. If you choose the framed option, you'll notice a small amount is added to your total to cover the cost.</p>",
                 productPublished: "true",
                 productTags: "donald trump, twitter, tweet, trump twitter, " + monthYear,
@@ -289,6 +290,12 @@ module.exports.insertProducts = function(tweets, callback) {
                 productAddedDate: new Date(),
                 productImage: "/uploads/placeholder.png"
             };
+
+            // Framed product. Cost at Printful: $85.00
+            var docFramed = doc;
+            docFramed.productPermalink = tweetID + '-framed'
+            docFramed.productPrice = '98.99'
+            docFramed.productDescription = ''
 
             // Check if this tweet has already been stored as a product.
             productsCol.findOne({'productPermalink': tweetID}, function (err, result) {
