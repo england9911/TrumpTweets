@@ -56,6 +56,7 @@ module.exports.printfulOrder = function(req, order, callback) {
     console.log('REQ:');
     console.log(req);
     console.log('---------------');
+    console.log('ORDER INFO:');
     console.log(order);
     console.log('');
 
