@@ -2,7 +2,7 @@
     "cartTitle": "Trump Tweet Posters",
     "cartDescription": "Buy a poster of any of Donald Trump's tweets seconds after they are sent.",
     "cartLogo": "",
-    "baseUrl": "https://www.trumptweetposters.com/",
+    "baseUrl": "https://www.trumptweetposters.com",
     "emailHost": "smtp.gmail.com",
     "emailPort": "465",
     "emailSecure": true,
