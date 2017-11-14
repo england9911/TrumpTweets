@@ -53,6 +53,9 @@ module.exports.printfulOrder = function(req, order, callback) {
     // Potentially add that in myself at a later stage, now concentrating on a MVP.
     // TODO: When adding products, add a separate product for the framed version.
 
+
+    // TODO: The gmail / email notification is not working properly. See logs after placing an order.
+
     console.log('---------------');
     console.log('Request object:');
     console.log(req);
@@ -63,13 +66,17 @@ module.exports.printfulOrder = function(req, order, callback) {
 
 
     var recipientDetails = {
-        name: 'John Doe',
-        address1: '19749 Dearborn St',
-        city: 'Chatsworth',
-        state_code: 'CA',
-        country_code: 'US',
-        zip: '91311'        
+        name: order.orderFirstname + ' ' + orderLastname,
+        address1: order.orderAddr1,
+        city: order.orderAddr2,
+        state_code: order.orderState,
+        country_code: order.orderCountry,
+        zip: order.orderPostcode       
     };
+
+    console.log('Constructed recipient:')
+    console.log(recipientDetails)
+    console.log('--------------')
 
     // Loop and add to this array for each item.
     var recipientItems = [
