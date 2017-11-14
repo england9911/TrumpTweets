@@ -54,7 +54,9 @@ module.exports.printfulOrder = function(req, order, callback) {
     // TODO: When adding products, add a separate product for the framed version.
 
 
-    // TODO: The gmail / email notification is not working properly. See logs after placing an order.
+    // TODO:    The gmail / email notification is not working properly. It's not logging 
+    //          in with the provided details in settings.json.
+    //          See logs after placing an order.
 
     console.log('---------------');
     console.log('Request object:');
