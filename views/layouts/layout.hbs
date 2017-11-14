@@ -81,7 +81,7 @@
         alert('Success');
         }
         }
-        run();
+        //run();
         </script>
 
 
@@ -90,7 +90,7 @@
 	<body class="admin">
     {{else}}
     <body>
-    {{/if}}	
+    {{/if}}
 		<!-- Static navbar -->
 	    <nav class="navbar navbar-default navbar-static-top">
 			<div class="container-fluid">
@@ -99,7 +99,7 @@
                         <span class="sr-only">Toggle navigation</span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>                    
+						<span class="icon-bar"></span>
 					</button>
                     {{#if admin}}
                         <a class="navbar-brand navbar-brand-image" href="/admin"><img class="img-responsive" src="/images/logo-admin.png"></a>
@@ -115,7 +115,7 @@
                         {{/isNull}}
                     {{/if}}
 				</div>
-				<div id="navbar" class="navbar-collapse collapse"> 
+				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
                         {{#unless admin}}
                         {{#ifCond page '!=' 'checkout'}}
@@ -130,11 +130,11 @@
                         {{/unless}}
                         {{#if session.user}}
 							<li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"> </i>Logout</a></li>
-						{{/if}}	
+						{{/if}}
 					</ul>
 				</div>
 	      </div>
-	    </nav>	
+	    </nav>
         <div class="site-overlay"></div>
         {{#unless admin}}
             {{#ifCond page '!=' 'checkout'}}
