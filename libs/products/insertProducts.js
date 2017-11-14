@@ -29,7 +29,7 @@ module.exports.printfulOrder = function(req, order, callback) {
 
     // TODO: Send order to Printful.
     // 24x36 matte poster unframed = ID:2
-    // All variant IDs: https://www.printful.com/products    
+    // All variant IDs: https://www.printful.com/products
     //
     // Order info stored in: req.session
     // https://www.printful.com/docs/orders
@@ -39,8 +39,8 @@ module.exports.printfulOrder = function(req, order, callback) {
     // POST to: https://api.printful.com/orders?confirm=1
     // Skip the draft phase, go straight to confirmed order to be fulfilled.
     //
-    // Need to load the print file from s3, these are not currently saved into 
-    // folders, so there is only the tweet id to search by. If we know the colour 
+    // Need to load the print file from s3, these are not currently saved into
+    // folders, so there is only the tweet id to search by. If we know the colour
     // and tweet ID then we can easily find the file.
 
 
@@ -49,12 +49,12 @@ module.exports.printfulOrder = function(req, order, callback) {
 
     // 24x36 matte poster framed = ID: 4
     // -- If framed, add X to price.
-    // Disabled framed option as there is no priced option in expressCart currently. 
+    // Disabled framed option as there is no priced option in expressCart currently.
     // Potentially add that in myself at a later stage, now concentrating on a MVP.
     // TODO: When adding products, add a separate product for the framed version.
 
 
-    // TODO:    The gmail / email notification is not working properly. It's not logging 
+    // TODO:    The gmail / email notification is not working properly. It's not logging
     //          in with the provided details in settings.json.
     //          See logs after placing an order.
 
@@ -68,12 +68,12 @@ module.exports.printfulOrder = function(req, order, callback) {
 
 
     var recipientDetails = {
-        name: order.orderFirstname + ' ' + orderLastname,
+        name: order.orderFirstname + ' ' + order.orderLastname,
         address1: order.orderAddr1,
         city: order.orderAddr2,
         state_code: order.orderState,
         country_code: order.orderCountry,
-        zip: order.orderPostcode       
+        zip: order.orderPostcode
     };
 
     console.log('Constructed recipient:')
@@ -85,7 +85,7 @@ module.exports.printfulOrder = function(req, order, callback) {
     // Loop and add to this array for each item.
     var recipientItems = [
         {
-            variant_id: 2, 
+            variant_id: 2,
             name: 'Niagara Falls poster', // Display name
             retail_price: '35.00', // Retail price for packing slip
             quantity: 1,
@@ -94,7 +94,7 @@ module.exports.printfulOrder = function(req, order, callback) {
             ]
         },
         {
-            variant_id: 2, 
+            variant_id: 2,
             name: 'Niagara Falls poster 2', // Display name
             retail_price: '35.00', // Retail price for packing slip
             quantity: 1,
@@ -405,7 +405,7 @@ function updateMainImg(db, newThumb, tweetID, cb) {
                 return cb(null);
             }
         }
-    ); 
+    );
 }
 
 
@@ -420,14 +420,14 @@ function updateMainImg(db, newThumb, tweetID, cb) {
 // TODO: Set up a CNAME for media.trumptweetposters.com and point it to s3 thumb bucket
 function setS3ProductThumbs(tweetID, docID, cb) {
 
-    // If any error is passed to a successive function, the waterfall goes 
+    // If any error is passed to a successive function, the waterfall goes
     // straight to it's top-level callback.
     async.waterfall([
         function list(next) {
 
             console.log('wait for thumbnail creation by Lambda function.');
 
-            // The generated thumbs aren't available for a good few seconds. Wait for 
+            // The generated thumbs aren't available for a good few seconds. Wait for
             // lambda to do it's thing.
             sleep.sleep(30);
 
@@ -458,7 +458,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
             var i = 0;
             var newThumbs = [];
 
-            // Pass each file to the renameThumb function. Return full array of new 
+            // Pass each file to the renameThumb function. Return full array of new
             // filenames with docID in the path.
             async.mapSeries(files, function(item, callback) {
                 console.log('map....')
@@ -481,7 +481,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
                 // Delete the existing object.
                 s3.deleteObject({Bucket:S3_THUMBS, Key: thumb}, function(err, data) {
-                    if (err) next(err); 
+                    if (err) next(err);
 
                     if(i == files.length) {
                         var rand = randomIntFromInterval(0, newThumbs.length);
@@ -508,19 +508,19 @@ function setS3ProductThumbs(tweetID, docID, cb) {
     );
 }
 
-// Take the tweet thumb, and add the product docID to it's path 
+// Take the tweet thumb, and add the product docID to it's path
 // for future reference in the app.
 function renameThumb(tweetID, docID, item, cb) {
 
     console.log('-----');
-    
+
     var ts = Math.round((new Date()).getTime() / 1000);
     var filenameLoc = tweetID + '--' + ts + '.png';
     var fullpath = path.join(__dirname, '../posters/poster-imgs/' + filenameLoc);
     var filename = docID + '/' + item;
 
     console.log(filename);
-    
+
 
     const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: item}).createReadStream();
     const fileStream = fs.createWriteStream(fullpath);
@@ -530,7 +530,7 @@ function renameThumb(tweetID, docID, item, cb) {
     fileStream.on('error', function() {
 
     });
-    // This is what gets called when the object has been written 
+    // This is what gets called when the object has been written
     // locally with pipe().
     fileStream.on('close', () => {
         // console.log('Created local file: ' + filename + ' successfully.');
