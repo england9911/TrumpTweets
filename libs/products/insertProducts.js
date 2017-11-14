@@ -80,6 +80,8 @@ module.exports.printfulOrder = function(req, order, callback) {
     console.log(recipientDetails)
     console.log('--------------')
 
+    // TODO: loop through order.orderProducts below....
+
     // Loop and add to this array for each item.
     var recipientItems = [
         {
