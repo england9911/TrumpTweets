@@ -43,7 +43,8 @@ module.exports.printfulOrder = function(req, order, callback) {
     // folders, so there is only the tweet id to search by. If we know the colour 
     // and tweet ID then we can easily find the file.
 
-    // TODO: ***** Get a successful snadbox payment callback to start testing this. ***
+
+    // Sandbox user details are in the details spreadsheet.
 
 
     // 24x36 matte poster framed = ID: 4
@@ -52,13 +53,13 @@ module.exports.printfulOrder = function(req, order, callback) {
     // Potentially add that in myself at a later stage, now concentrating on a MVP.
     // TODO: When adding products, add a separate product for the framed version.
 
-
-    console.log('REQ:');
+    console.log('---------------');
+    console.log('Request object:');
     console.log(req);
     console.log('---------------');
-    console.log('ORDER INFO:');
+    console.log('Order object:');
     console.log(order);
-    console.log('');
+    console.log('---------------');
 
 
     var recipientDetails = {
