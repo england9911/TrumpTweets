@@ -86,7 +86,7 @@ module.exports.printfulOrder = function(req, order, callback) {
       console.log('---------product---------')
       console.log(product);
 
-      var printFile =
+      var printFile = getPrintFile(docID, colour);
 
       recipientItem = [{
         variant_id: 2,
@@ -413,15 +413,26 @@ module.exports.insertProducts = function(tweets, callback) {
 // Return URL to print file on s3.
 function getPrintFile(docID, colour) {
 
-  // TODO: Contruct filename from the document (product) ID and colour variation.
-  // TODO: Would it make this process easier if print files were in a 'folder' on s3 based on docID?
-  // TODO: Can this be loaded with just the docID?
-  // TODO: Example: https://s3.us-east-2.amazonaws.com/trumptweetposters/930089374187950100-2977BC-24x32.png
-  var productFilename = '';
+  mongodb.connect(config.databaseConnectionString, {}, function(err, db) {
 
-  var awsLink = 'https://' + S3_BUCKET + '.s3.amazonaws.com/' + productFilename;
+    // TODO: Contruct filename from the document (product) ID and colour variation.
+    // TODO: Would it make this process easier if print files were in a 'folder' on s3 based on docID?
+    // TODO: Can this be loaded with just the docID?
+    // TODO: Example: https://s3.us-east-2.amazonaws.com/trumptweetposters/930089374187950100-2977BC-24x32.png
+    // TODO:  productImage field in DB contains the thumb:
+    //        https://trumptweetposters-thumbnails.s3.amazonaws.com/5a0a7e3e1b00460004a2e2c0/thumb-930304414564352000-FCFAEC-24x32.png
 
-  return awsLink;
+
+    // TODO: Get the productImage, strip off all but the filename.
+    // TODO: Replace the colour code with ours.
+
+    var productFilename = '';
+
+    var awsLink = 'https://' + S3_BUCKET + '.s3.amazonaws.com/' + productFilename;
+
+    return awsLink;
+
+  }
 
 
 }
