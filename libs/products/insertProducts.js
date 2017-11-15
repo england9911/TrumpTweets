@@ -82,6 +82,31 @@ module.exports.printfulOrder = function(req, order, callback) {
 
     // TODO: loop through order.orderProducts below....
 
+    order.orderProducts.forEach(function(product){
+      console.log('---------product---------')
+      console.log(product);
+
+      var printFile =
+
+      recipientItem = [{
+        variant_id: 2,
+        name: product.title,
+        retail_price: product.totalItemPrice,
+        quantity: product.quantity,
+        files: [{
+          url: ''
+        }]
+      }];
+
+      console.log('-------- recipientItem -------')
+      console.log(recipientItem);
+
+    });
+
+
+
+
+
     // Loop and add to this array for each item.
     var recipientItems = [
         {
@@ -383,6 +408,11 @@ module.exports.insertProducts = function(tweets, callback) {
 
 
     });
+}
+
+// Return URL to print file on s3.
+function getPrintFile(docID, colour) {
+
 }
 
 function updateMainImg(db, newThumb, tweetID, cb) {
