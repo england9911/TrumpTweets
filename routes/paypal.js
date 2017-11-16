@@ -149,7 +149,7 @@ router.post('/checkout_action', function (req, res, next){
         },
         'transactions': [{
             'amount': {
-                'total': req.session.totalCartAmount,
+                'total': req.session.totalCartAmount.toFixed(2),
                 'currency': paypalConfig.paypalCurrency
             },
             'description': paypalConfig.paypalCartDescription
