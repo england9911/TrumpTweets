@@ -92,7 +92,7 @@ module.exports.printfulOrder = function(req, order, callback) {
       // console.log(product);
 
       // docID does not exist here. Need to get product ID.
-      var printFile = getPrintFile(product.link, colour);
+      var printFile = getPrintFile(product.link, '#FFFFFF');
 
       recipientItem = [{
         variant_id: 2,
@@ -110,7 +110,7 @@ module.exports.printfulOrder = function(req, order, callback) {
 
 
     console.log('-------- Final arry for Printful -------')
-    console.log(recipientItems); 
+    console.log(recipientItems);
 
 
     // Post with instant confirmation - straight to fulfillment.
@@ -408,7 +408,7 @@ function getPrintFile(docID, colour) {
 
     var productsCol = db.collection('products');
 
-    var cursor = productsCol.find({ 
+    var cursor = productsCol.find({
       _id: docID
     }).project({ productImage: 1 });
 
