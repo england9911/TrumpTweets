@@ -24,6 +24,9 @@ router.get('/checkout_return', function (req, res, next){
 
     var payerId = req.params('PayerID');
 
+    console.log('Params type 1: ' + req.param('PayerID'));
+    console.log('Params type 2: ' + req.params('PayerID'));
+
     var details = {'payer_id': payerId};
     paypal.payment.execute(paymentId, details, function (error, payment){
         var paymentApproved = false;
