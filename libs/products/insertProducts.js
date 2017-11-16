@@ -58,9 +58,9 @@ module.exports.printfulOrder = function(req, order, callback) {
     //          in with the provided details in settings.json.
     //          See logs after placing an order.
 
-    console.log('---------------');
-    console.log('Request object:');
-    console.log(req);
+    // console.log('---------------');
+    // console.log('Request object:');
+    // console.log(req);
     console.log('---------------');
     console.log('Order object:');
     console.log(order);
@@ -82,12 +82,14 @@ module.exports.printfulOrder = function(req, order, callback) {
 
     var recipientItems = [];
 
+    console.log('There are (' + order.orderProducts.length + ') products in this order.');
+
 
     // TODO: loop through order.orderProducts below....
 
     order.orderProducts.forEach(function(product){
-      console.log('---------product---------')
-      console.log(product);
+      // console.log('---------product---------')
+      // console.log(product);
 
       var printFile = getPrintFile(docID, colour);
 
@@ -97,7 +99,7 @@ module.exports.printfulOrder = function(req, order, callback) {
         retail_price: product.totalItemPrice,
         quantity: product.quantity,
         files: [{
-          url: ''
+          url: 'filename_here.jpg'
         }]
       }];
 
@@ -106,32 +108,9 @@ module.exports.printfulOrder = function(req, order, callback) {
     });
 
 
-    console.log('-------- recipientItems -------')
+    console.log('-------- Final arry for Printful -------')
     console.log(recipientItems); 
 
-
-
-    // Loop and add to this array for each item.
-    var recipientItems = [
-        {
-            variant_id: 2,
-            name: 'Niagara Falls poster', // Display name
-            retail_price: '35.00', // Retail price for packing slip
-            quantity: 1,
-            files: [
-                { url: 'http://example.com/files/posters/poster_1.jpg' }
-            ]
-        },
-        {
-            variant_id: 2,
-            name: 'Niagara Falls poster 2', // Display name
-            retail_price: '35.00', // Retail price for packing slip
-            quantity: 1,
-            files: [
-                { url: 'http://example.com/files/posters/poster_1.jpg' }
-            ]
-        }
-    ];
 
     // Post with instant confirmation - straight to fulfillment.
     // printful.post('orders',
