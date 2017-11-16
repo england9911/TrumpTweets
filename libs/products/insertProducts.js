@@ -440,7 +440,7 @@ function getPrintFile(docID, colour) {
 
     return awsLink;
 
-  }
+  });
 }
 
 function updateMainImg(db, newThumb, tweetID, cb) {
