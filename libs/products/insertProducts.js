@@ -422,6 +422,14 @@ function getPrintFile(docID, colour) {
     // TODO:  productImage field in DB contains the thumb:
     //        https://trumptweetposters-thumbnails.s3.amazonaws.com/5a0a7e3e1b00460004a2e2c0/thumb-930304414564352000-FCFAEC-24x32.png
 
+    var productsCol = db.collection('products');
+
+    var cursor = productsCol.find({ 
+      _id: docID
+    }).project({ productImage: 1 });
+
+    console.log('cursor:');
+    console.log(cursor);
 
     // TODO: Get the productImage, strip off all but the filename.
     // TODO: Replace the colour code with ours.
@@ -433,8 +441,6 @@ function getPrintFile(docID, colour) {
     return awsLink;
 
   }
-
-
 }
 
 function updateMainImg(db, newThumb, tweetID, cb) {
