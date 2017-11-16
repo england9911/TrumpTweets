@@ -164,6 +164,8 @@ router.post('/checkout_action', function (req, res, next){
         if(error){
           console.log('PAYPAL ERROR details');
           console.log(util.inspect(error, false, null));
+          console.log('PAyPAL PAYMENT:');
+          console.log(util.inspect(payment, false, null))
 
             req.session.message = 'There was an error processing your payment. You have not been charged and can try again.';
             req.session.messageType = 'danger';
