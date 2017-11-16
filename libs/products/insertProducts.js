@@ -80,6 +80,9 @@ module.exports.printfulOrder = function(req, order, callback) {
     console.log(recipientDetails)
     console.log('--------------')
 
+    var recipientItems = [];
+
+
     // TODO: loop through order.orderProducts below....
 
     order.orderProducts.forEach(function(product){
@@ -98,12 +101,13 @@ module.exports.printfulOrder = function(req, order, callback) {
         }]
       }];
 
-      console.log('-------- recipientItem -------')
-      console.log(recipientItem);
+      recipientItems.concat(recipientItem);
 
     });
 
 
+    console.log('-------- recipientItems -------')
+    console.log(recipientItems); 
 
 
 
@@ -330,10 +334,10 @@ module.exports.insertProducts = function(tweets, callback) {
             };
 
             // Framed product. Cost at Printful: $85.00
-            var docFramed = doc;
-            docFramed.productPermalink = tweetID + '-framed'
-            docFramed.productPrice = '98.99'
-            docFramed.productDescription = ''
+            // var docFramed = doc;
+            // docFramed.productPermalink = tweetID + '-framed'
+            // docFramed.productPrice = '98.99'
+            // docFramed.productDescription = ''
 
             // Check if this tweet has already been stored as a product.
             productsCol.findOne({'productPermalink': tweetID}, function (err, result) {
