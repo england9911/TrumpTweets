@@ -92,7 +92,7 @@ module.exports.printfulOrder = function(req, order, callback) {
       // console.log(product);
 
       // docID does not exist here. Need to get product ID.
-      // var printFile = getPrintFile(docID, colour);
+      var printFile = getPrintFile(product.link, colour);
 
       recipientItem = [{
         variant_id: 2,
