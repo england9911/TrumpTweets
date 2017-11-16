@@ -2,6 +2,7 @@ var express = require('express');
 var common = require('./common');
 var paypal = require('paypal-rest-sdk');
 var router = express.Router();
+const util = require('util');
 
 // Custom.
 var products = require('./../libs/products/insertProducts');
