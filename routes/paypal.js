@@ -25,9 +25,6 @@ router.get('/checkout_return', function (req, res, next){
 
     var payerId = req.param('PayerID');
 
-    console.log('Params type 1: ' + req.param('PayerID'));
-    console.log('Params type 2: ' + req.params('PayerID'));
-
     var details = {'payer_id': payerId};
     paypal.payment.execute(paymentId, details, function (error, payment){
         var paymentApproved = false;
@@ -159,17 +156,9 @@ router.post('/checkout_action', function (req, res, next){
     // set the config
     paypal.configure(paypalConfig);
 
-    console.log('PAYPAL PAYMENT 1:');
-    console.log(util.inspect(payment, false, null));
-
     // create payment
     paypal.payment.create(payment, function (error, payment){
         if(error){
-          console.log('PAYPAL ERROR details');
-          console.log(util.inspect(error, false, null));
-          console.log('PAYPAL PAYMENT 2:');
-          console.log(util.inspect(payment, false, null));
-
             req.session.message = 'There was an error processing your payment. You have not been charged and can try again.';
             req.session.messageType = 'danger';
             res.redirect('/pay');
