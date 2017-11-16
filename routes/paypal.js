@@ -17,7 +17,7 @@ router.get('/checkout_return', function (req, res, next){
     var db = req.app.db;
     var config = common.getConfig();
     var paymentId = req.session.paymentId;
-    var payerId = req.param('PayerID');
+    var payerId = req.params('PayerID');
 
     var details = {'payer_id': payerId};
     paypal.payment.execute(paymentId, details, function (error, payment){
