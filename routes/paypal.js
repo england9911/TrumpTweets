@@ -159,13 +159,16 @@ router.post('/checkout_action', function (req, res, next){
     // set the config
     paypal.configure(paypalConfig);
 
+    console.log('PAYPAL PAYMENT 1:');
+    console.log(util.inspect(payment, false, null));
+
     // create payment
     paypal.payment.create(payment, function (error, payment){
         if(error){
           console.log('PAYPAL ERROR details');
           console.log(util.inspect(error, false, null));
-          console.log('PAyPAL PAYMENT:');
-          console.log(util.inspect(payment, false, null))
+          console.log('PAYPAL PAYMENT 2:');
+          console.log(util.inspect(payment, false, null));
 
             req.session.message = 'There was an error processing your payment. You have not been charged and can try again.';
             req.session.messageType = 'danger';
