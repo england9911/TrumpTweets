@@ -18,8 +18,8 @@ router.get('/checkout_return', function (req, res, next){
     var config = common.getConfig();
     var paymentId = req.session.paymentId;
 
-    // MATT: Changed below line to paramS based on: 
-    // GMT express deprecated req.param(name): Use req.params, req.body, or req.query instead 
+    // MATT: Changed below line to paramS based on:
+    // GMT express deprecated req.param(name): Use req.params, req.body, or req.query instead
     // at routes/paypal.js:20:23
 
     var payerId = req.params('PayerID');
@@ -158,6 +158,8 @@ router.post('/checkout_action', function (req, res, next){
     // create payment
     paypal.payment.create(payment, function (error, payment){
         if(error){
+          console.log('PAYPAL ERROR');
+          console.log(error)
             req.session.message = 'There was an error processing your payment. You have not been changed and can try again.';
             req.session.messageType = 'danger';
             res.redirect('/pay');
