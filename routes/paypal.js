@@ -23,7 +23,8 @@ router.get('/checkout_return', function (req, res, next){
     // GMT express deprecated req.param(name): Use req.params, req.body, or req.query instead
     // at routes/paypal.js:20:23
 
-    var payerId = req.param('PayerID');
+    // var payerId = req.param('PayerID');
+    var payerId = req.params.PayerID;
 
     var details = {'payer_id': payerId};
     paypal.payment.execute(paymentId, details, function (error, payment){
