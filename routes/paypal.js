@@ -17,6 +17,11 @@ router.get('/checkout_return', function (req, res, next){
     var db = req.app.db;
     var config = common.getConfig();
     var paymentId = req.session.paymentId;
+
+    // MATT: Changed below line to paramS based on: 
+    // GMT express deprecated req.param(name): Use req.params, req.body, or req.query instead 
+    // at routes/paypal.js:20:23
+
     var payerId = req.params('PayerID');
 
     var details = {'payer_id': payerId};
