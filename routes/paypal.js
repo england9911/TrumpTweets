@@ -98,6 +98,11 @@ router.get('/checkout_return', function (req, res, next){
                 if(err){
                     console.info(err.stack);
                 }
+
+                console.log('---- Update order status in DB ----');
+                console.log('- ORDER OBJ: -');
+                console.log(util.inspect(order, false, null));
+
                 var lunrDoc = {
                     orderLastname: order.orderLastname,
                     orderEmail: order.orderEmail,
