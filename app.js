@@ -24,6 +24,7 @@ var paypal = require('./routes/paypal');
 var stripe = require('./routes/stripe');
 
 var app = express();
+app.use(require('request-param')());
 
 // view engine setup
 app.set('views', path.join(__dirname, '/views'));
