@@ -27,13 +27,21 @@ router.get('/checkout_return', function (req, res, next){
     var payerId = req.params.PayerID;
 
     var details = {'payer_id': payerId};
+
+    console.log('PAYPAL PAYER ID: ' + payerId);
+    console.log('---- REQ PARAMS -----')
+    console.log(util.inspect(req.params, false, null))
+    console.log('---- END PARAMS -----')
+
+
     paypal.payment.execute(paymentId, details, function (error, payment){
         var paymentApproved = false;
         var paymentMessage = '';
         if(error){
 
             console.log('---- PAYPAL ERROR -----')
-            console.log(util.inspect(error, {showHidden: false, depth: null}));
+            console.log(util.inspect(error, false, null))
+            console.log('---- PAYPAL ERROR END -----')
 
             paymentApproved = false;
 
