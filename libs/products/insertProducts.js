@@ -109,7 +109,7 @@ module.exports.printfulOrder = function(req, order, callback) {
     });
 
 
-    console.log('-------- Final arry for Printful -------')
+    console.log('-------- Final array for Printful -------')
     console.log(recipientItems);
 
 

@@ -31,6 +31,10 @@ router.get('/checkout_return', function (req, res, next){
         var paymentApproved = false;
         var paymentMessage = '';
         if(error){
+
+            console.log('---- PAYPAL ERROR -----')
+            console.log(util.inspect(error, {showHidden: false, depth: null}));
+
             paymentApproved = false;
 
             if(error.response.name === 'PAYMENT_ALREADY_DONE'){
