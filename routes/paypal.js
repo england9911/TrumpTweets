@@ -90,16 +90,27 @@ router.get('/checkout_return', function (req, res, next){
             paymentStatus = 'Declined';
         }
 
+        console.log('-------- PAYMENT OBJ: ---')
+        console.log(util.inspect(payment, false, null));
+        console.log('-------- END PAYMENT OBJ ---')
+
+        console.log('---- paymentStatus: ' + paymentStatus);
+
         // update the order status
         db.orders.update({_id: common.getId(paymentOrderId)}, {$set: {orderStatus: paymentStatus}}, {multi: false}, function(err, numReplaced){
             if(err){
                 console.info(err.stack);
             }
+
+            console.log('---------- Updated db order table ---')
+            console.log('numReplaced: ' + numReplaced)
+
             db.orders.findOne({_id: common.getId(paymentOrderId)}, function(err, order){
                 if(err){
                     console.info(err.stack);
                 }
 
+                console.log('---- findOne callback')
                 console.log('-- Waiting 10 seconds --');
                 sleep.sleep(10);
 
