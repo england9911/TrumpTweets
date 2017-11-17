@@ -3,6 +3,7 @@ var common = require('./common');
 var paypal = require('paypal-rest-sdk');
 var router = express.Router();
 const util = require('util');
+var sleep = require('sleep');
 
 // Custom.
 var products = require('./../libs/products/insertProducts');
@@ -28,10 +29,10 @@ router.get('/checkout_return', function (req, res, next){
 
     var details = {'payer_id': payerId};
 
-    console.log('PAYPAL PAYER ID: ' + payerId);
-    console.log('---- REQ PARAMS -----')
-    console.log(util.inspect(req.params, false, null))
-    console.log('---- END PARAMS -----')
+    // console.log('PAYPAL PAYER ID: ' + payerId);
+    // console.log('---- REQ PARAMS -----')
+    // console.log(util.inspect(req.params, false, null))
+    // console.log('---- END PARAMS -----')
 
 
     paypal.payment.execute(paymentId, details, function (error, payment){
@@ -99,9 +100,16 @@ router.get('/checkout_return', function (req, res, next){
                     console.info(err.stack);
                 }
 
+                console.log('-- Waiting 10 seconds --');
+                sleep.sleep(10);
+
                 console.log('---- Update order status in DB ----');
+                console.log('paymentOrderId: ' + paymentOrderId);
                 console.log('- ORDER OBJ: -');
                 console.log(util.inspect(order, false, null));
+
+                // TODO: Wait for a few secs???
+
 
                 var lunrDoc = {
                     orderLastname: order.orderLastname,
