@@ -20,6 +20,8 @@ router.get('/checkout_return', function (req, res, next){
     var config = common.getConfig();
     var paymentId = req.session.paymentId;
 
+    const debug = false;
+
     // MATT: Changed below line to paramS based on:
     // GMT express deprecated req.param(name): Use req.params, req.body, or req.query instead
     // at routes/paypal.js:20:23
@@ -29,20 +31,23 @@ router.get('/checkout_return', function (req, res, next){
 
     var details = {'payer_id': payerId};
 
-    // console.log('PAYPAL PAYER ID: ' + payerId);
-    // console.log('---- REQ PARAMS -----')
-    // console.log(util.inspect(req.params, false, null))
-    // console.log('---- END PARAMS -----')
-
+    if(debug) {
+        console.log('PAYPAL PAYER ID: ' + payerId);
+        console.log('---- REQ PARAMS -----')
+        console.log(util.inspect(req.params, false, null))
+        console.log('---- END PARAMS -----')
+    }
 
     paypal.payment.execute(paymentId, details, function (error, payment){
         var paymentApproved = false;
         var paymentMessage = '';
         if(error){
 
-            console.log('---- PAYPAL ERROR -----')
-            console.log(util.inspect(error, false, null))
-            console.log('---- PAYPAL ERROR END -----')
+            if(debug) {
+                console.log('---- PAYPAL ERROR -----')
+                console.log(util.inspect(error, false, null))
+                console.log('---- PAYPAL ERROR END -----')
+            }
 
             paymentApproved = false;
 
@@ -90,11 +95,12 @@ router.get('/checkout_return', function (req, res, next){
             paymentStatus = 'Declined';
         }
 
-        console.log('-------- PAYMENT OBJ: ---')
-        console.log(util.inspect(payment, false, null));
-        console.log('-------- END PAYMENT OBJ ---')
-
-        console.log('---- paymentStatus: ' + paymentStatus);
+        if(debug) {
+            console.log('-------- PAYMENT OBJ: ---')
+            console.log(util.inspect(payment, false, null));
+            console.log('-------- END PAYMENT OBJ ---')
+            console.log('---- paymentStatus: ' + paymentStatus);
+        }
 
         // update the order status
         db.orders.update({_id: common.getId(paymentOrderId)}, {$set: {orderStatus: paymentStatus}}, {multi: false}, function(err, numReplaced){
@@ -102,23 +108,28 @@ router.get('/checkout_return', function (req, res, next){
                 console.info(err.stack);
             }
 
-            console.log('---------- Updated db order table ---')
-            console.log('numReplaced: ' + numReplaced)
+            if(debug) {
+                console.log('---------- Updated db order table ---')
+                console.log('numReplaced: ' + numReplaced)
+            }
 
             db.orders.findOne({_id: common.getId(paymentOrderId)}, function(err, order){
                 if(err){
                     console.info(err.stack);
                 }
 
-                console.log('---- findOne callback')
-                console.log('-- Waiting 10 seconds --');
+                if(debug) {
+                    console.log('---- findOne callback')
+                }
+                console.log('-- Paypal: waiting 10 seconds --')
                 sleep.sleep(10);
 
-                console.log('---- Update order status in DB ----');
-                console.log('paymentOrderId: ' + paymentOrderId);
-                console.log('- ORDER OBJ: -');
-                console.log(util.inspect(order, false, null));
-                
+                if(debug) {
+                    console.log('---- Update order status in DB ----');
+                    console.log('paymentOrderId: ' + paymentOrderId);
+                    console.log('- ORDER OBJ: -');
+                    console.log(util.inspect(order, false, null));
+                }
 
                 var lunrDoc = {
                     orderLastname: order.orderLastname,
