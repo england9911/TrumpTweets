@@ -305,7 +305,7 @@ module.exports.insertProducts = function(tweets, callback) {
                 productPermalink: tweetID,
                 productTitle: tweet.text,
                 productPrice: "28.99",
-                productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + ".</p><p>All posters are on museum quality archival matte paper, and can be sent framed or unframed. If you choose the framed option, you'll notice a small amount is added to your total to cover the cost.</p>",
+                productDescription: "<p>Originally posted at: " + tweet.tweet_local_date + ".</p><p>All posters are on museum quality, archival matte paper that will last a long time and reproduce the strong colour palette in the best possible way, remaining bright years after your purchase.</p>",
                 productPublished: "true",
                 productTags: "donald trump, twitter, tweet, trump twitter, " + monthYear,
                 productOptions: optsNoFrame,

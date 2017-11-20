@@ -118,9 +118,7 @@ router.get('/checkout_return', function (req, res, next){
                 console.log('paymentOrderId: ' + paymentOrderId);
                 console.log('- ORDER OBJ: -');
                 console.log(util.inspect(order, false, null));
-
-                // TODO: Wait for a few secs???
-
+                
 
                 var lunrDoc = {
                     orderLastname: order.orderLastname,
