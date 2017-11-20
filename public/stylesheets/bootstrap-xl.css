@@ -11,6 +11,9 @@
     .hidden-lg {
         display: none !important;
     }
+    .container {
+        /*width: 1160px;*/
+    }
 }
 
 

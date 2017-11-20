@@ -104,7 +104,6 @@
                     {{#if admin}}
                         <a class="navbar-brand navbar-brand-image" href="/admin"><img class="img-responsive" src="/images/logo-admin.png"></a>
                     {{else}}
-
                         {{#isNull config.cartLogo}}
                             {{#isNull config.cartTitle}}
                                 <a class="navbar-brand" href="/">expressCart</a>
@@ -114,9 +113,6 @@
                         {{else}}
                             <a class="navbar-brand navbar-brand-image" href="/"><img class="img-responsive" src="{{config.cartLogo}}"></a>
                         {{/isNull}}
-
-                        <a class="navbar-brand navbar-brand-image" href="/"><img class="img-responsive" src="/themes/{{config.theme}}/img/trump-poster-tweets-logo.png" alt="Trump Tweet Posters logo"></a>
-
                     {{/if}}
 				</div>
 				<div id="navbar" class="navbar-collapse collapse">
@@ -172,7 +168,7 @@
             <footer class="footer">
                 <div class="container-fluid">
                     {{#isNull config.footerHtml}}
-                        <h4 class="text-center">Trump Tweet Posters</h4>
+                        <h4 class="text-center">Powered by expressCart</h4>
                     {{else}}
                         {{{config.footerHtml}}}
                     {{/isNull}}
