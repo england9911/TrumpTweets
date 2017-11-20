@@ -2,6 +2,8 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 	font-family: 'Roboto Condensed', 'Lato', 'Helvetica', sans-serif;
 }
 
+
+/* NAVBAR */
 .navbar {
   -webkit-transition: height 0.3s ease;
   -moz-transition: height 0.3s ease;
@@ -53,7 +55,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 .shrink .logo-wrap h1 {
-	margin-top: auto;
+	margin-top: 11px;
 }
 
 /*@media (min-width: 1400px) {
@@ -71,6 +73,9 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 	transition: all .6s ease-in-out;
 	transform: scale(1);
 }
+
+
+/* Product Grid - homepage */
 
 .product-title {
     font-size: 12px;
