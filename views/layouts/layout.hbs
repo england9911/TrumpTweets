@@ -101,8 +101,6 @@
                 return window.pageYOffset || document.documentElement.scrollTop;
             }
         </script>
-
-
     </head>
     {{#if admin}}
     <body class="admin">
@@ -111,32 +109,34 @@
     {{/if}}
         <!-- Static navbar -->
         <nav class="navbar navbar-default navbar-static-top">
-                <div class="logo-wrap">
-                    {{#if admin}}
-                        <a class="navbar-brand navbar-brand-image" href="/admin"><img class="img-responsive" src="/images/logo-admin.png"></a>
-                    {{else}}
-                        <a class="logo" href="/"><img class="img-responsive" src="/themes/{{config.theme}}/imgs/trump-poster-tweets-logo.svg" width="200" height="200" alt="Trump Tweet Posters Logo"></a>
-                    {{/if}}
-                    <h1 class=site-title><a href="/">Trump Tweet Posters</a></h1>
-                </div>
-                <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        {{#unless admin}}
-                        {{#ifCond page '!=' 'checkout'}}
-                        {{#ifCond page '!=' 'pay'}}
-                            {{#if session.cart}}
-                                <li><a href="/cart" class="menu-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart <span class="badge" id="cart-count">{{objectLength session.cart}}</span></a></li>
-                                {{else}}
-                                <li><a href="/cart" class="menu-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart <span class="badge" id="cart-count">0</span></a></li>
-                            {{/if}}
-                        {{/ifCond}}
-                        {{/ifCond}}
-                        {{/unless}}
-                        {{#if session.user}}
-                            <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"> </i>Logout</a></li>
+
+            <div id="navbar" class="">
+                <ul class="nav navbar-nav navbar-right">
+                    {{#unless admin}}
+                    {{#ifCond page '!=' 'checkout'}}
+                    {{#ifCond page '!=' 'pay'}}
+                        {{#if session.cart}}
+                            <li><a href="/cart" class="menu-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart <span class="badge" id="cart-count">{{objectLength session.cart}}</span></a></li>
+                            {{else}}
+                            <li><a href="/cart" class="menu-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart <span class="badge" id="cart-count">0</span></a></li>
                         {{/if}}
-                    </ul>
-                </div>
+                    {{/ifCond}}
+                    {{/ifCond}}
+                    {{/unless}}
+                    {{#if session.user}}
+                        <li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"> </i>Logout</a></li>
+                    {{/if}}
+                </ul>
+            </div>
+
+            <div class="logo-wrap">
+                {{#if admin}}
+                    <a class="navbar-brand navbar-brand-image" href="/admin"><img class="img-responsive" src="/images/logo-admin.png"></a>
+                {{else}}
+                    <a class="logo" href="/"><img class="img-responsive" src="/themes/{{config.theme}}/imgs/trump-poster-tweets-logo.svg" width="200" height="200" alt="Trump Tweet Posters Logo"></a>
+                {{/if}}
+                <h1 class=site-title><a href="/">Trump Tweet Posters</a></h1>
+            </div>
 
         </nav>
         <div class="site-overlay"></div>
