@@ -23,5 +23,5 @@
     "paymentGateway": "paypal",
     "databaseType": "mongodb",
     "databaseConnectionString": "mongodb://heroku_pr5tqj83:isqdduo1h7usacebamitlv5lb3@ds149124.mlab.com:49124/heroku_pr5tqj83",
-    "theme": ""
+    "theme": "ttp"
 }
