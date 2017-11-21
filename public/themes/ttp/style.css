@@ -74,7 +74,10 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 @media (max-width: 767px) {
-
+  .logo-wrap a {
+    display: block;
+    clear: both;
+  }
 }
 
 
@@ -225,7 +228,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   -webkit-transition: opacity 100ms ease-out;
   transition: opacity 100ms ease-out;
 }
-@media (min-width: 576px) and (max-width: 767px) {
+@media (min-width: 576px) and (max-width: 991px) {
   .product-item {
     width: 50%;
     float: left;
