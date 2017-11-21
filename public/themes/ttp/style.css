@@ -24,6 +24,26 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   }
 }
 
+.navbar-nav {
+  margin: 0;
+}
+
+.navbar-default .badge {
+  margin-left: 5px;
+}
+
+@media (max-width: 767px) {
+  #navbar {
+    float: right;
+  }
+}
+
+.navbar-nav > li > a {
+  padding-top: 3px;
+  padding-bottom: 10px;
+}
+
+/* SHRINKING NAV */
 
 .navbar.shrink {
   position: fixed;
@@ -48,20 +68,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 .navbar.shrink #navbar {
 	float: right;
-}
-
-.navbar-nav {
-	margin: 0;
-}
-
-.navbar-default .badge {
-	margin-left: 5px;
-}
-
-@media (max-width: 767px) {
-	#navbar {
-		float: right;
-	}
 }
 
 /* LOGO */
