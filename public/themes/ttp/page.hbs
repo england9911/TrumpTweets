@@ -4,15 +4,15 @@
         <div class="row">
             {{#ifCond config.menuEnabled '==' "true"}}
                 {{#ifCond config.menuLocation '==' "side"}}
-                    <div class="col-md-offset-2 col-lg-offset-2 col-xl-9 col-xl-offset-3 search-bar col-md-10 search-bar">
+                    <div class="col-md-offset-2 col-lg-offset-2 col-xl-9 col-xl-offset-3 search-bar col-md-10 search-bar 0">
                 {{else}}
-                    <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2 search-bar">
+                    <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2 search-bar 1">
                 {{/ifCond}}
             {{else}}
-                <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2 search-bar">
+                <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2 search-bar 2">
             {{/ifCond}}
                 <div class="search-bar-input input-group">
-                    <input type="text" name="frm_search" id="frm_search" class="form-control" placeholder="Search the shop">
+                    <input type="text" name="frm_search" id="frm_search" class="form-control" placeholder="Search Tweets">
                     <span class="input-group-btn">
                         <button class="btn btn-primary" id="btn_search" type="submit">Search</button>
                         <a href="/" class="hidden-xs btn btn-primary"><i class="fa fa-times" aria-hidden="true"></i></a>

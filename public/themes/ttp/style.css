@@ -5,17 +5,17 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 /* NAVBAR */
 .navbar {
-
+	transition: all .6s ease-in-out;
+	transform: scale(1);
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
 
   .navbar {
     -webkit-transition: height 0.3s ease;
     -moz-transition: height 0.3s ease;
     transition: height 0.3s ease;
 
-    display: table;
     position: relative;
     top: 0;
     left: 0;
@@ -54,6 +54,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   display: block;
   padding-top: 5px;
   padding-bottom: 5px;
+  transition: all .6s ease-in-out;
 }
 
 .navbar.shrink .site-title {
@@ -76,10 +77,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 	text-align: center;
 	padding-left: 10px;
 	padding-right: 10px;
+	transition: all .6s ease-in-out;
 }
 
 .logo-wrap img {
 	display: inline-block;
+	transition: width .75s ease-in-out;
+	width: 200px;
 }
 
 @media (max-width: 767px) {
@@ -89,12 +93,24 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   }
 }
 
+@media (min-width: 992px) {
+  .logo-wrap {
+  	clear: both;
+  	padding-bottom: 20px;
+  }
+
+  .shrink .logo-wrap {
+  	clear: none;
+  }
+}
+
 
 /* HEADER */
 
 .site-title {
 	text-transform: uppercase;
 	font-size: 26px;
+	display: none;
 }
 
 .site-title a:hover,
@@ -130,9 +146,9 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   .shrink .logo-wrap {
     float: left;
   }
-	.shrink .logo-wrap img {
-		width: 50px;
-	}
+  .shrink .logo-wrap img {
+	width: 50px;
+  }
 }
 
 .shrink .logo-wrap h1 {
@@ -144,13 +160,19 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 	margin-top: 0;
 }
 
-.main-container.shrink {
-	margin-top: 14em;
-	transition: all .6s ease-in-out;
-	transform: scale(1);
+.main-container .top-padding {
+	transition: height .6s ease;
+	margin-top: 0;
 }
 
+.main-container.shrink .top-padding {
+	margin-top: 250px;
+}
 
+/* Search bar */
+.search-bar {
+	margin-bottom: 20px;
+}
 
 
 /* Product Grid - homepage */
@@ -167,14 +189,20 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .thumbnail {
 	margin-bottom: 0;
 	border-radius: 0;
-	min-height: none;
+	min-height: auto;
 	padding: 0;
 	margin: 0;
 }
 
+@media (min-width: 576px) {
+	.thumbnail {
+		min-height: calc(50vw + 140px);
+	}
+}
+
 @media (min-width: 768px) and (max-width: 991px) {
 	.thumbnail {
-		min-height: 455px;
+		min-height: 540px;
 	}
 }
 
