@@ -6,7 +6,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 /* NAVBAR */
 .navbar {
 	transition: all .6s ease-in-out;
-	transform: scale(1);
+	background-color: transparent;
 }
 
 @media (min-width: 768px) {
