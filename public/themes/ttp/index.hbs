@@ -1,3 +1,4 @@
+<h1>{{ testvar }}</h1>
 <div class="col-xs-12 main-content">
     <div class="row">
         <form>
@@ -64,7 +65,7 @@
                 {{/ifCond}}
                 {{#each results}}
                     <div class="{{perRowClass ../config.productsPerRow}}">
-                        <div class="thumbnail content-item-removethis">
+                        <div class="thumbnail">
 
                             {{#if productPermalink}}
                                 <a href="/product/{{this.productPermalink}}" data-id="{{this._id}}" data-link="{{this.productPermalink}}" data-has-options="{{checkProductOptions this.productOptions}}">
@@ -83,8 +84,8 @@
                             <div class="product-details-wrap tile-secondary-content text-center">
 
                                 <div class="stats">
-                                    <div class="stat retweets"><i class="fa fa-retweet" aria-hidden="true"></i><span>12345</span></div>
-                                    <div class="stat replies"><i class="fa fa-reply" aria-hidden="true"></i><span>12345</span></div>
+                                    <div class="stat retweets"><i class="fa fa-retweet" aria-hidden="true"></i><span>{{this.retweet_count}}</span></div>
+                                    <div class="stat replies"><i class="fa fa-reply" aria-hidden="true"></i><span>{{this.favorite_count}}</span></div>
                                 </div>
 
                                 <div class="product-details-padding">

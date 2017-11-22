@@ -1,13 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var colors = require('colors');
+var async = require('async');
 var _ = require('lodash');
 var common = require('./common');
+
 
 // The homepage of the site
 router.get('/payment/:orderId', function (req, res, next){
     var db = req.app.db;
     var config = common.getConfig();
+
+    console.log('Route A---');
 
     // render the payment complete message
     db.orders.findOne({_id: common.getId(req.params.orderId)}, function(err, result){
@@ -31,6 +35,8 @@ router.get('/payment/:orderId', function (req, res, next){
 
 router.get('/checkout', function (req, res, next){
     var config = common.getConfig();
+
+    console.log('Route B---');
 
     // if there is no items in the cart then render a failure
     if(!req.session.cart){
@@ -59,6 +65,9 @@ router.get('/checkout', function (req, res, next){
 router.get('/pay', function (req, res, next){
     var config = common.getConfig();
 
+    console.log('Route C---');
+
+
     // if there is no items in the cart then render a failure
     if(!req.session.cart){
         req.session.message = 'The are no items in your cart. Please add some items before checking out';
@@ -85,6 +94,9 @@ router.get('/pay', function (req, res, next){
 });
 
 router.get('/cartPartial', function (req, res){
+
+    console.log('Route D---');
+
     res.render('partials/cart', {
         pageCloseBtn: common.showCartCloseBtn(req.query.path),
         page: req.query.path,
@@ -99,6 +111,8 @@ router.get('/cartPartial', function (req, res){
 router.get('/product/:id', function (req, res){
     var db = req.app.db;
     var config = common.getConfig();
+
+    console.log('Route E---');
 
     db.products.findOne({$or: [{_id: common.getId(req.params.id)}, {productPermalink: req.params.id}]}, function (err, result){
         // render 404 if page is not published
@@ -149,6 +163,8 @@ router.get('/logout', function (req, res){
 router.get('/login', function (req, res){
     var db = req.app.db;
 
+    console.log('Route F---');
+
     db.users.count({}, function(err, userCount){
         if(err){
             // if there are no users set the "needsSetup" session
@@ -180,6 +196,8 @@ router.get('/login', function (req, res){
 router.get('/setup', function (req, res){
     var db = req.app.db;
 
+    console.log('Route G---');
+
     db.users.count({}, function (err, userCount){
         if(err){
             console.error(colors.red('Error getting users for setup', err));
@@ -208,6 +226,8 @@ router.get('/setup', function (req, res){
 router.post('/login_action', function (req, res){
     var db = req.app.db;
     var bcrypt = req.bcrypt;
+
+    console.log('Route H---');
 
     db.users.findOne({userEmail: req.body.email}, function (err, user){
         if(err){
@@ -247,6 +267,8 @@ router.get('/search/:searchTerm/:pageNum?', function (req, res){
     var productsIndex = req.app.productsIndex;
     var config = common.getConfig();
     var numberProducts = config.productsPerPage ? config.productsPerPage : 6;
+
+    console.log('Route I---');
 
     var lunrIdArray = [];
     productsIndex.search(searchTerm).forEach(function(id){
@@ -296,6 +318,8 @@ router.get('/category/:cat/:pageNum?', function (req, res){
     var productsIndex = req.app.productsIndex;
     var config = common.getConfig();
     var numberProducts = config.productsPerPage ? config.productsPerPage : 6;
+
+    console.log('Route J---');
 
     var lunrIdArray = [];
     productsIndex.search(searchTerm).forEach(function(id){
@@ -347,6 +371,8 @@ router.get('/sitemap.xml', function (req, res, next){
     var sm = require('sitemap');
     var config = common.getConfig();
 
+    console.log('Route K---');
+
     common.addSitemapProducts(req, res, function (err, products){
         if(err){
             console.error(colors.red('Error generating sitemap.xml', err));
@@ -379,6 +405,8 @@ router.get('/page/:pageNum', function (req, res, next){
     var config = common.getConfig();
     var numberProducts = config.productsPerPage ? config.productsPerPage : 6;
 
+    console.log('Route L---');
+
     getData(req, req.params.pageNum, {}, function (err, results){
         if(err){
             console.error(colors.red('Error getting products for page', err));
@@ -409,12 +437,17 @@ router.get('/:page?', function (req, res, next){
     var config = common.getConfig();
     var numberProducts = config.productsPerPage ? config.productsPerPage : 6;
 
+    console.log('Route M---');
+
     // if no page is specified, just render page 1 of the cart
     if(!req.params.page){
         getData(req, 1, {}, function (err, results){
             if(err){
                 console.error(colors.red('Error getting products for page', err));
             }
+
+            console.log('Route 1---');
+            // console.log(results.data);
 
             res.render(config.themeViews + 'index', {
                 title: 'Shop',
@@ -431,7 +464,8 @@ router.get('/:page?', function (req, res, next){
                 paginateUrl: 'page',
                 helpers: req.handlebars.helpers,
                 showFooter: 'showFooter',
-                menu: common.getMenu()
+                menu: common.getMenu(),
+                testvar: 'TESTING123'
             });
         });
     }else{
@@ -484,6 +518,9 @@ var getData = function (req, page, query, cb){
         skip = (page - 1) * numberProducts;
     }
 
+    // Matt: Retrieve the related Tweet for each product.
+    var tweetsCol = db.collection('tweets');
+
     query['productPublished'] = 'true';
 
     db.products.count(query, function (err, totalProducts){
@@ -504,7 +541,34 @@ var getData = function (req, page, query, cb){
                 if(err){
                     cb('Error retrieving products', null);
                 }else{
-                    cb(null, {data: results, totalProducts: totalProducts});
+
+                    var resultPlace = 0;
+
+                    // Matt: Loop through product results, use productPermalink == tweetID.
+                    async.eachSeries(results, function(resultRow, callback) {
+
+                        tweetsCol.find({ tweet_id:resultRow.productPermalink }).toArray(function(err, resultTweet) {
+
+                            if (err) throw err;
+
+                            if(resultTweet.length > 0) {
+
+                                // Add retweet & favourite counts to products object.
+                                results[resultPlace].retweet_count = resultTweet[0].retweet_count;
+                                results[resultPlace].favorite_count = resultTweet[0].favorite_count;
+                            }
+
+                            resultPlace++;
+
+                            callback();
+                        });
+
+                    }, err => {
+                        if (err) console.error(err.message);
+
+                        // Matt: This line was the only original one in this whole ELSE section.
+                        cb(null, {data: results, totalProducts: totalProducts});
+                    });
                 }
             });
         }
