@@ -464,8 +464,7 @@ router.get('/:page?', function (req, res, next){
                 paginateUrl: 'page',
                 helpers: req.handlebars.helpers,
                 showFooter: 'showFooter',
-                menu: common.getMenu(),
-                testvar: 'TESTING123'
+                menu: common.getMenu()            
             });
         });
     }else{
@@ -537,7 +536,9 @@ var getData = function (req, page, query, cb){
                 }
             });
         }else{
-            db.products.find(query).skip(skip).limit(parseInt(numberProducts)).toArray(function (err, results){
+
+            // Matt: Sort by productAddedDate DESC
+            db.products.find(query).sort({productAddedDate: -1}).skip(skip).limit(parseInt(numberProducts)).toArray(function (err, results){
                 if(err){
                     cb('Error retrieving products', null);
                 }else{
