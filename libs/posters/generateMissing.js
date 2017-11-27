@@ -52,8 +52,12 @@ function reCreate(callback) {
 
 	                // SEE: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#invoke-property
 
-	                // Thought: Check the lambda function itself to see if there are any weird characters in the filename
-					
+
+	                // Thought; If you could get to the bototm of why the tthumb isn't generated the first time, this file is not needed.
+
+	                // TODO: invoke with:  heroku local:run node libs/posters/generateMissing.js
+
+									
 					var params = {
 					  FunctionName: "posterThumb", 
 					  LogType: "None", 
