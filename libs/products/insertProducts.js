@@ -471,7 +471,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             // The generated thumbs aren't available for a good few seconds. Wait for
             // lambda to do it's thing.
-            sleep.sleep(30);
+            sleep.sleep(40);
 
             console.log("waited. bucket: " + S3_THUMBS)
 
@@ -512,11 +512,6 @@ function setS3ProductThumbs(tweetID, docID, cb) {
         },
         function del(files, newThumbs, next) {
 
-            console.log(files);
-            console.log(newThumbs);
-            console.log('deleting original thumbs..');
-            console.log();
-
             var i = 1;
 
             async.eachSeries(files, function(thumb, callback3) {
@@ -555,15 +550,10 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 // for future reference in the app.
 function renameThumb(tweetID, docID, item, cb) {
 
-    console.log('-----');
-
     var ts = Math.round((new Date()).getTime() / 1000);
     var filenameLoc = tweetID + '--' + ts + '.png';
     var fullpath = path.join(__dirname, '../posters/poster-imgs/' + filenameLoc);
     var filename = docID + '/' + item;
-
-    console.log(filename);
-
 
     const s3Stream = s3.getObject({Bucket:S3_THUMBS, Key: item}).createReadStream();
     const fileStream = fs.createWriteStream(fullpath);
