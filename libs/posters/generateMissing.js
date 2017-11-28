@@ -176,56 +176,9 @@ function reCreate(callback) {
 										}
 									});
 							    });
+							});
 
-
-							// 	s3.getObject({
-							// 		Bucket: S3_BUCKET,
-							// 		Key: file.Key
-							// 	}, function(err, data) {
-
-							// 		// var jbody = data.Body.toString();
-							// 		// var firstChar = jbody.substring(0, 1);
-							// 	 //    var firstCharCode = jbody.charCodeAt(0);
-							// 	 //    if (firstCharCode == 65533) {
-							// 	 //        console.log('First character "' + firstChar + '" (character code: ' + firstCharCode + ') is invalid so removing it.');
-							// 	 //    	jbody = jbody.substring(1);
-							// 	 //    }
-
-							// 		// todo: SyntaxError: Unexpected token � in JSON at position 0
-							// 		// todo: what char is at 0 that is not valid json?
-							// 		// var json = new JSON.stringify(data.Body);
-
-							// 		// util.inspect(data.Body, {depth: 10})
-
-							// 		// var json = JSON.parse(stringify(data.Body));
-
-							// 		// var file = require('fs').createWriteStream('/path/to/file.jpg');
-
-
-							// 		// console.log('json')
-							// 		// console.log(json)
-
-
-
-							// 		// var params = {
-							// 		// 	FunctionName: "posterThumb", 
-							// 		// 	Payload: JSON.parse(stringify(new Buffer(data.Body)))
-							// 		// };
-														
-				   //  	// 			lambda.invoke(params, function(err, data) {
-				              
-							// 		// 	if (err) {
-							// 		// 		console.log(err, err.stack); 
-							// 		// 	} else {
-							// 		// 		i++;              
-							// 		// 		console.log('image ' + i);
-							// 		// 		console.log('returned lambda data:');
-							// 		// 		console.log(data);
-							// 		// 		callback3();
-							// 		// 	}
-							// 		// });
-							// 	});
-							// });         
+					      
 						}
 				        ], function (err, newThumb) {
 
