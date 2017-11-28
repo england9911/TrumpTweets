@@ -139,8 +139,9 @@ function reCreate(callback) {
 								console.log(file)
 								console.log(file.Key)
 
+								var filenameLoc = file.Key + '--tmp' + '.png';
 								var fullpath = path.join(__dirname, '../posters/poster-imgs/' + filenameLoc);
-								const s3Stream = s3.getObject({Bucket:S3_BUCKET, Key: item}).createReadStream();
+								const s3Stream = s3.getObject({Bucket:S3_BUCKET, Key: file.Key}).createReadStream();
 							    const fileStream = fs.createWriteStream(fullpath);
 							    s3Stream.on('error', function() {
 
