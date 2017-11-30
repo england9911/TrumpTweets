@@ -469,7 +469,7 @@ function updateMainImg(db, newThumb, tweetID, cb) {
 function setS3ProductThumbs(tweetID, docID, cb) {
 
     // If any error is passed to a successive function, the waterfall goes
-    // straight to it's top-level callback.
+    // straight to it's top-level callback..
     async.waterfall([
         function list(next) {
 
