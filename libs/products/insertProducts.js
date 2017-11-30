@@ -471,7 +471,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             // The generated thumbs aren't available for a good few seconds. Wait for
             // lambda to do it's thing.
-            sleep.sleep(40);
+            sleep.sleep(50);
 
             console.log("waited. bucket: " + S3_THUMBS)
 
