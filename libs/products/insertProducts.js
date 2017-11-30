@@ -342,11 +342,17 @@ module.exports.insertProducts = function(tweets, callback) {
 
                             setS3ProductThumbs(tweetID, newId, function(err3, newThumb) {
 
-                                updateMainImg(db, newThumb, tweetID, function(err4) {
+                                if(newThumb !== null) {
 
-                                    if(err4) console.log(err4);
+                                    updateMainImg(db, newThumb, tweetID, function(err4) {
+
+                                        if(err4) console.log(err4);
+                                        cb();
+                                    });
+                                }
+                                else {
                                     cb();
-                                });
+                                }
                             });
                         }
                     });
@@ -471,7 +477,7 @@ function setS3ProductThumbs(tweetID, docID, cb) {
 
             // The generated thumbs aren't available for a good few seconds. Wait for
             // lambda to do it's thing.
-            sleep.sleep(50);
+            sleep.sleep(60);
 
             console.log("waited. bucket: " + S3_THUMBS)
 
